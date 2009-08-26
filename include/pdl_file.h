@@ -15,6 +15,7 @@
  * \brief PDL 基本文件操作类
  * \details LFile 是 PDL 最基本文件操作封装，它封装了大部分常用的文件操作 API 函数。
  */
+
 class LFile
 {
 public:
@@ -89,26 +90,36 @@ protected:
  */
 
 class LStringA;
-class LTxtFile : private LFile
+class LStringW;
+class LTxtFile : protected LFile
 {
 public:
+    typedef enum {
+        modeAppend,      // 追加模式
+        modeReadWrite,   // 读写模式
+        modeReset        // 清空模式
+    } MODE;
     LTxtFile(void);
     ~LTxtFile(void);
 public:
 
     /**
-     * 打开一个文件，并向文件中追加数据。
+     * 以指定的模式打开一个文本文件。
      * @param [in] lpFileName 要打开的文件名。
-     * @return 如果打开成功则返回 TRUE，否则返回 FALSE。
+     * @param [in] mode 打开文件的模式。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     * \sa Close
      */
-    BOOL Append(__in PCSTR lpFileName);
+    BOOL Open(__in PCSTR lpFileName, __in MODE mode);
 
     /**
-     * 打开一个文件，并向文件中追加数据。
+     * 以指定的模式打开一个文本文件。
      * @param [in] lpFileName 要打开的文件名。
-     * @return 如果打开成功则返回 TRUE，否则返回 FALSE。
+     * @param [in] mode 打开文件的模式。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     * \sa Close
      */
-    BOOL Append(__in PCWSTR lpFileName);
+    BOOL Open(__in PCWSTR lpFileName, __in MODE mode);
 
     BOOL Close(void);
 
@@ -121,26 +132,20 @@ public:
     BOOL Flush(void);
 
     /**
-     * 以读写模式打开文件。
-     * @param [in] lpFileName 要打开的文件名。
-     * @return 如果打开成功则返回 TRUE，否则返回 FALSE。
+     * 读取文本。
+     * @param [out] str 读取数据输出的字符串。
+     * @param [in] 要读取的字符数。
+     * @return 实际读到的字符数。
      */
-    BOOL Open(__in PCSTR lpFileName);
-
-    /**
-     * 以读写模式打开文件。
-     * @param [in] lpFileName 要打开的文件名。
-     * @return 如果打开成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL Open(__in PCWSTR lpFileName);
+    DWORD Read(__out LStringA* str, __in DWORD dwSize);
 
     /**
      * 读取文本。
      * @param [out] str 读取数据输出的字符串。
      * @param [in] 要读取的字符数。
-     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     * @return 实际读到的字符数。
      */
-    BOOL Read(__out LStringA* str, __in DWORD dwSize);
+    DWORD Read(__out LStringW* str, __in DWORD dwSize);
 
     /**
      * 读取一行文本。
@@ -150,18 +155,11 @@ public:
     BOOL ReadLn(__out LStringA* str);
 
     /**
-     * 打开一个文件，并将其内容清空。
-     * @param [in] lpFileName 要打开的文件名。
-     * @return 如果打开成功则返回 TRUE，否则返回 FALSE。
+     * 读取一行文本。
+     * @param [out] str 读取数据输出的字符串。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL Reset(__in PCSTR lpFileName);
-
-    /**
-     * 打开一个文件，并将其内容清空。
-     * @param [in] lpFileName 要打开的文件名。
-     * @return 如果打开成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL Reset(__in PCWSTR lpFileName);
+    BOOL ReadLn(__out LStringW* str);
 
     /**
      * 向文件中写入文本。
@@ -171,19 +169,33 @@ public:
     BOOL Write(__in PCSTR str);
 
     /**
+     * 向文件中写入文本。
+     * @param [in] str 要写入的字符串。
+     * @return 如果写入成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Write(__in PCWSTR str);
+
+    /**
      * 向文件中写入一行文本。
      * @param [in] str 要写入的字符串。
      * @return 如果写入成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL WriteLn(__in PCSTR str);
 
+    /**
+     * 向文件中写入一行文本。
+     * @param [in] str 要写入的字符串。
+     * @return 如果写入成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL WriteLn(__in PCWSTR str);
+
 protected:
     /**
      * 将当前缓存中的数据复制到目标缓冲区。
      */
-    DWORD CopyToBuffer(__out PSTR buf, __in DWORD dwCnt);
+    DWORD CopyToBuffer(__out PVOID buf, __in DWORD dwCnt);
     /**
-     * 查找当前缓存中换行符的位置。
+     * 查找换行符。
      */
     int FindCRLF(void);
     /**
@@ -204,9 +216,13 @@ protected:
      */
     DWORD m_dwFlags;
     /**
+     * 字符大小
+     */
+    DWORD m_cbChar;
+    /**
      * 数据缓冲区
      */
-    PSTR m_buf;
+    PBYTE m_buf;
     /**
      * 当前缓冲区指针
      */

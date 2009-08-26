@@ -46,8 +46,7 @@
 
 #define _PDL_WSTR(s)    L ## s
 #define PDL_WSTR(s)     _PDL_WSTR(s)
-
-#define PDLASSERT(expr) LAssertBox(L###expr, PDL_WSTR(__FILE__), __LINE__)
+#define PDLASSERT(expr) (void)((!!(expr)) || (LAssertBox(L###expr, PDL_WSTR(__FILE__), __LINE__)))
 #define PDLTRACE        LTrace
 #define PDLLOG          LTrace
 
@@ -182,7 +181,7 @@ PDLINLINE T offset_cast(PVOID base, int offset)
  * @param [in] srcfile 产生断言的源文件。
  * @param [in] nLine 源文件的行数。
  */
-void PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine);
+int PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine);
 
 /**
  * 输出调试信息。

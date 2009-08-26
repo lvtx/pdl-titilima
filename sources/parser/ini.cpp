@@ -14,7 +14,7 @@
 #include "..\adaptor\wince_adaptor.h"
 #endif // _WIN32_WCE
 
-LIniParser::LIniParser(__in ILock* lock) : LStrListA(lock)
+LIniParser::LIniParser(__in ILock* lock) : LStrList(lock)
 {
     m_secList.Create(sizeof(LIterator));
 }
@@ -26,7 +26,7 @@ LIniParser::~LIniParser(void)
 
 void LIniParser::Close(void)
 {
-    LStrListA::Clear();
+    LStrList::Clear();
     m_secList.Clear();
 }
 
@@ -45,7 +45,8 @@ LIterator LIniParser::FindKey(__in PCSTR lpszSection, __in PCSTR lpszKey)
     LIterator itNext = FindNextSection(itSec);
     while (itSec != itNext)
     {
-        LStringA str = LStrListA::GetAt(itSec);
+        LStringA str;
+        LStrList::GetAt(itSec, &str);
         int nEqual = str.Find('=');
         if (-1 != nEqual)
         {
@@ -68,7 +69,7 @@ LIterator LIniParser::FindNextSection(__in LIterator it)
     {
         m_secList.GetAt(it2, &itSec);
         m_secList.GetNextIterator(&it2);
-        if (itSec == it)
+        if (itSec == it && NULL != it2)
         {
             m_secList.GetAt(it2, &itSec);
             return itSec;
@@ -90,7 +91,7 @@ LIterator LIniParser::FindSection(__in PCSTR lpszSection)
     {
         m_secList.GetAt(it, &itSec);
 
-        LStringA str = LStrListA::GetAt(itSec);
+        LStringA str = LStrList::GetAt(itSec);
         str.Trim(" \t");
         str.Trim("[]");
         if (0 == lstrcmpiA(lpszSection, str))
@@ -281,7 +282,7 @@ PSTR LIniParser::GetStringA(__in PCSTR lpszSection, __in PCSTR lpszKey)
     if (NULL == it)
         return NULL;
 
-    PCSTR lpLine = LStrListA::GetAt(it);
+    PCSTR lpLine = LStrList::GetAt(it);
     LStringA str = strchr(lpLine, '=') + 1;
     str.Trim(" \t");
     return str.Detach();
@@ -293,7 +294,7 @@ BOOL LIniParser::Open(__in_opt PCSTR lpszFileName)
     GetFilePath(szFileName, MAX_PATH, lpszFileName);
 
     LTxtFile file;
-    if (!file.Open(lpszFileName))
+    if (!file.Open(szFileName, LTxtFile::modeReadWrite))
         return FALSE;
 
     Open(&file);
@@ -306,7 +307,7 @@ BOOL LIniParser::Open(__in_opt PCWSTR lpszFileName)
     GetFilePath(szFileName, MAX_PATH, lpszFileName);
 
     LTxtFile file;
-    if (!file.Open(lpszFileName))
+    if (!file.Open(szFileName, LTxtFile::modeReadWrite))
         return FALSE;
 
     Open(&file);
@@ -323,7 +324,9 @@ void LIniParser::Open(__in LTxtFile* pFile)
     while (!pFile->Eof())
     {
         pFile->ReadLn(&str);
-        LStrListA::AddTail(str);
+        if ('\0' != str[0])
+            LStrList::AddTail(str);
+
         int len = str.Trim(" \t");
         if (len > 0 && '[' == str[0] && ']' == str[len - 1])
             m_secList.AddTail(&m_itTail);
@@ -346,7 +349,7 @@ BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
 {
     CHAR szFileName[MAX_PATH];
     GetFilePath(szFileName, MAX_PATH, lpszFileName);
-    return LStrListA::SaveToFile(szFileName,
+    return LStrList::SaveToFile(szFileName,
         SLFILE_CLEAR | SLFILE_INCLUDENULL);
 }
 
@@ -354,7 +357,7 @@ BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
 {
     WCHAR szFileName[MAX_PATH];
     GetFilePath(szFileName, MAX_PATH, lpszFileName);
-    return LStrListA::SaveToFile(szFileName,
+    return LStrList::SaveToFile(szFileName,
         SLFILE_CLEAR | SLFILE_INCLUDENULL);
 }
 
@@ -400,7 +403,7 @@ BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
     {
         // 不存在指定的 section
         str.Format("[%s]", lpszSection);
-        LStrListA::AddTail(str);
+        LStrList::AddTail(str);
         m_secList.AddTail(&m_itTail);
         itSec = m_itTail;
     }
@@ -409,15 +412,15 @@ BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
     LIterator itKey = FindKey(lpszSection, lpszKey);
     if (NULL != itKey)
     {
-        LStrListA::SetAt(itKey, str);
+        LStrList::SetAt(itKey, str);
         return TRUE;
     }
 
     // 尾部插入新的值
     LIterator it = FindNextSection(itSec);
     if (NULL != it)
-        LStrListA::InsertBefore(it, str);
+        LStrList::InsertBefore(it, str);
     else
-        LStrListA::AddTail(str);
+        LStrList::AddTail(str);
     return TRUE;
 }

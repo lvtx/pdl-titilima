@@ -4,7 +4,7 @@
  * \details 这个文件中实现了 PDL 中的常用容器：
  *   \li \c LPtrList PDL 链表类
  *   \li \c LPtrVector PDL 向量类
- *   \li \c LStrListA PDL Ansi 字符串链表类
+ *   \li \c LStrList PDL 字符串链表类
  */
 
 #pragma once
@@ -27,6 +27,26 @@ typedef void (*CopyPtr)(void* dst, const void* src);
 typedef void (*DestructPtr)(void* ptr);
 
 /**
+ * 迭代回调函数
+ * @param [in] p 当前元素的指针。
+ * @param [in] param 用户自定义参数。
+ * @return 如果返回 TRUE 则继续迭代，否则停止迭代。
+ * \sa LPtrList::ForEach
+ * \sa LPtrVector::ForEach
+ */
+typedef BOOL (*IteratePtr)(void* p, void* param);
+
+/**
+ * 排序回调函数
+ * @param [in] p1 第一个元素的指针。
+ * @param [in] p2 第二个元素的指针。
+ * @return 如果返回 TRUE 则交换两个元素的位置，否则不作处理。
+ * \sa LPtrList::Sort
+ * \sa LPtrVector::Sort
+ */
+typedef BOOL (*ComparePtr)(void* p1, void* p2);
+
+/**
  * \class LPtrList
  * \brief PDL 链表类
  */
@@ -36,17 +56,6 @@ class LPtrList
 public:
     LPtrList(void);
     ~LPtrList(void);
-
-    /**
-     * 迭代回调函数
-     * @param [in] This 容器指针。
-     * @param [in] it 当前迭代器。
-     * @param [in] param 用户自定义参数。
-     * @return 如果返回 TRUE 则继续迭代，否则停止迭代。
-     * \sa ForEach
-     */
-    typedef BOOL (*IteratePtr)(LPtrList* This, LIterator it, void* param);
-
 public:
 
     /**
@@ -156,6 +165,13 @@ public:
     void SetAt(__in LIterator it, __in LPCVOID ptr);
 
     /**
+     * 排序。
+     * @param [in] pfnCompare 元素比较回调，当回调返回 TRUE 时则交换两个元素。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Sort(__in ComparePtr pfnCompare);
+
+    /**
      * 移除指定位置的数据。
      * @param [in] it 要移除的位置。
      * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
@@ -212,17 +228,6 @@ class LPtrVector
 public:
     LPtrVector(void);
     ~LPtrVector(void);
-
-    /**
-     * 迭代回调函数
-     * @param [in] This 容器指针。
-     * @param [in] idx 当前迭代的元素索引。
-     * @param [in] param 用户自定义参数。
-     * @return 如果返回 TRUE 则继续迭代，否则停止迭代。
-     * \sa ForEach
-     */
-    typedef BOOL (*IteratePtr)(LPtrVector* This, int idx, void* param);
-
 public:
 
     /**
@@ -295,6 +300,13 @@ public:
      * @param [in] ptr 要设置的新数据。
      */
     BOOL SetAt(__in int idx, __in LPCVOID pvData);
+
+    /**
+     * 排序。
+     * @param [in] pfnCompare 元素比较回调，当回调返回 TRUE 时则交换两个元素。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Sort(__in ComparePtr pfnCompare);
 protected:
     /**
      * 获得指定索引对应的元素地址。
@@ -353,8 +365,8 @@ protected:
 };
 
 /**
- * \class LStrListA
- * \brief PDL Ansi 字符串链表类
+ * \class LStrList
+ * \brief PDL 字符串链表类
  */
 
 /**
@@ -366,7 +378,9 @@ protected:
  */
 #define SLFILE_INCLUDENULL  0x00000002
 
-class LStrListA : protected LPtrList
+class LStringA;
+class LStringW;
+class LStrList : protected LPtrList
 {
 public:
 
@@ -374,18 +388,23 @@ public:
      * 构造函数。
      * @param [in] lock 操作锁。
      */
-    LStrListA(__in ILock* lock = NULL);
+    LStrList(__in ILock* lock = NULL);
 
 public:
-    PCSTR AddHead(__in PCSTR lpString);
-    PCSTR AddTail(__in PCSTR lpString);
-    PCSTR GetAt(__in LIterator it);
+    LIterator AddHead(__in PCSTR lpString);
+    LIterator AddHead(__in PCWSTR lpString);
+    LIterator AddTail(__in PCSTR lpString);
+    LIterator AddTail(__in PCWSTR lpString);
+    BOOL GetAt(__in LIterator it, __out LStringA* str);
+    BOOL GetAt(__in LIterator it, __out LStringW* str);
     LIterator GetHeadIterator(void);
     void GetNextIterator(__inout LIterator* it);
     void GetPrevIterator(__inout LIterator* it);
     LIterator GetTailIterator(void);
-    PCSTR InsertAfter(__in LIterator it, __in PCSTR lpString);
-    PCSTR InsertBefore(__in LIterator it, __in PCSTR lpString);
+    LIterator InsertAfter(__in LIterator it, __in PCSTR lpString);
+    LIterator InsertAfter(__in LIterator it, __in PCWSTR lpString);
+    LIterator InsertBefore(__in LIterator it, __in PCWSTR lpString);
+    LIterator InsertBefore(__in LIterator it, __in PCSTR lpString);
 
     /**
      * 从一个指定的文本文件中加载一个字符串链表。
@@ -432,4 +451,7 @@ public:
     DWORD SaveToFile(__in PCWSTR lpFile, __in DWORD dwFlags);
 
     void SetAt(__in LIterator it, __in PCSTR lpString);
+    void SetAt(__in LIterator it, __in PCWSTR lpString);
+protected:
+    PCSTR GetAt(__in LIterator it);
 };

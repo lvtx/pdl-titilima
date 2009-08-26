@@ -1,2 +1,8 @@
-2009.8.12
-发布。
+2009.8.17 - 0.02.128
+* 为 LTxtFile 加入 Unicode 支持。
+* 为 LStrListA 加入 Unicode 支持，改名为 LStrList。
+* 为 LPtrList 与 LPtrVector 加入排序支持。
+* 修正若干 bug。
+
+2009.8.12 - 0.01.117
+* 发布。

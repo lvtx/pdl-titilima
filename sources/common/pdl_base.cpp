@@ -11,7 +11,7 @@ typedef struct _tagThisThunk {
 } THISTHUNK;
 #pragma pack(pop)
 
-void PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
+int PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
 {
     WCHAR app[MAX_PATH];
     ::GetModuleFileNameW(NULL, app, MAX_PATH);
@@ -35,6 +35,7 @@ void PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
         ExitProcess(0);
     else if (IDRETRY == n)
         DebugBreak();
+    return 0;
 }
 
 PTHISTHUNK PDLAPI LCreateThisThunk(PVOID This, PVOID pfn)

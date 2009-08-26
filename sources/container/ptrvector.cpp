@@ -113,7 +113,7 @@ int LPtrVector::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
     LAutoLock lock(m_lock);
     for (int i = 0; i < (int)m_dwUnitCnt; ++i)
     {
-        if (!pfnCallBack(this, i, param))
+        if (!pfnCallBack(DataFromPos(i), param))
             return i;
     }
     return -1;
@@ -208,5 +208,34 @@ BOOL LPtrVector::SetAt(__in int idx, __in LPCVOID pvData)
     CopyMemory(p, pvData, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(p, pvData);
+    return TRUE;
+}
+
+BOOL LPtrVector::Sort(__in ComparePtr pfnCompare)
+{
+    if (NULL == m_pvData || 0 == m_dwUnitCnt || NULL == pfnCompare)
+        return FALSE;
+
+    LAutoLock lock(m_lock);
+    m_dwStatus = VECTOR_ITERATING;
+    PBYTE tmp = new BYTE[m_dwUnitSize];
+
+    for (int i = 0; i < (int)m_dwUnitCnt - 1; ++i)
+    {
+        PVOID p1 = DataFromPos(i);
+        for (int j = i + 1; j < (int)m_dwUnitCnt; ++j)
+        {
+            PVOID p2 = DataFromPos(j);
+            if (pfnCompare(p1, p2))
+            {
+                CopyMemory(tmp, p1, m_dwUnitSize);
+                CopyMemory(p1, p2, m_dwUnitSize);
+                CopyMemory(p2, tmp, m_dwUnitSize);
+            }
+        }
+    }
+
+    delete [] tmp;
+    m_dwStatus &= ~VECTOR_ITERATING;
     return TRUE;
 }
