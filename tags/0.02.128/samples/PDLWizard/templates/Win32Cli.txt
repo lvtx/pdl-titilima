@@ -1,0 +1,12 @@
+#include <pdl_base.h>
+#include <pdl_module.h>
+
+int main(int argc, char* argv[])
+{
+    LAppModule::Initialize(NULL);
+
+    // TODO: 在这里添加您的代码
+
+    LAppModule::Destroy();
+    return 0;
+}
