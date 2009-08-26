@@ -145,7 +145,7 @@ LIterator LPtrList::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
     PNODE node = (PNODE)m_itHead;
     while (NULL != node)
     {
-        if (!pfnCallBack(this, node, param))
+        if (!pfnCallBack(node->data, param))
             break;
 
         node = node->next;
@@ -309,4 +309,37 @@ void LPtrList::SetAt(__in LIterator it, __in LPCVOID ptr)
     CopyMemory(node->data, ptr, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(node->data, ptr);
+}
+
+BOOL LPtrList::Sort(__in ComparePtr pfnCompare)
+{
+    if (NULL == m_itHead || NULL == pfnCompare || m_itHead == m_itTail)
+        return FALSE;
+
+    LAutoLock lock(m_lock);
+    m_dwStatus = LIST_ITERATING;
+    PBYTE tmp = new BYTE[m_dwUnitSize];
+
+    PNODE p1 = (PNODE)m_itHead;
+    while (p1 != m_itTail)
+    {
+        PNODE p2 = p1->next;
+        while (NULL != p2)
+        {
+            if (pfnCompare(p1->data, p2->data))
+            {
+                CopyMemory(tmp, p1->data, m_dwUnitSize);
+                CopyMemory(p1->data, p2->data, m_dwUnitSize);
+                CopyMemory(p2->data, tmp, m_dwUnitSize);
+            }
+
+            p2 = p2->next;
+        }
+
+        p1 = p1->next;
+    }
+
+    delete [] tmp;
+    m_dwStatus &= ~LIST_ITERATING;
+    return TRUE;
 }

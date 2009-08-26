@@ -44,7 +44,7 @@ COLORREF PDLAPI LParseColorString(
  */
 
 class LTxtFile;
-class LIniParser : protected LStrListA
+class LIniParser : protected LStrList
 {
 public:
 
