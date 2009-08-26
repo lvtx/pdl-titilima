@@ -1,0 +1,12 @@
+#include <pdl_base.h>
+#include <pdl_module.h>
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, PVOID lpvReserved)
+{
+    if (DLL_PROCESS_ATTACH == fdwReason)
+        LAppModule::Initialize(hinstDLL);
+    else if (DLL_PROCESS_DETACH == fdwReason)
+        LAppModule::Destroy();
+
+    return TRUE;
+}
