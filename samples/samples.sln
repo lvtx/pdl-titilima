@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PDLWizard", "PDLWizard\PDLWizard.vcproj", "{25E32A6C-0A7E-438E-A739-2E63CD6791B8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PDLHello", "PDLHello\PDLHello.vcproj", "{4700444A-E936-44C4-AC2D-DE51A166D611}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThisThunk", "ThisThunk\ThisThunk.vcproj", "{FBAF1877-AB6E-4D18-81C4-14EB4B3D6CA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{25E32A6C-0A7E-438E-A739-2E63CD6791B8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{25E32A6C-0A7E-438E-A739-2E63CD6791B8}.Debug|Win32.Build.0 = Debug|Win32
+		{25E32A6C-0A7E-438E-A739-2E63CD6791B8}.Release|Win32.ActiveCfg = Release|Win32
+		{25E32A6C-0A7E-438E-A739-2E63CD6791B8}.Release|Win32.Build.0 = Release|Win32
+		{4700444A-E936-44C4-AC2D-DE51A166D611}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4700444A-E936-44C4-AC2D-DE51A166D611}.Debug|Win32.Build.0 = Debug|Win32
+		{4700444A-E936-44C4-AC2D-DE51A166D611}.Release|Win32.ActiveCfg = Release|Win32
+		{4700444A-E936-44C4-AC2D-DE51A166D611}.Release|Win32.Build.0 = Release|Win32
+		{FBAF1877-AB6E-4D18-81C4-14EB4B3D6CA7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FBAF1877-AB6E-4D18-81C4-14EB4B3D6CA7}.Debug|Win32.Build.0 = Debug|Win32
+		{FBAF1877-AB6E-4D18-81C4-14EB4B3D6CA7}.Release|Win32.ActiveCfg = Release|Win32
+		{FBAF1877-AB6E-4D18-81C4-14EB4B3D6CA7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
