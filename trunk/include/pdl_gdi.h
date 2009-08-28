@@ -7,6 +7,7 @@
  *   \li \c LBrush 画刷对象类
  *   \li \c LFont 字体对象类
  *   \li \c LPen 画笔对象类
+ *   \li \c LRgn 区域对象类
  *   \li \c LDC HDC 封装类
  *   \li \c LPaintDC BeginPaint/EndPaint 封装类
  *   \li \c LClientDC GetDC/ReleaseDC 封装类
@@ -138,6 +139,19 @@ public:
     LPen(__in HPEN hPen = NULL);
     operator HPEN(void);
     LPen& operator=(__in HPEN hPen);
+};
+
+/**
+ * \class LRgn
+ * \brief 区域对象类
+ */
+
+class LRgn : public LGdiObj
+{
+public:
+    LRgn(__in HRGN hRgn = NULL);
+    operator HRGN(void);
+    LRgn& operator=(__in HRGN hPen);
 };
 
 /**

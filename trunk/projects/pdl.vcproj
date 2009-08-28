@@ -96,6 +96,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="BuildInc $(ProjectDir)Version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

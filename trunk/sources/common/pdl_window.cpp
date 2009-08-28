@@ -928,6 +928,12 @@ BOOL LWnd::SetWindowPos(
     return ::SetWindowPos(m_hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 }
 
+int LWnd::SetWindowRgn(__in_opt HRGN hRgn, __in BOOL bRedraw)
+{
+    PDLASSERT(IsWindow());
+    return ::SetWindowRgn(m_hWnd, hRgn, bRedraw);
+}
+
 BOOL LWnd::SetWindowTextA(__in PCSTR lpszString)
 {
     PDLASSERT(IsWindow());
@@ -1125,6 +1131,20 @@ void LMsgWnd::OnMouseLeave(BOOL& bHandled)
 void LMsgWnd::OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled)
 {
     bHandled = FALSE;
+}
+
+void LMsgWnd::OnNcCalcSize(
+    BOOL bCalcValidRects,
+    LPNCCALCSIZE_PARAMS lpncsp,
+    BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+LRESULT LMsgWnd::OnNcHitTest(int x, int y, BOOL& bHandled)
+{
+    bHandled = FALSE;
+    return 0;
 }
 
 void LMsgWnd::OnPaint(BOOL& bHandled)
@@ -1329,6 +1349,16 @@ LRESULT LMsgWnd::OnMessage(
         {
             OnMouseMove((UINT)wParam, GET_X_LPARAM(lParam),
                 GET_Y_LPARAM(lParam), bHandled);
+        }
+        break;
+    case WM_NCCALCSIZE:
+        {
+            OnNcCalcSize((BOOL)wParam, (LPNCCALCSIZE_PARAMS)lParam, bHandled);
+        }
+        break;
+    case WM_NCHITTEST:
+        {
+            OnNcHitTest(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), bHandled);
         }
         break;
     case WM_PAINT:
