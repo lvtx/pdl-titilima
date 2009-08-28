@@ -290,8 +290,13 @@ PSTR LIniParser::GetStringA(__in PCSTR lpszSection, __in PCSTR lpszKey)
 
 BOOL LIniParser::Open(__in_opt PCSTR lpszFileName)
 {
+    LStrList::Clear();
+    m_secList.Clear();
+
     CHAR szFileName[MAX_PATH];
     GetFilePath(szFileName, MAX_PATH, lpszFileName);
+    if (!LFile::Exists(szFileName))
+        return FALSE;
 
     LTxtFile file;
     if (!file.Open(szFileName, LTxtFile::modeReadWrite))
@@ -303,8 +308,13 @@ BOOL LIniParser::Open(__in_opt PCSTR lpszFileName)
 
 BOOL LIniParser::Open(__in_opt PCWSTR lpszFileName)
 {
+    LStrList::Clear();
+    m_secList.Clear();
+
     WCHAR szFileName[MAX_PATH];
     GetFilePath(szFileName, MAX_PATH, lpszFileName);
+    if (!LFile::Exists(szFileName))
+        return FALSE;
 
     LTxtFile file;
     if (!file.Open(szFileName, LTxtFile::modeReadWrite))
