@@ -447,6 +447,7 @@ public:
         __in UINT uFlags);
     BOOL SetWindowPos(__in HWND hWndInsertAfter, __in int X, __in int Y,
         __in int cx, __in int cy, __in UINT uFlags);
+    int SetWindowRgn(__in_opt HRGN hRgn, __in BOOL bRedraw);
     BOOL SetWindowTextA(__in PCSTR lpszString);
     BOOL SetWindowTextW(__in PCWSTR lpszString);
 
@@ -539,7 +540,8 @@ protected:
      */
     virtual PVOID OnGetPDLObject(PWSTR lpClassName, DWORD dwSize);
 
-    virtual void OnHScroll(UINT nCode, UINT nPos, HWND hScrollBar, BOOL& bHandled);
+    virtual void OnHScroll(UINT nCode, UINT nPos, HWND hScrollBar,
+        BOOL& bHandled);
     virtual BOOL OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled);
     virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags,
         BOOL& bHandled);
@@ -548,6 +550,9 @@ protected:
     virtual void OnLButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnMouseLeave(BOOL& bHandled);
     virtual void OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled);
+    virtual void OnNcCalcSize(BOOL bCalcValidRects,
+        LPNCCALCSIZE_PARAMS lpncsp, BOOL& bHandled);
+    virtual LRESULT OnNcHitTest(int x, int y, BOOL& bHandled);
     virtual void OnPaint(BOOL& bHandled);
     virtual BOOL OnSetCursor(HWND hWnd, UINT nHitTest, UINT message,
         BOOL& bHandled);
