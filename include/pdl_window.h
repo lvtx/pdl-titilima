@@ -554,6 +554,9 @@ protected:
         LPNCCALCSIZE_PARAMS lpncsp, BOOL& bHandled);
     virtual LRESULT OnNcHitTest(int x, int y, BOOL& bHandled);
     virtual void OnPaint(BOOL& bHandled);
+    virtual void OnRButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled);
+    virtual void OnRButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
+    virtual void OnRButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual BOOL OnSetCursor(HWND hWnd, UINT nHitTest, UINT message,
         BOOL& bHandled);
     virtual void OnShowWindow(BOOL bShow, UINT nStatus, BOOL& bHandled);

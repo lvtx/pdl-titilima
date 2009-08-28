@@ -72,6 +72,13 @@ LStringA& LStringA::operator=(__in PCWSTR lpszString)
     return *this;
 }
 
+LStringA& LStringA::operator=(__in const LStringA& str)
+{
+    if (this != &str)
+        Copy(str.m_lpszData);
+    return *this;
+}
+
 const LStringA& LStringA::operator+=(__in PCSTR lpszString)
 {
     int nLen = GetLength();
@@ -392,6 +399,13 @@ LStringW& LStringW::operator=(__in PCWSTR lpszString)
 {
     if (m_lpszData != lpszString)
         Copy(lpszString);
+    return *this;
+}
+
+LStringW& LStringW::operator=(__in const LStringW& str)
+{
+    if (this != &str)
+        Copy(str.m_lpszData);
     return *this;
 }
 
