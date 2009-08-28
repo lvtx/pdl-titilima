@@ -39,6 +39,8 @@ public:
      */
     void Attach(__in HGDIOBJ hGdiObj);
 
+    BOOL DeleteObject(void);
+
     /**
      * 解除 LGdiObj 对 HGDIOBJ 句柄的附着。
      * @return 先前所附着的 HGDIOBJ 句柄。

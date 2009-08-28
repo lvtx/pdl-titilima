@@ -22,6 +22,7 @@ LGdiObj::operator HGDIOBJ(void)
 
 LGdiObj& LGdiObj::operator=(__in HGDIOBJ hGdiObj)
 {
+    DeleteObject();
     m_hGdiObj = hGdiObj;
     return *this;
 }
@@ -29,6 +30,13 @@ LGdiObj& LGdiObj::operator=(__in HGDIOBJ hGdiObj)
 void LGdiObj::Attach(__in HGDIOBJ hGdiObj)
 {
     m_hGdiObj = hGdiObj;
+}
+
+BOOL LGdiObj::DeleteObject(void)
+{
+    if (NULL == m_hGdiObj)
+        return FALSE;
+    return ::DeleteObject(Detach());
 }
 
 HGDIOBJ LGdiObj::Detach(void)
@@ -53,6 +61,7 @@ LBitmap::operator HBITMAP(void)
 
 LBitmap& LBitmap::operator=(__in HBITMAP hBitmap)
 {
+    DeleteObject();
     m_hGdiObj = hBitmap;
     return *this;
 }
@@ -153,6 +162,7 @@ LBrush::operator HBRUSH(void)
 
 LBrush& LBrush::operator=(__in HBRUSH hBrush)
 {
+    DeleteObject();
     m_hGdiObj = hBrush;
     return *this;
 }
@@ -188,6 +198,7 @@ LFont::operator HFONT(void)
 
 LFont& LFont::operator=(__in HFONT hFont)
 {
+    DeleteObject();
     m_hGdiObj = hFont;
     return *this;
 }
@@ -207,6 +218,7 @@ LPen::operator HPEN(void)
 
 LPen& LPen::operator=(__in HPEN hPen)
 {
+    DeleteObject();
     m_hGdiObj = hPen;
     return *this;
 }
@@ -226,6 +238,7 @@ LRgn::operator HRGN(void)
 
 LRgn& LRgn::operator=(__in HRGN hRgn)
 {
+    DeleteObject();
     m_hGdiObj = hRgn;
     return *this;
 }
