@@ -1152,6 +1152,21 @@ void LMsgWnd::OnPaint(BOOL& bHandled)
     bHandled = FALSE;
 }
 
+void LMsgWnd::OnRButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+void LMsgWnd::OnRButtonDown(UINT uFlags, int x, int y, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+void LMsgWnd::OnRButtonUp(UINT uFlags, int x, int y, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
 BOOL LMsgWnd::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message, BOOL& bHandled)
 {
     bHandled = FALSE;
@@ -1364,6 +1379,24 @@ LRESULT LMsgWnd::OnMessage(
     case WM_PAINT:
         {
             OnPaint(bHandled);
+        }
+        break;
+    case WM_RBUTTONDBLCLK:
+        {
+            OnRButtonDblClk((UINT)wParam, GET_X_LPARAM(lParam),
+                GET_Y_LPARAM(lParam), bHandled);
+        }
+        break;
+    case WM_RBUTTONDOWN:
+        {
+            OnRButtonDown((UINT)wParam, GET_X_LPARAM(lParam),
+                GET_Y_LPARAM(lParam), bHandled);
+        }
+        break;
+    case WM_RBUTTONUP:
+        {
+            OnRButtonUp((UINT)wParam, GET_X_LPARAM(lParam),
+                GET_Y_LPARAM(lParam), bHandled);
         }
         break;
     case WM_SETCURSOR:

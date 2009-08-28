@@ -25,6 +25,7 @@ public:
     operator PSTR(void) const;
     LStringA& operator=(__in PCSTR lpszString);
     LStringA& operator=(__in PCWSTR lpszString);
+    LStringA& operator=(__in const LStringA& str);
     const LStringA& operator+=(__in PCSTR lpszString);
     char operator[](__in int idx);
 public:
@@ -66,6 +67,7 @@ public:
     operator PWSTR(void) const;
     LStringW& operator=(__in PCSTR lpszString);
     LStringW& operator=(__in PCWSTR lpszString);
+    LStringW& operator=(__in const LStringW& str);
     const LStringW& operator+=(__in PCWSTR lpszString);
     WCHAR operator[](__in int idx);
 public:
