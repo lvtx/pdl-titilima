@@ -317,6 +317,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\sources\container\ptrtree.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\sources\container\ptrvector.cpp"
 				>
 			</File>

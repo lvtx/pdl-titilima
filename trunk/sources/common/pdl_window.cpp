@@ -964,7 +964,7 @@ BOOL LWnd::SizeToContent(__in BOOL bRedraw /* = TRUE */)
 
     LString strText;
     GetWindowText(&strText);
-    
+
     RECT rc = { 0 };
     LClientDC dc(m_hWnd);
     dc.DrawText(strText, -1, &rc, DT_CALCRECT);
