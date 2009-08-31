@@ -3,6 +3,7 @@
  * \brief PDL 常用容器
  * \details 这个文件中实现了 PDL 中的常用容器：
  *   \li \c LPtrList PDL 链表类
+ *   \li \c LPtrTree PDL 树类
  *   \li \c LPtrVector PDL 向量类
  *   \li \c LStrList PDL 字符串链表类
  */
@@ -90,6 +91,7 @@ public:
 
     /**
      * 销毁链表。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     void Destroy(void);
 
@@ -125,15 +127,17 @@ public:
 
     /**
      * 获取指定迭代器的下一个迭代器。
-     * @param [in, out] it 传入一个指定的迭代器，传出其下一个迭代器。
+     * @param [in] it 一个有效的迭代器。
+     * @return 如果成功则返回指定迭代器的下一个迭代器，否则返回 NULL。
      */
-    void GetNextIterator(__inout LIterator* it);
+    LIterator GetNextIterator(__in LIterator it);
 
     /**
      * 获取指定迭代器的前一个迭代器。
-     * @param [in, out] it 传入一个指定的迭代器，传出其前一个迭代器。
+     * @param [in] it 一个有效的迭代器。
+     * @return 如果成功则返回指定迭代器的前一个迭代器，否则返回 NULL。
      */
-    void GetPrevIterator(__inout LIterator* it);
+    LIterator GetPrevIterator(__in LIterator it);
 
     /**
      * 获取链表尾部的迭代器。
@@ -218,6 +222,159 @@ protected:
     ILock* m_lock;
 };
 
+#define LT_FIRST    1
+#define LT_LAST     2
+#define LT_ROOT     ((LIterator)NULL)
+
+/**
+ * \class LPtrTree
+ * \brief PDL 树类
+ */
+
+class LPtrTree
+{
+public:
+    LPtrTree(void);
+    ~LPtrTree(void);
+public:
+
+    /**
+     * 添加一个元素。
+     * @param [in] it 要添加元素的父结点，如为 LT_ROOT 则添加根结点。
+     * @param [in] ptr 来源元素的地址。
+     * @param [in] type 要添加子结点的顺序：
+     *   \li \c LT_FIRST 添加为第一个子结点。
+     *   \li \c LT_LAST 添加为最后一个子结点。
+     * @return 如果添加成功则返回添加后的元素迭代器，否则返回 NULL。
+     */
+    LIterator AddChild(__in LIterator it, __in LPCVOID ptr, __in DWORD type);
+
+    /**
+     * 清空树。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Clear(void);
+
+    /**
+     * 创建树。
+     * @param [in] dwUnitSize 元素的大小。
+     * @param [in] pfnCopy 元素的复制函数。
+     * @param [in] pfnDestroy 元素的销毁函数。
+     * @param [in] lock 操作锁。
+     */
+    void Create(__in DWORD dwUnitSize, __in CopyPtr pfnCopy = NULL,
+        __in DestructPtr pfnDestroy = NULL, __in ILock* lock = NULL);
+
+    /**
+     * 销毁树。
+     */
+    void Destroy(void);
+
+    /**
+     * 获取指定位置的元素。
+     * @param [in] it 一个有效位置的迭代器。
+     * @param [out] p 用于接收元素数据的缓冲区指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetAt(__in LIterator it, __out PVOID p);
+
+    /**
+     * 获取指定结点的子结点。
+     * @param [in] it 指定的父结点，使用 LT_ROOT 可以获得根结点。
+     * @param [in] type 要获得子结点的类型：
+     *   \li \c LT_FIRST 获取第一个子结点。
+     *   \li \c LT_LAST 获取最后一个子结点。
+     * @return 如果成功则返回指定的子结点，否则返回 NULL。
+     */
+    LIterator GetChild(__in LIterator it, __in DWORD type);
+
+    /**
+     * 获取指定结点的下一个兄弟结点。
+     * @param [in] it 一个有效的迭代器。
+     * @return 如果成功则返回指定迭代器的下一个兄弟结点，否则返回 NULL。
+     */
+    LIterator GetNextSibling(__in LIterator it);
+
+    /**
+     * 获取指定结点的前一个兄弟结点。
+     * @param [in] it 一个有效的迭代器。
+     * @return 如果成功则返回指定迭代器的前一个兄弟结点，否则返回 NULL。
+     */
+    LIterator GetPrevSibling(__in LIterator it);
+
+    /**
+     * 向指定位置的后面插入一个元素。
+     * @param [in] it 要插入数据的位置。
+     * @param [in] ptr 要插入的数据。
+     * @return 如果插入成功则返回插入后的位置，否则返回 NULL。
+     */
+    LIterator InsertAfter(__in LIterator it, __in LPCVOID ptr);
+
+    /**
+     * 向指定位置的前面插入一个元素。
+     * @param [in] it 要插入数据的位置。
+     * @param [in] ptr 要插入的数据。
+     * @return 如果插入成功则返回插入后的位置，否则返回 NULL。
+     */
+    LIterator InsertBefore(__in LIterator it, __in LPCVOID ptr);
+
+    /**
+     * 设置指定位置的数据。
+     * @param [in] it 要设置新数据的位置。
+     * @param [in] ptr 要设置的新数据。
+     */
+    void SetAt(__in LIterator it, __in LPCVOID ptr);
+
+    /**
+     * 移除指定位置的数据。
+     * @param [in] it 要移除的位置。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Remove(__in LIterator it);
+
+protected:
+    /**
+     * 获得可用的操作锁。
+     */
+    PDLINLINE ILock* GetSafeLock(void) const;
+    /**
+     * 为新元素申请空间。
+     */
+    LIterator New(__in LPCVOID ptr);
+protected:
+    /**
+     * 状态
+     */
+    DWORD m_dwStatus;
+    /**
+     * 第一个根结点
+     */
+    LIterator m_itRootFirst;
+    /**
+     * 最后一个根结点
+     */
+    LIterator m_itRootLast;
+    /**
+     * 元素的大小
+     */
+    DWORD m_dwUnitSize;
+    /**
+     * 元素复制函数
+     */
+    CopyPtr m_pfnCopy;
+    /**
+     * 元素销毁函数
+     */
+    DestructPtr m_pfnDestroy;
+    /**
+     * 操作锁
+     */
+    ILock* m_lock;
+};
+
+#define LV_FIRST    0
+#define LV_LAST     (-1)
+
 /**
  * \class LPtrVector
  * \brief PDL 向量类
@@ -293,6 +450,13 @@ public:
      * @return 如果插入成功则返回插入后的索引，否则返回 -1。
      */
     int InsertBefore(__in int idx, __in LPCVOID pvData);
+
+    /**
+     * 移除指定位置的数据。
+     * @param [in] idx 要移除的位置。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Remove(__in int idx);
 
     /**
      * 设置指定位置的数据。
@@ -398,8 +562,8 @@ public:
     BOOL GetAt(__in LIterator it, __out LStringA* str);
     BOOL GetAt(__in LIterator it, __out LStringW* str);
     LIterator GetHeadIterator(void);
-    void GetNextIterator(__inout LIterator* it);
-    void GetPrevIterator(__inout LIterator* it);
+    LIterator GetNextIterator(__in LIterator it);
+    LIterator GetPrevIterator(__in LIterator it);
     LIterator GetTailIterator(void);
     LIterator InsertAfter(__in LIterator it, __in PCSTR lpString);
     LIterator InsertAfter(__in LIterator it, __in PCWSTR lpString);

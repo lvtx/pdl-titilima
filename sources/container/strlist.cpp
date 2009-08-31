@@ -84,12 +84,12 @@ LIterator LStrList::GetHeadIterator(void)
     return LPtrList::GetHeadIterator();
 }
 
-void LStrList::GetNextIterator(__inout LIterator* it)
+LIterator LStrList::GetNextIterator(__in LIterator it)
 {
     return LPtrList::GetNextIterator(it);
 }
 
-void LStrList::GetPrevIterator(__inout LIterator* it)
+LIterator LStrList::GetPrevIterator(__in LIterator it)
 {
     return LPtrList::GetPrevIterator(it);
 }

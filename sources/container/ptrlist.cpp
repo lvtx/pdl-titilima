@@ -27,7 +27,7 @@ LPtrList::LPtrList(void)
     m_dwUnitSize = 0;
     m_pfnCopy = NULL;
     m_pfnDestroy = NULL;
-    m_lock = NULL;
+    m_lock = &g_lock;
 }
 
 LPtrList::~LPtrList(void)
@@ -87,7 +87,7 @@ PVOID LPtrList::AddTail(__in LPCVOID ptr)
 
 BOOL LPtrList::Clear(void)
 {
-    if (NULL == m_itHead || (LIST_ITERATING & m_dwStatus))
+    if (LIST_ITERATING & m_dwStatus)
         return FALSE;
 
     LAutoLock lock(m_lock);
@@ -126,13 +126,13 @@ void LPtrList::Create(
 
 void LPtrList::Destroy(void)
 {
-    if (Clear())
-    {
-        m_dwUnitSize = 0;
-        m_pfnCopy = NULL;
-        m_pfnDestroy = NULL;
-        m_lock = NULL;
-    }
+    m_dwStatus &= ~LIST_ITERATING;
+    Clear();
+
+    m_dwUnitSize = 0;
+    m_pfnCopy = NULL;
+    m_pfnDestroy = NULL;
+    m_lock = NULL;
 }
 
 LIterator LPtrList::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
@@ -186,16 +186,18 @@ LIterator LPtrList::GetHeadIterator(void)
     return m_itHead;
 }
 
-void LPtrList::GetNextIterator(__inout LIterator* it)
+LIterator LPtrList::GetNextIterator(__in LIterator it)
 {
-    PNODE node = (PNODE)*it;
-    *it = node->next;
+    if (NULL == it)
+        return NULL;
+    return ((PNODE)it)->next;
 }
 
-void LPtrList::GetPrevIterator(__inout LIterator* it)
+LIterator LPtrList::GetPrevIterator(__in LIterator it)
 {
-    PNODE node = (PNODE)*it;
-    *it = node->prev;
+    if (NULL == it)
+        return NULL;
+    return ((PNODE)it)->prev;
 }
 
 PDLINLINE ILock* LPtrList::GetSafeLock(void) const

@@ -22,7 +22,7 @@ LPtrVector::LPtrVector(void)
     m_nGrowCnt = 0;
     m_pfnCopy = NULL;
     m_pfnDestroy = NULL;
-    m_lock = NULL;
+    m_lock = &g_lock;
 }
 
 LPtrVector::~LPtrVector(void)
@@ -124,6 +124,8 @@ BOOL LPtrVector::GetAt(__in int idx, __out PVOID buf)
     if (NULL == m_pvData || m_dwUnitCnt <= (DWORD)idx)
         return FALSE;
 
+    if (idx < 0)
+        idx = m_dwUnitCnt - 1;
     CopyMemory(buf, DataFromPos(idx), m_dwUnitSize);
     return TRUE;
 }
@@ -196,6 +198,31 @@ int LPtrVector::InsertBefore(__in int idx, __in LPCVOID pvData)
     if (NULL != m_pfnCopy)
         m_pfnCopy(dst, pvData);
     return idx;
+}
+
+BOOL LPtrVector::Remove(__in int idx)
+{
+    if (VECTOR_ITERATING & m_dwStatus)
+        return FALSE;
+    if (NULL == m_pvData || (DWORD)idx >= m_dwUnitCnt)
+        return FALSE;
+
+    LAutoLock lock(m_lock);
+    --m_dwUnitCnt;
+    if (idx < 0)
+    {
+        if (NULL != m_pfnDestroy)
+            m_pfnDestroy(DataFromPos(m_dwUnitCnt));
+        return TRUE;
+    }
+
+    PBYTE dst = (PBYTE)DataFromPos(idx);
+    if (NULL != m_pfnDestroy)
+        m_pfnDestroy(dst);
+
+    DWORD dwSize = (m_dwUnitCnt - idx) * m_dwUnitSize;
+    MoveMemory(dst, dst + m_dwUnitSize, dwSize);
+    return TRUE;
 }
 
 BOOL LPtrVector::SetAt(__in int idx, __in LPCVOID pvData)
