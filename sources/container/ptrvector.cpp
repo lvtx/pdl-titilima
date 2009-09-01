@@ -121,7 +121,7 @@ int LPtrVector::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
 
 BOOL LPtrVector::GetAt(__in int idx, __out PVOID buf)
 {
-    if (NULL == m_pvData || m_dwUnitCnt <= (DWORD)idx)
+    if (NULL == m_pvData || (int)m_dwUnitCnt <= idx || 0 == m_dwUnitCnt)
         return FALSE;
 
     if (idx < 0)
@@ -132,6 +132,7 @@ BOOL LPtrVector::GetAt(__in int idx, __out PVOID buf)
 
 DWORD LPtrVector::GetCount(void)
 {
+    PDLASSERT(NULL != m_pvData);
     return m_dwUnitCnt;
 }
 
@@ -160,7 +161,7 @@ int LPtrVector::InsertAfter(__in int idx, __in LPCVOID pvData)
     if (VECTOR_ITERATING & m_dwStatus)
         return -1;
 
-    if (NULL == m_pvData || (DWORD)idx >= m_dwUnitCnt)
+    if (NULL == m_pvData || idx >= (int)m_dwUnitCnt)
         return -1;
 
     if (idx < 0)
@@ -176,6 +177,7 @@ int LPtrVector::InsertAfter(__in int idx, __in LPCVOID pvData)
     CopyMemory(dst, pvData, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(dst, pvData);
+    ++m_dwUnitCnt;
     return idx + 1;
 }
 
@@ -184,7 +186,7 @@ int LPtrVector::InsertBefore(__in int idx, __in LPCVOID pvData)
     if (VECTOR_ITERATING & m_dwStatus)
         return -1;
 
-    if (NULL == m_pvData || idx < 0 || (DWORD)idx >= m_dwUnitCnt)
+    if (NULL == m_pvData || idx < 0 || idx >= (int)m_dwUnitCnt)
         return -1;
 
     LAutoLock lock(m_lock);
@@ -197,6 +199,7 @@ int LPtrVector::InsertBefore(__in int idx, __in LPCVOID pvData)
     CopyMemory(dst, pvData, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(dst, pvData);
+    ++m_dwUnitCnt;
     return idx;
 }
 
@@ -204,7 +207,7 @@ BOOL LPtrVector::Remove(__in int idx)
 {
     if (VECTOR_ITERATING & m_dwStatus)
         return FALSE;
-    if (NULL == m_pvData || (DWORD)idx >= m_dwUnitCnt)
+    if (NULL == m_pvData || idx >= (int)m_dwUnitCnt)
         return FALSE;
 
     LAutoLock lock(m_lock);
@@ -227,11 +230,15 @@ BOOL LPtrVector::Remove(__in int idx)
 
 BOOL LPtrVector::SetAt(__in int idx, __in LPCVOID pvData)
 {
-    if (NULL == m_pvData || idx < 0 || (DWORD)idx >= m_dwUnitCnt)
-        return -1;
+    if (NULL == m_pvData || idx >= (int)m_dwUnitCnt || 0 == m_dwUnitCnt)
+        return FALSE;
 
     LAutoLock lock(GetSafeLock());
+    if (idx < 0)
+        idx = m_dwUnitCnt - 1;
     PVOID p = DataFromPos(idx);
+    if (NULL != m_pfnDestroy)
+        m_pfnDestroy(p);
     CopyMemory(p, pvData, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(p, pvData);

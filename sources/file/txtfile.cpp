@@ -75,6 +75,31 @@ BOOL LTxtFile::Flush(void)
     return TRUE;
 }
 
+int LTxtFile::GetChar(void)
+{
+    if (OPFLAG_EOF & m_dwFlags)
+        return LEOF;
+
+    if (m_ptr >= TXTBUF_SIZE)
+        ReadBlock();
+
+    int ch;
+    if (FILEFLAG_UNICODE & m_dwFlags)
+    {
+        ch = *(PCWSTR)m_buf;
+        m_ptr += sizeof(WCHAR);
+    }
+    else
+    {
+        ch = *(PCSTR)m_buf;
+        m_ptr += sizeof(char);
+    }
+
+    if (m_ptr >= TXTBUF_SIZE)
+        ReadBlock();
+    return ch;
+}
+
 BOOL LTxtFile::Open(__in PCSTR lpFileName, __in MODE mode)
 {
     DWORD dwAccess = 0;
@@ -219,6 +244,20 @@ BOOL LTxtFile::Open(__in PCWSTR lpFileName, __in MODE mode)
     m_ptr = 0;
     m_rwptr = 0;
     return TRUE;
+}
+
+void LTxtFile::PutChar(int ch)
+{
+    if (FILEFLAG_UNICODE & m_dwFlags)
+    {
+        WCHAR w[2] = { (WCHAR)ch, L'\0' };
+        Write(w);
+    }
+    else
+    {
+        char c[2] = { (char)ch, '\0' };
+        Write(c);
+    }
 }
 
 DWORD LTxtFile::Read(__out LStringA* str, __in DWORD dwSize)

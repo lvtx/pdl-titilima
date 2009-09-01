@@ -56,7 +56,7 @@ LIterator LIniParser::FindKey(__in PCSTR lpszSection, __in PCSTR lpszKey)
                 return itSec;
         }
 
-        m_secList.GetNextIterator(&itSec);
+        itSec = m_secList.GetNextIterator(itSec);
     }
     return NULL;
 }
@@ -68,7 +68,7 @@ LIterator LIniParser::FindNextSection(__in LIterator it)
     while (NULL != it2)
     {
         m_secList.GetAt(it2, &itSec);
-        m_secList.GetNextIterator(&it2);
+        it2 = m_secList.GetNextIterator(it2);
         if (itSec == it && NULL != it2)
         {
             m_secList.GetAt(it2, &itSec);
@@ -97,7 +97,7 @@ LIterator LIniParser::FindSection(__in PCSTR lpszSection)
         if (0 == lstrcmpiA(lpszSection, str))
             return itSec;
 
-        m_secList.GetNextIterator(&it);
+        it = m_secList.GetNextIterator(it);
     }
     return NULL;
 }
@@ -350,7 +350,7 @@ void LIniParser::RemoveSection(__in PCSTR lpszSection)
     while (itNext != itSec)
     {
         LIterator itDel = itSec;
-        GetNextIterator(&itSec);
+        itSec = GetNextIterator(itSec);
         Remove(itDel);
     }
 }

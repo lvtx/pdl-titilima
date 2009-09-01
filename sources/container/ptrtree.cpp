@@ -59,16 +59,20 @@ LIterator LPtrTree::AddChild(
         if (LT_FIRST == type)
         {
             node->next = (PTNODE)m_itRootFirst;
-            m_itRootFirst = node;
+            m_itRootFirst = (LIterator)node;
             if (NULL == m_itRootLast)
                 m_itRootLast = m_itRootFirst;
+            else
+                node->next->prev = node;
         }
         else
         {
             node->prev = (PTNODE)m_itRootLast;
-            m_itRootLast = node;
+            m_itRootLast = (LIterator)node;
             if (NULL == m_itRootFirst)
                 m_itRootFirst = m_itRootLast;
+            else
+                node->prev->next = node;
         }
     }
     else
@@ -81,6 +85,8 @@ LIterator LPtrTree::AddChild(
             parent->firstchild = node;
             if (NULL == parent->lastchild)
                 parent->lastchild = parent->firstchild;
+            else
+                node->next->prev = node;
         }
         else
         {
@@ -88,10 +94,12 @@ LIterator LPtrTree::AddChild(
             parent->lastchild = node;
             if (NULL == parent->firstchild)
                 parent->firstchild = parent->lastchild;
+            else
+                node->prev->next = node;
         }
     }
 
-    return node;
+    return (LIterator)node;
 }
 
 BOOL LPtrTree::Clear(void)
@@ -106,7 +114,7 @@ BOOL LPtrTree::Clear(void)
     {
         PTNODE del = node;
         node = node->next;
-        Remove(del);
+        Remove((LIterator)del);
     }
 
     m_itRootFirst = NULL;
@@ -159,14 +167,14 @@ LIterator LPtrTree::GetChild(__in LIterator it, __in DWORD type)
         if (LT_ROOT == it)
             return m_itRootFirst;
         else
-            return ((PTNODE)it)->firstchild;
+            return (LIterator)(((PTNODE)it)->firstchild);
     }
     else if (LT_LAST == type)
     {
         if (LT_ROOT == it)
             return m_itRootLast;
         else
-            return ((PTNODE)it)->lastchild;
+            return (LIterator)(((PTNODE)it)->lastchild);
     }
     return NULL;
 }
@@ -175,14 +183,14 @@ LIterator LPtrTree::GetNextSibling(__in LIterator it)
 {
     if (NULL == it)
         return NULL;
-    return ((PTNODE)it)->next;
+    return (LIterator)(((PTNODE)it)->next);
 }
 
 LIterator LPtrTree::GetPrevSibling(__in LIterator it)
 {
     if (NULL == it)
         return NULL;
-    return ((PTNODE)it)->prev;
+    return (LIterator)(((PTNODE)it)->prev);
 }
 
 PDLINLINE ILock* LPtrTree::GetSafeLock(void) const
@@ -201,7 +209,7 @@ LIterator LPtrTree::New(__in LPCVOID ptr)
     CopyMemory(node->data, ptr, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(node->data, ptr);
-    return node;
+    return (LIterator)node;
 }
 
 BOOL LPtrTree::Remove(__in LIterator it)
@@ -221,15 +229,15 @@ BOOL LPtrTree::Remove(__in LIterator it)
         prev->next = next;
     else if (NULL != parent)
         parent->firstchild = next;
-    else
-        m_itRootFirst = next;
+    else if (m_itRootFirst == it)
+        m_itRootFirst = (LIterator)next;
 
     if (NULL != next)
         next->prev = prev;
     else if (NULL != parent)
         parent->lastchild = prev;
-    else
-        m_itRootLast = next;
+    else if (m_itRootLast == it)
+        m_itRootLast = (LIterator)prev;
     node->parent = NULL;
     node->next = NULL;
     node->prev = NULL;
@@ -243,6 +251,7 @@ BOOL LPtrTree::Remove(__in LIterator it)
         {
             // 如含有子结点，则将结点入栈
             stack.InsertAfter(-1, &node);
+            node = node->firstchild;
             continue;
         }
 

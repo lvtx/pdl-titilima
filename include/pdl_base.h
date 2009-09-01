@@ -74,7 +74,6 @@
 #define PDLINLINE   __inline
 #endif // PDLINLINE
 
-
 /**
  * \def GET_X_LPARAM
  * 从消息的 lParam 参数中获取 x 坐标。
@@ -108,6 +107,14 @@
  */
 #ifndef PDL_SYSBRUSH
 #define PDL_SYSBRUSH(br)    ((HBRUSH)(br + 1))
+#endif
+
+/**
+ * \def LEOF
+ * 文件结束标志
+ */
+#ifndef LEOF
+#define LEOF    (-1)
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

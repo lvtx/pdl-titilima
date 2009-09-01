@@ -35,7 +35,7 @@ LPtrList::~LPtrList(void)
     Destroy();
 }
 
-PVOID LPtrList::AddHead(__in LPCVOID ptr)
+LIterator LPtrList::AddHead(__in LPCVOID ptr)
 {
     if (LIST_ITERATING & m_dwStatus)
         return NULL;
@@ -47,20 +47,20 @@ PVOID LPtrList::AddHead(__in LPCVOID ptr)
     LAutoLock lock(m_lock);
     if (NULL == m_itHead)
     {
-        m_itHead = node;
-        m_itTail = node;
+        m_itHead = (LIterator)node;
+        m_itTail = (LIterator)node;
     }
     else
     {
         PNODE head = (PNODE)m_itHead;
         node->next = head;
         head->prev = node;
-        m_itHead = node;
+        m_itHead = (LIterator)node;
     }
-    return node->data;
+    return (LIterator)node;
 }
 
-PVOID LPtrList::AddTail(__in LPCVOID ptr)
+LIterator LPtrList::AddTail(__in LPCVOID ptr)
 {
     if (LIST_ITERATING & m_dwStatus)
         return NULL;
@@ -72,17 +72,17 @@ PVOID LPtrList::AddTail(__in LPCVOID ptr)
     LAutoLock lock(m_lock);
     if (NULL == m_itTail)
     {
-        m_itHead = node;
-        m_itTail = node;
+        m_itHead = (LIterator)node;
+        m_itTail = (LIterator)node;
     }
     else
     {
         PNODE tail = (PNODE)m_itTail;
         node->prev = (PNODE)m_itTail;
         tail->next = node;
-        m_itTail = node;
+        m_itTail = (LIterator)node;
     }
-    return node->data;
+    return (LIterator)node;
 }
 
 BOOL LPtrList::Clear(void)
@@ -152,7 +152,7 @@ LIterator LPtrList::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
     }
 
     m_dwStatus &= ~LIST_ITERATING;
-    return node;
+    return (LIterator)node;
 }
 
 BOOL LPtrList::GetAt(__in LIterator it, __out PVOID p)
@@ -190,14 +190,14 @@ LIterator LPtrList::GetNextIterator(__in LIterator it)
 {
     if (NULL == it)
         return NULL;
-    return ((PNODE)it)->next;
+    return (LIterator)(((PNODE)it)->next);
 }
 
 LIterator LPtrList::GetPrevIterator(__in LIterator it)
 {
     if (NULL == it)
         return NULL;
-    return ((PNODE)it)->prev;
+    return (LIterator)(((PNODE)it)->prev);
 }
 
 PDLINLINE ILock* LPtrList::GetSafeLock(void) const
@@ -229,7 +229,7 @@ LIterator LPtrList::InsertAfter(__in LIterator it, __in LPCVOID ptr)
     node->next = next;
     next->prev = node;
     prev->next = node;
-    return node;
+    return (LIterator)node;
 }
 
 LIterator LPtrList::InsertBefore(__in LIterator it, __in LPCVOID ptr)
@@ -251,7 +251,7 @@ LIterator LPtrList::InsertBefore(__in LIterator it, __in LPCVOID ptr)
     node->next = next;
     next->prev = node;
     prev->next = node;
-    return node;
+    return (LIterator)node;
 }
 
 LIterator LPtrList::New(__in LPCVOID ptr)
@@ -262,7 +262,7 @@ LIterator LPtrList::New(__in LPCVOID ptr)
     CopyMemory(node->data, ptr, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(node->data, ptr);
-    return node;
+    return (LIterator)node;
 }
 
 BOOL LPtrList::Remove(__in LIterator it)
@@ -279,7 +279,7 @@ BOOL LPtrList::Remove(__in LIterator it)
 
     if (m_itHead == it)
     {
-        m_itHead = next;
+        m_itHead = (LIterator)next;
         if (NULL != next)
             next->prev = NULL;
     }
@@ -289,7 +289,7 @@ BOOL LPtrList::Remove(__in LIterator it)
     }
     if (m_itTail == it)
     {
-        m_itTail = prev;
+        m_itTail = (LIterator)prev;
         if (NULL != prev)
             prev->next = NULL;
     }
@@ -323,7 +323,7 @@ BOOL LPtrList::Sort(__in ComparePtr pfnCompare)
     PBYTE tmp = new BYTE[m_dwUnitSize];
 
     PNODE p1 = (PNODE)m_itHead;
-    while (p1 != m_itTail)
+    while ((LIterator)p1 != m_itTail)
     {
         PNODE p2 = p1->next;
         while (NULL != p2)

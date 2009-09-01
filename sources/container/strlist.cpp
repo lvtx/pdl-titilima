@@ -101,9 +101,7 @@ LIterator LStrList::GetTailIterator(void)
 
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCSTR lpString)
 {
-    LPtrList::InsertAfter(it, lpString);
-    GetNextIterator(&it);
-    return it;
+    return LPtrList::InsertAfter(it, &lpString);
 }
 
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCWSTR lpString)
@@ -114,9 +112,7 @@ LIterator LStrList::InsertAfter(__in LIterator it, __in PCWSTR lpString)
 
 LIterator LStrList::InsertBefore(__in LIterator it, __in PCSTR lpString)
 {
-    LPtrList::InsertBefore(it, lpString);
-    GetPrevIterator(&it);
-    return it;
+    return LPtrList::InsertBefore(it, &lpString);
 }
 
 LIterator LStrList::InsertBefore(__in LIterator it, __in PCWSTR lpString)
@@ -197,7 +193,7 @@ DWORD LStrList::SaveToFile(__in PCSTR lpFile, __in DWORD dwFlags)
             file.WriteLn(str);
             ++ret;
         }
-        GetNextIterator(&it);
+        it = GetNextIterator(it);
     }
 
     return ret;
@@ -227,7 +223,7 @@ DWORD LStrList::SaveToFile(__in PCWSTR lpFile, __in DWORD dwFlags)
             file.WriteLn(str);
             ++ret;
         }
-        GetNextIterator(&it);
+        it = GetNextIterator(it);
     }
 
     return ret;
