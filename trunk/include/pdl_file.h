@@ -132,6 +132,18 @@ public:
     BOOL Flush(void);
 
     /**
+     * 读取一个字符。
+     * @return 如果读取成功则返回读取到的字符，否则返回 LEOF。
+     */
+    int GetChar(void);
+
+    /**
+     * 写入一个字符。
+     * @param [in] ch 要写入的字符。
+     */
+    void PutChar(int ch);
+
+    /**
      * 读取文本。
      * @param [out] str 读取数据输出的字符串。
      * @param [in] 要读取的字符数。

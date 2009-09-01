@@ -15,7 +15,7 @@
 /**
  * PDL 容器迭代器
  */
-typedef void *LIterator;
+typedef struct { int unk; } *LIterator;
 
 /**
  * 容器对象拷贝函数
@@ -62,16 +62,16 @@ public:
     /**
      * 添加一个元素到链表头。
      * @param [in] ptr 来源元素的地址。
-     * @return 如果添加成功则返回添加后的元素地址，否则返回 NULL。
+     * @return 如果添加成功则返回添加后的元素迭代器，否则返回 NULL。
      */
-    PVOID AddHead(__in LPCVOID ptr);
+    LIterator AddHead(__in LPCVOID ptr);
 
     /**
      * 添加一个元素到链表尾。
      * @param [in] ptr 来源元素的地址。
-     * @return 如果添加成功则返回添加后的元素地址，否则返回 NULL。
+     * @return 如果添加成功则返回添加后的元素迭代器，否则返回 NULL。
      */
-    PVOID AddTail(__in LPCVOID ptr);
+    LIterator AddTail(__in LPCVOID ptr);
 
     /**
      * 清空链表。
