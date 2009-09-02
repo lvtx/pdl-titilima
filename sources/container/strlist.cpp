@@ -1,7 +1,7 @@
-#include <pdl_container.h>
+#include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
-#include <pdl_file.h>
-#include <pdl_string.h>
+#include "..\..\include\pdl_file.h"
+#include "..\..\include\pdl_string.h"
 
 void LStrList_Copy(void* dst, const void* src)
 {

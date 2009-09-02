@@ -1,4 +1,4 @@
-#include <pdl_file.h>
+#include "..\..\include\pdl_file.h"
 
 LFile::LFile(void) : m_hFile(INVALID_HANDLE_VALUE)
 {
@@ -49,7 +49,7 @@ BOOL LFile::Create(
     return INVALID_HANDLE_VALUE != m_hFile;
 }
 
-BOOL LFile::Exists(
+BOOL PDLAPI LFile::Exists(
     __in PCSTR lpszFileName,
     __in BOOL bIncludeDir)
 {
@@ -73,7 +73,7 @@ BOOL LFile::Exists(
 #endif // _WIN32_WCE
 }
 
-BOOL LFile::Exists(
+BOOL PDLAPI LFile::Exists(
     __in PCWSTR lpszFileName,
     __in BOOL bIncludeDir /* = TRUE */)
 {
@@ -113,7 +113,33 @@ DWORD LFile::GetSize(void)
     return ::GetFileSize(m_hFile, NULL);
 }
 
-BOOL LFile::MatchName(__in PCSTR lpszFileName, __in PCSTR lpszMatch)
+BOOL PDLAPI LFile::IsFullPathName(__in PCSTR lpszFileName)
+{
+    if (NULL == lpszFileName)
+        return FALSE;
+    if (!isalpha(lpszFileName[0]))
+        return FALSE;
+    if (':' != lpszFileName[1])
+        return FALSE;
+    if ('\\' != lpszFileName[2])
+        return FALSE;
+    return TRUE;
+}
+
+BOOL PDLAPI LFile::IsFullPathName(__in PCWSTR lpszFileName)
+{
+    if (NULL == lpszFileName)
+        return FALSE;
+    if (!iswalpha(lpszFileName[0]))
+        return FALSE;
+    if (L':' != lpszFileName[1])
+        return FALSE;
+    if (L'\\' != lpszFileName[2])
+        return FALSE;
+    return TRUE;
+}
+
+BOOL PDLAPI LFile::MatchName(__in PCSTR lpszFileName, __in PCSTR lpszMatch)
 {
     PDLASSERT(NULL != lpszFileName && NULL != lpszMatch);
 
@@ -185,7 +211,7 @@ BOOL LFile::MatchName(__in PCSTR lpszFileName, __in PCSTR lpszMatch)
     return LFile::MatchName(lpszFileName, lpszMatch);
 }
 
-BOOL LFile::MatchName(__in PCWSTR lpszFileName, __in PCWSTR lpszMatch)
+BOOL PDLAPI LFile::MatchName(__in PCWSTR lpszFileName, __in PCWSTR lpszMatch)
 {
     PDLASSERT(NULL != lpszFileName && NULL != lpszMatch);
 

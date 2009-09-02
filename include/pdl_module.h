@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <pdl_base.h>
+#include "pdl_base.h"
 
 /**
  * \class LAppModule
@@ -74,6 +74,20 @@ public:
 
     HRSRC FindResourceA(__in PCSTR lpName, __in PCSTR lpType);
     HRSRC FindResourceW(__in PCWSTR lpName, __in PCWSTR lpType);
+
+    /**
+     * 获取应用程序所在路径。
+     * @param [out] path 用于接收应用程序路径的 LStringA 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL GetAppPath(__out LStringA* path);
+
+    /**
+     * @param [out] path 用于接收应用程序路径的 LStringW 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL GetAppPath(__out LStringW* path);
+
     HACCEL LoadAcceleratorsA(__in PCSTR lpTableName);
     HACCEL LoadAcceleratorsW(__in PCWSTR lpTableName);
     HBITMAP LoadBitmapA(__in PCSTR lpBitmapName);

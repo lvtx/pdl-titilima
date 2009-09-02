@@ -1,5 +1,5 @@
-#include <pdl_file.h>
-#include <pdl_string.h>
+#include "..\..\include\pdl_file.h"
+#include "..\..\include\pdl_string.h"
 #include "file.h"
 
 #define TXTBUF_SIZE     4096

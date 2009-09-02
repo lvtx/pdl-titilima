@@ -1,5 +1,5 @@
-#include <pdl_base.h>
-#include <pdl_parser.h>
+#include "..\..\include\pdl_base.h"
+#include "..\..\include\pdl_parser.h"
 #include <stdlib.h>
 
 int PDLAPI x2i(__in int x)

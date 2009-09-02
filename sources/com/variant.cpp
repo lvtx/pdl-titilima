@@ -1,4 +1,4 @@
-#include <pdl_com.h>
+#include "..\..\include\pdl_com.h"
 
 LVariant::LVariant(void)
 {

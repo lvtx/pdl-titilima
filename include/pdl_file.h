@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pdl_base.h>
+#include "pdl_base.h"
 
 /**
  * \class LFile
@@ -36,7 +36,8 @@ public:
      * @param [in] bIncludeDir 是否包含目录。
      * @return 如果文件存在则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL Exists(__in PCSTR lpszFileName, __in BOOL bIncludeDir = TRUE);
+    static BOOL PDLAPI Exists(__in PCSTR lpszFileName,
+        __in BOOL bIncludeDir = TRUE);
 
     /**
      * 判断给定的文件是否存在。
@@ -44,7 +45,8 @@ public:
      * @param [in] bIncludeDir 是否包含目录。
      * @return 如果文件存在则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL Exists(__in PCWSTR lpszFileName, __in BOOL bIncludeDir = TRUE);
+    static BOOL PDLAPI Exists(__in PCWSTR lpszFileName,
+        __in BOOL bIncludeDir = TRUE);
 
     BOOL Flush(void);
 
@@ -58,12 +60,18 @@ public:
     DWORD GetSize(void);
 
     /**
-     * 匹配文件名。
-     * @param [in] lpszFileName 要匹配的文件名。
-     * @param [in] lpszMatch 要匹配的模式字符串。
-     * @return 如果匹配成功则返回 TRUE，否则返回 FALSE。
+     * 判断给定的文件名是否全路径。
+     * @param [in] lpszFileName 要判断的文件名。
+     * @return 如果给定的文件名是全路径则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL MatchName(__in PCSTR lpszFileName, __in PCSTR lpszMatch);
+    static BOOL PDLAPI IsFullPathName(__in PCSTR lpszFileName);
+
+    /**
+     * 判断给定的文件名是否全路径。
+     * @param [in] lpszFileName 要判断的文件名。
+     * @return 如果给定的文件名是全路径则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL PDLAPI IsFullPathName(__in PCWSTR lpszFileName);
 
     /**
      * 匹配文件名。
@@ -71,7 +79,17 @@ public:
      * @param [in] lpszMatch 要匹配的模式字符串。
      * @return 如果匹配成功则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL MatchName(__in PCWSTR lpszFileName, __in PCWSTR lpszMatch);
+    static BOOL PDLAPI MatchName(__in PCSTR lpszFileName,
+        __in PCSTR lpszMatch);
+
+    /**
+     * 匹配文件名。
+     * @param [in] lpszFileName 要匹配的文件名。
+     * @param [in] lpszMatch 要匹配的模式字符串。
+     * @return 如果匹配成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL PDLAPI MatchName(__in PCWSTR lpszFileName,
+        __in PCWSTR lpszMatch);
 
     DWORD Read(__out PVOID lpBuffer, __in DWORD dwSize);
     DWORD SetPointer(__in LONG lPointer, __in DWORD dwMoveMethod);

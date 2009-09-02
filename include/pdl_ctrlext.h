@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <pdl_base.h>
-#include <pdl_window.h>
-#include <pdl_ctrl.h>
-#include <pdl_commctrl.h>
-#include <pdl_gdi.h>
+#include "pdl_base.h"
+#include "pdl_window.h"
+#include "pdl_ctrl.h"
+#include "pdl_commctrl.h"
+#include "pdl_gdi.h"
 
 /**
  * \class LHyperLink

@@ -7,7 +7,7 @@
 // Information: 锁的全局变量定义
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_container.h>
+#include "..\..\include\pdl_container.h"
 #include "lock.h"
 
 LDummyLock g_lock;

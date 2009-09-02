@@ -1,7 +1,7 @@
-#include <pdl_window.h>
-#include <pdl_module.h>
-#include <pdl_gdi.h>
-#include <pdl_parser.h>
+#include "..\..\include\pdl_window.h"
+#include "..\..\include\pdl_module.h"
+#include "..\..\include\pdl_gdi.h"
+#include "..\..\include\pdl_parser.h"
 #include "thunk.h"
 
 #define MAKEINTATOMA(i)  (PSTR)((ULONG_PTR)((WORD)(i)))

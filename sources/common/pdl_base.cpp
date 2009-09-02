@@ -1,4 +1,4 @@
-#include <pdl_base.h>
+#include "..\..\include\pdl_base.h"
 
 #pragma pack(push, 1)
 typedef struct _tagThisThunk {

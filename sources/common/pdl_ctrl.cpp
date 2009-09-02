@@ -1,5 +1,5 @@
-#include <pdl_ctrl.h>
-#include <pdl_gdi.h>
+#include "..\..\include\pdl_ctrl.h"
+#include "..\..\include\pdl_gdi.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LComboBox

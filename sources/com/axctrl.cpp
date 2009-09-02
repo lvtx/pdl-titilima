@@ -7,8 +7,8 @@
 // Information: ActiveX ¿Ø¼þÈÝÆ÷ÊµÏÖ
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_com.h>
-#include <pdl_module.h>
+#include "..\..\include\pdl_com.h"
+#include "..\..\include\pdl_module.h"
 
 #define AXCTRL_CLASS    _T("LAxCtrl")
 

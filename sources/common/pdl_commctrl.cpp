@@ -1,6 +1,6 @@
-#include <pdl_commctrl.h>
-#include <pdl_gdi.h>
-#include <pdl_module.h>
+#include "..\..\include\pdl_commctrl.h"
+#include "..\..\include\pdl_gdi.h"
+#include "..\..\include\pdl_module.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LDateTime

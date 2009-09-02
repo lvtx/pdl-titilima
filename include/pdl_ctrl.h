@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <pdl_base.h>
-#include <pdl_window.h>
+#include "pdl_base.h"
+#include "pdl_window.h"
 
 /**
  * \class LComboBox

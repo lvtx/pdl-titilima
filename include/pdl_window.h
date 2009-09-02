@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <pdl_base.h>
-#include <pdl_string.h>
+#include "pdl_base.h"
+#include "pdl_string.h"
 #include <ShellAPI.h>
 
 /**

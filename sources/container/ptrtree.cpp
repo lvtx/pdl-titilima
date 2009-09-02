@@ -7,8 +7,8 @@
 // Information:  ˜¿‡ µœ÷
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_base.h>
-#include <pdl_container.h>
+#include "..\..\include\pdl_base.h"
+#include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
 
 #define TREE_ITERATING  0x00000001

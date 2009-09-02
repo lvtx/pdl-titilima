@@ -7,7 +7,7 @@
 // Information: COM BSTR ×Ö·û´®ÀàÊµÏÖ
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_com.h>
+#include "..\..\include\pdl_com.h"
 
 LBStr::LBStr(void)
 {

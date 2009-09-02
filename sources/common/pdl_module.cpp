@@ -1,6 +1,6 @@
-#include <pdl_module.h>
-#include <pdl_file.h>
-#include <pdl_registry.h>
+#include "..\..\include\pdl_module.h"
+#include "..\..\include\pdl_file.h"
+#include "..\..\include\pdl_registry.h"
 #include <comdef.h>
 
 #define PDL_INIT_WNDDATA    2
@@ -130,6 +130,52 @@ HRSRC LAppModule::FindResourceW(__in PCWSTR lpName, __in PCWSTR lpType)
 LAppModule* LAppModule::GetApp(void)
 {
     return m_pApp;
+}
+
+BOOL LAppModule::GetAppPath(__out LStringA* path)
+{
+#ifndef _WIN32_WCE
+    DWORD dwSize = MAX_PATH;
+    PSTR buf = path->AllocBuffer(dwSize, FALSE);
+    DWORD ret = ::GetModuleFileNameA(NULL, buf, dwSize);
+    if (0 == ret)
+        return FALSE;
+
+    while (ret == dwSize && ERROR_INSUFFICIENT_BUFFER == ::GetLastError())
+    {
+        dwSize *= 2;
+        buf = path->AllocBuffer(dwSize, FALSE);
+        ret = ::GetModuleFileNameA(NULL, buf, dwSize);
+    }
+
+    *(strrchr(buf, '\\') + 1) = '\0';
+#else
+    LStringW strW;
+    if (!GetAppPath(&strW))
+        return FALSE;
+
+    path->Copy(strW);
+#endif // _WIN32_WCE
+    return TRUE;
+}
+
+BOOL LAppModule::GetAppPath(__out LStringW* path)
+{
+    DWORD dwSize = MAX_PATH;
+    PWSTR buf = path->AllocBuffer(dwSize, FALSE);
+    DWORD ret = ::GetModuleFileNameW(NULL, buf, dwSize);
+    if (0 == ret)
+        return FALSE;
+
+    while (ret == dwSize && ERROR_INSUFFICIENT_BUFFER == ::GetLastError())
+    {
+        dwSize *= 2;
+        buf = path->AllocBuffer(dwSize, FALSE);
+        ret = ::GetModuleFileNameW(NULL, buf, dwSize);
+    }
+
+    *(wcsrchr(buf, L'\\') + 1) = L'\0';
+    return TRUE;
 }
 
 HINSTANCE LAppModule::GetInstance(void) const
