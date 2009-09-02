@@ -7,7 +7,7 @@
 // Information: 指针链表类实现
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_container.h>
+#include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
 
 #define LIST_ITERATING  0x00000001

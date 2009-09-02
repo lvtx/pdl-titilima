@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <pdl_window.h>
+#include "pdl_window.h"
 
 /**
  * \class LComCtlInit

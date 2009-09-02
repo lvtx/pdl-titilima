@@ -7,8 +7,8 @@
 // Information: 分隔条控件实现
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_ctrlext.h>
-#include <pdl_module.h>
+#include "..\..\include\pdl_ctrlext.h"
+#include "..\..\include\pdl_module.h"
 
 #define HSPLITTER_CLASS _T("LSplitterH")
 #define VSPLITTER_CLASS _T("LSplitterV")

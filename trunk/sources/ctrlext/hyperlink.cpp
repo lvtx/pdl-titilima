@@ -7,11 +7,11 @@
 // Information: 超级链接控件实现
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_ctrlext.h>
-#include <pdl_registry.h>
-#include <pdl_gdi.h>
-#include <pdl_string.h>
-#include <pdl_parser.h>
+#include "..\..\include\pdl_ctrlext.h"
+#include "..\..\include\pdl_registry.h"
+#include "..\..\include\pdl_gdi.h"
+#include "..\..\include\pdl_string.h"
+#include "..\..\include\pdl_parser.h"
 
 PDL_DEFINE_WINCLASS(LHyperLink)
 

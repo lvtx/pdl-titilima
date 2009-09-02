@@ -7,9 +7,9 @@
 // Information: ini parser
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pdl_parser.h>
-#include <pdl_file.h>
-#include <stdlib.h>
+#include "..\..\include\pdl_parser.h"
+#include "..\..\include\pdl_file.h"
+#include "..\..\include\pdl_module.h"
 #ifdef _WIN32_WCE
 #include "..\adaptor\wince_adaptor.h"
 #endif // _WIN32_WCE
@@ -292,14 +292,24 @@ BOOL LIniParser::Open(__in_opt PCSTR lpszFileName)
 {
     LStrList::Clear();
     m_secList.Clear();
+    if (NULL == lpszFileName)
+        return FALSE;
 
-    CHAR szFileName[MAX_PATH];
-    GetFilePath(szFileName, MAX_PATH, lpszFileName);
-    if (!LFile::Exists(szFileName))
+    LStringA path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+    if (!LFile::Exists(path))
         return FALSE;
 
     LTxtFile file;
-    if (!file.Open(szFileName, LTxtFile::modeReadWrite))
+    if (!file.Open(path, LTxtFile::modeReadWrite))
         return FALSE;
 
     Open(&file);
@@ -310,14 +320,24 @@ BOOL LIniParser::Open(__in_opt PCWSTR lpszFileName)
 {
     LStrList::Clear();
     m_secList.Clear();
+    if (NULL == lpszFileName)
+        return FALSE;
 
-    WCHAR szFileName[MAX_PATH];
-    GetFilePath(szFileName, MAX_PATH, lpszFileName);
-    if (!LFile::Exists(szFileName))
+    LStringW path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+    if (!LFile::Exists(path))
         return FALSE;
 
     LTxtFile file;
-    if (!file.Open(szFileName, LTxtFile::modeReadWrite))
+    if (!file.Open(path, LTxtFile::modeReadWrite))
         return FALSE;
 
     Open(&file);

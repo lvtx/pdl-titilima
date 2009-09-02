@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <pdl_base.h>
-#include <pdl_string.h>
-#include <pdl_container.h>
+#include "pdl_base.h"
+#include "pdl_string.h"
+#include "pdl_container.h"
 
 /**
  * \fn LParseColorString
@@ -125,14 +125,14 @@ public:
 
     /**
      * 打开一个 ini 文件。
-     * @param lpszFileName: ini 文件的文件名，如果为 NULL，则打开与应用程序同名的 ini 文件。
+     * @param lpszFileName: ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in_opt PCSTR lpszFileName);
 
     /**
      * 打开一个 ini 文件。
-     * @param lpszFileName: ini 文件的文件名，如果为 NULL，则打开与应用程序同名的 ini 文件。
+     * @param lpszFileName: ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in_opt PCWSTR lpszFileName);

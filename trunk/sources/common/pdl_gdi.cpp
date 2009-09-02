@@ -1,6 +1,6 @@
-#include <pdl_gdi.h>
-#include <pdl_file.h>
-#include <pdl_string.h>
+#include "..\..\include\pdl_gdi.h"
+#include "..\..\include\pdl_file.h"
+#include "..\..\include\pdl_string.h"
 
 //////////////////////////////////////////////////////////////////////////
 // LGdiObj

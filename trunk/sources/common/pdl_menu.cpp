@@ -1,5 +1,5 @@
-#include <pdl_menu.h>
-#include <pdl_module.h>
+#include "..\..\include\pdl_menu.h"
+#include "..\..\include\pdl_module.h"
 #ifdef _WIN32_WCE
 #include <aygshell.h>
 #endif // _WIN32_WCE

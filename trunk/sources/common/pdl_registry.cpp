@@ -1,6 +1,6 @@
-#include <pdl_registry.h>
+#include "..\..\include\pdl_registry.h"
 #ifdef _WIN32_WCE
-#include "adaptor\wince_adaptor.h"
+#include "..\adaptor\wince_adaptor.h"
 #endif // #ifdef _WIN32_WCE
 
 //////////////////////////////////////////////////////////////////////////
