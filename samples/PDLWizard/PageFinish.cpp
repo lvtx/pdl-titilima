@@ -87,8 +87,8 @@ LRESULT CPageFinish::OnNotify(
             CHAR proj[MAX_PATH];
             lstrcpyA(proj, theConfig.szName);
             lstrcatA(proj, ".vcproj");
-            LFile file;
-            if (!file.Create(proj, GENERIC_WRITE, 0, CREATE_ALWAYS))
+            LTxtFile file;
+            if (!file.Open(proj, LTxtFile::modeReset))
             {
                 MessageBox(_T("创建工程失败。"), _T("错误"),
                     MB_ICONINFORMATION);

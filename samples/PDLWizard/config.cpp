@@ -59,30 +59,30 @@ void CProjectConfig::CreateFiles(void)
     }
 }
 
-void CProjectConfig::OutputCfgDebug(LFile* file)
+void CProjectConfig::OutputCfgDebug(LTxtFile* file)
 {
     char str[1024];
 
-    lstrcpyA(str, "\t\t<Configuration\r\n");
-    file->Write(str, lstrlenA(str));
+    lstrcpyA(str, "\t\t<Configuration");
+    file->WriteLn(str);
 
     if (Unicode == m_CharacterSet)
-        lstrcpyA(str, "\t\t\tName=\"DebugU|Win32\"\r\n");
+        lstrcpyA(str, "\t\t\tName=\"DebugU|Win32\"");
     else
-        lstrcpyA(str, "\t\t\tName=\"DebugA|Win32\"\r\n");
-    file->Write(str, lstrlenA(str));
+        lstrcpyA(str, "\t\t\tName=\"DebugA|Win32\"");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\tOutputDirectory=\"$(SolutionDir)$(ConfigurationName)\"\r\n"
-        "\t\t\tIntermediateDirectory=\"$(ConfigurationName)\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\tIntermediateDirectory=\"$(ConfigurationName)\"");
+    file->WriteLn(str);
 
     wsprintfA(str,
         "\t\t\tConfigurationType=\"%d\"\r\n"
         "\t\t\tCharacterSet=\"%d\"\r\n"
-        "\t\t\t>\r\n",
+        "\t\t\t>",
         theConfig.Type, m_CharacterSet);
-    file->Write(str, lstrlenA(str));
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -99,8 +99,8 @@ void CProjectConfig::OutputCfgDebug(LFile* file)
         "\t\t\t/>\r\n"
         "\t\t\t<Tool\r\n"
         "\t\t\t\tName=\"VCMIDLTool\"\r\n"
-        "\t\t\t/>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t/>");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -119,8 +119,8 @@ void CProjectConfig::OutputCfgDebug(LFile* file)
         "\t\t\t\tUsePrecompiledHeader=\"0\"\r\n"
         "\t\t\t\tWarningLevel=\"3\"\r\n"
         "\t\t\t\tDebugInformationFormat=\"4\"\r\n"
-        "\t\t\t/>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t/>");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -133,25 +133,25 @@ void CProjectConfig::OutputCfgDebug(LFile* file)
         "\t\t\t\tName=\"VCPreLinkEventTool\"\r\n"
         "\t\t\t/>\r\n"
         "\t\t\t<Tool\r\n"
-        "\t\t\t\tName=\"VCLinkerTool\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t\tName=\"VCLinkerTool\"");
+    file->WriteLn(str);
 
-    lstrcpyA(str, "\t\t\t\tAdditionalDependencies=\"pdl.lib\"\r\n");
-    file->Write(str, lstrlenA(str));
+    lstrcpyA(str, "\t\t\t\tAdditionalDependencies=\"pdl.lib\"");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t\tLinkIncremental=\"2\"\r\n"
         "\t\t\t\tGenerateManifest=\"false\"\r\n"
         "\t\t\t\tManifestFile=\"\"\r\n"
-        "\t\t\t\tGenerateDebugInformation=\"true\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t\tGenerateDebugInformation=\"true\"");
+    file->WriteLn(str);
 
     wsprintfA(str, "\t\t\t\tSubSystem=\"%d\"\r\n", theConfig.SubSystem);
     lstrcatA(str, "\t\t\t\tOptimizeReferences=\"0\"\r\n"
         "\t\t\t\tEnableCOMDATFolding=\"0\"\r\n"
-        "\t\t\t\tTargetMachine=\"1\"\r\n"
+        "\t\t\t\tTargetMachine=\"1\""
         "\t\t\t/>\r\n");
-    file->Write(str, lstrlenA(str));
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -175,34 +175,34 @@ void CProjectConfig::OutputCfgDebug(LFile* file)
         "\t\t\t<Tool\r\n"
         "\t\t\t\tName=\"VCPostBuildEventTool\"\r\n"
         "\t\t\t/>\r\n"
-        "\t\t</Configuration>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t</Configuration>");
+    file->WriteLn(str);
 }
 
-void CProjectConfig::OutputCfgRelease(LFile* file)
+void CProjectConfig::OutputCfgRelease(LTxtFile* file)
 {
     char str[1024];
 
-    lstrcpyA(str, "\t\t<Configuration\r\n");
-    file->Write(str, lstrlenA(str));
+    lstrcpyA(str, "\t\t<Configuration");
+    file->WriteLn(str);
 
     if (Unicode == m_CharacterSet)
-        lstrcpyA(str, "\t\t\tName=\"ReleaseU|Win32\"\r\n");
+        lstrcpyA(str, "\t\t\tName=\"ReleaseU|Win32\"");
     else
-        lstrcpyA(str, "\t\t\tName=\"ReleaseA|Win32\"\r\n");
-    file->Write(str, lstrlenA(str));
+        lstrcpyA(str, "\t\t\tName=\"ReleaseA|Win32\"");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\tOutputDirectory=\"$(SolutionDir)$(ConfigurationName)\"\r\n"
-        "\t\t\tIntermediateDirectory=\"$(ConfigurationName)\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\tIntermediateDirectory=\"$(ConfigurationName)\"");
+    file->WriteLn(str);
 
     wsprintfA(str,
         "\t\t\tConfigurationType=\"%d\"\r\n"
         "\t\t\tCharacterSet=\"%d\"\r\n"
-        "\t\t\t>\r\n",
+        "\t\t\t>",
         theConfig.Type, m_CharacterSet);
-    file->Write(str, lstrlenA(str));
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -219,8 +219,8 @@ void CProjectConfig::OutputCfgRelease(LFile* file)
         "\t\t\t/>\r\n"
         "\t\t\t<Tool\r\n"
         "\t\t\t\tName=\"VCMIDLTool\"\r\n"
-        "\t\t\t/>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t/>");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -239,8 +239,8 @@ void CProjectConfig::OutputCfgRelease(LFile* file)
         "\t\t\t\tUsePrecompiledHeader=\"0\"\r\n"
         "\t\t\t\tWarningLevel=\"3\"\r\n"
         "\t\t\t\tDebugInformationFormat=\"0\"\r\n"
-        "\t\t\t/>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t/>");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -253,25 +253,25 @@ void CProjectConfig::OutputCfgRelease(LFile* file)
         "\t\t\t\tName=\"VCPreLinkEventTool\"\r\n"
         "\t\t\t/>\r\n"
         "\t\t\t<Tool\r\n"
-        "\t\t\t\tName=\"VCLinkerTool\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t\tName=\"VCLinkerTool\"");
+    file->WriteLn(str);
 
-    lstrcpyA(str, "\t\t\t\tAdditionalDependencies=\"pdl.lib\"\r\n");
-    file->Write(str, lstrlenA(str));
+    lstrcpyA(str, "\t\t\t\tAdditionalDependencies=\"pdl.lib\"");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t\tLinkIncremental=\"1\"\r\n"
         "\t\t\t\tGenerateManifest=\"false\"\r\n"
         "\t\t\t\tManifestFile=\"\"\r\n"
-        "\t\t\t\tGenerateDebugInformation=\"false\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t\tGenerateDebugInformation=\"false\"");
+    file->WriteLn(str);
 
     wsprintfA(str, "\t\t\t\tSubSystem=\"%d\"\r\n", theConfig.SubSystem);
     lstrcatA(str, "\t\t\t\tOptimizeReferences=\"2\"\r\n"
         "\t\t\t\tEnableCOMDATFolding=\"2\"\r\n"
         "\t\t\t\tTargetMachine=\"1\"\r\n"
-        "\t\t\t/>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\t/>");
+    file->WriteLn(str);
 
     lstrcpyA(str,
         "\t\t\t<Tool\r\n"
@@ -295,11 +295,11 @@ void CProjectConfig::OutputCfgRelease(LFile* file)
         "\t\t\t<Tool\r\n"
         "\t\t\t\tName=\"VCPostBuildEventTool\"\r\n"
         "\t\t\t/>\r\n"
-        "\t\t</Configuration>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t</Configuration>");
+    file->WriteLn(str);
 }
 
-void CProjectConfig::OutputFiles(LFile* file)
+void CProjectConfig::OutputFiles(LTxtFile* file)
 {
     char str[1024];
 
@@ -309,8 +309,8 @@ void CProjectConfig::OutputFiles(LFile* file)
         "\t<Files>\r\n"
         "\t\t<Filter\r\n"
         "\t\t\tName=\"Source Files\"\r\n"
-        "\t\t\tFilter=\"cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\tFilter=\"cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx\"");
+    file->WriteLn(str);
 
     OutputUID(file, "\t\t\tUniqueIdentifier");
 
@@ -320,13 +320,13 @@ void CProjectConfig::OutputFiles(LFile* file)
         "\t\t\t\tRelativePath=\".\\%s.cpp\"\r\n"
         "\t\t\t\t>\r\n"
         "\t\t\t</File>\r\n"
-        "\t\t</Filter>\r\n", theConfig.szName);
-    file->Write(str, lstrlenA(str));
+        "\t\t</Filter>", theConfig.szName);
+    file->WriteLn(str);
 
     lstrcpyA(str, "\t\t<Filter\r\n"
         "\t\t\tName=\"Header Files\"\r\n"
-        "\t\t\tFilter=\"h;hpp;hxx;hm;inl;inc;xsd\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\tFilter=\"h;hpp;hxx;hm;inl;inc;xsd\"");
+    file->WriteLn(str);
 
     OutputUID(file, "\t\t\tUniqueIdentifier");
 
@@ -334,8 +334,8 @@ void CProjectConfig::OutputFiles(LFile* file)
         "\t\t</Filter>\r\n"
         "\t\t<Filter\r\n"
         "\t\t\tName=\"Resource Files\"\r\n"
-        "\t\t\tFilter=\"rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav\"\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t\t\tFilter=\"rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav\"");
+    file->WriteLn(str);
 
     OutputUID(file, "\t\t\tUniqueIdentifier");
 
@@ -344,11 +344,11 @@ void CProjectConfig::OutputFiles(LFile* file)
         "\t</Files>\r\n"
         "\t<Globals>\r\n"
         "\t</Globals>\r\n"
-        "</VisualStudioProject>\r\n");
-    file->Write(str, lstrlenA(str));
+        "</VisualStudioProject>");
+    file->WriteLn(str);
 }
 
-void CProjectConfig::OutputHeader(LFile* file)
+void CProjectConfig::OutputHeader(LTxtFile* file)
 {
     char str[1024];
 
@@ -358,11 +358,11 @@ void CProjectConfig::OutputHeader(LFile* file)
         "\tProjectType=\"Visual C++\"\r\n"
         "\tVersion=\"9.00\"\r\n"
         "\tName=\"");
-    file->Write(str, lstrlenA(str));
-    file->Write(theConfig.szName, lstrlenA(theConfig.szName));
+    file->Write(str);
+    file->Write(theConfig.szName);
 
-    lstrcpy(str, "\"\r\n");
-    file->Write(str, lstrlenA(str));
+    lstrcpy(str, "\"");
+    file->WriteLn(str);
 
     OutputUID(file, "\tProjectGUID");
 
@@ -378,23 +378,23 @@ void CProjectConfig::OutputHeader(LFile* file)
         "\t</Platforms>\r\n"
         "\t<ToolFiles>\r\n"
         "\t</ToolFiles>\r\n"
-        "\t<Configurations>\r\n");
-    file->Write(str, lstrlenA(str));
+        "\t<Configurations>");
+    file->WriteLn(str);
 }
 
-void CProjectConfig::OutputUID(LFile* file, PCSTR key)
+void CProjectConfig::OutputUID(LTxtFile* file, PCSTR key)
 {
     char str[1024];
 
     GUID guid;
     CoCreateGuid(&guid);
     wsprintfA(str, 
-        "%s=\"{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\"\r\n",
+        "%s=\"{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\"",
         key,
         guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1],
         guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5],
         guid.Data4[6], guid.Data4[7]);
-    file->Write(str, lstrlenA(str));
+    file->WriteLn(str);
 }
 
 void CProjectConfig::SetCharacterSet(CHARACTERSET CharacterSet)

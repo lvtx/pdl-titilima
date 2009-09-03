@@ -48,14 +48,14 @@ public:
     CProjectConfig(void);
 public:
     void CreateFiles(void);
-    void OutputCfgDebug(LFile* file);
-    void OutputCfgRelease(LFile* file);
-    void OutputFiles(LFile* file);
-    void OutputHeader(LFile* file);
+    void OutputCfgDebug(LTxtFile* file);
+    void OutputCfgRelease(LTxtFile* file);
+    void OutputFiles(LTxtFile* file);
+    void OutputHeader(LTxtFile* file);
     void SetCharacterSet(CHARACTERSET CharacterSet);
 private:
     BOOL CreateFileFromResource(PCSTR lpFile, UINT id);
-    void OutputUID(LFile* file, PCSTR key);
+    void OutputUID(LTxtFile* file, PCSTR key);
 private:
     CHARACTERSET m_CharacterSet;
 };
