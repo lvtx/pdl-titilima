@@ -6,11 +6,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 // LStringA
 
+const char nullstrA[] = { '\0' };
+
 LStringA::LStringA(void)
 {
     m_dwMaxLen = 0;
-    m_lpszData = new char[1];
-    *m_lpszData = '\0';
+    m_lpszData = AllocString(nullstrA);
 }
 
 LStringA::LStringA(__in PCSTR lpszString)
@@ -25,8 +26,7 @@ LStringA::LStringA(__in PCWSTR lpszString)
     m_dwMaxLen = 0;
     if (NULL == lpszString)
     {
-        m_lpszData = new char[m_dwMaxLen + 1];
-        *m_lpszData = '\0';
+        m_lpszData = AllocString(nullstrA);
     }
     else
     {
@@ -45,7 +45,7 @@ LStringA::LStringA(__in const LStringA& obj)
 LStringA::~LStringA(void)
 {
     if (NULL != m_lpszData)
-        delete [] m_lpszData;
+        FreeString(m_lpszData);
 }
 
 LStringA::operator PCSTR(void) const
@@ -87,6 +87,16 @@ const LStringA& LStringA::operator+=(__in PCSTR lpszString)
     return *this;
 }
 
+const LStringA& LStringA::operator+=(__in char ch)
+{
+    int len = GetLength();
+    if (len == m_dwMaxLen)
+        AllocBuffer(m_dwMaxLen * 2, TRUE);
+    m_lpszData[len] = ch;
+    m_lpszData[len + 1] = '\0';
+    return *this;
+}
+
 char LStringA::operator[](__in int idx)
 {
     PDLASSERT(idx < (int)m_dwMaxLen);
@@ -98,14 +108,14 @@ PSTR LStringA::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
     if (m_dwMaxLen < nChars)
     {
         m_dwMaxLen = nChars;
-        PSTR pszNewData = new char[nChars + 1];
+        PSTR pszNewData = InternalAlloc(nChars);
         if (bSaveData)
         {
             strncpy(pszNewData, m_lpszData, nChars);
             pszNewData[nChars] = '\0';
         }
         if (NULL != m_lpszData)
-            delete [] m_lpszData;
+            FreeString(m_lpszData);
         m_lpszData = pszNewData;
     }
 
@@ -115,12 +125,21 @@ PSTR LStringA::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
     return m_lpszData;
 }
 
+PSTR LStringA::AllocString(__in PCSTR lpString)
+{
+    if (NULL == lpString)
+        lpString = nullstrA;
+    PSTR ret = InternalAlloc(lstrlenA(lpString));
+    lstrcpyA(ret, lpString);
+    return ret;
+}
+
 void LStringA::Attach(__in PSTR lpszString)
 {
     if (NULL != m_lpszData)
-        delete [] m_lpszData;
+        FreeString(lpszString);
     m_lpszData = lpszString;
-    m_dwMaxLen = strlen(lpszString);
+    m_dwMaxLen = lstrlenA(lpszString);
 }
 
 BSTR LStringA::ConvertToBSTR(void)
@@ -131,15 +150,15 @@ BSTR LStringA::ConvertToBSTR(void)
 
 void LStringA::Copy(__in PCSTR lpszString)
 {
-    size_t len = strlen(lpszString);
+    size_t len = lstrlenA(lpszString);
     if (len > m_dwMaxLen)
     {
         m_dwMaxLen = len;
         if (NULL != m_lpszData)
-            delete [] m_lpszData;
-        m_lpszData = new char[len + 1];
+            FreeString(m_lpszData);
+        m_lpszData = InternalAlloc(len);
     }
-    strcpy(m_lpszData, lpszString);
+    lstrcpyA(m_lpszData, lpszString);
 }
 
 void LStringA::Copy(__in PCWSTR lpszString)
@@ -149,8 +168,8 @@ void LStringA::Copy(__in PCWSTR lpszString)
     if (len > m_dwMaxLen)
     {
         m_dwMaxLen = len;
-        delete [] m_lpszData;
-        m_lpszData = new char[len + 1];
+        FreeString(m_lpszData);
+        m_lpszData = InternalAlloc(len);
     }
     WideCharToMultiByte(CP_ACP, 0, lpszString, -1, m_lpszData, len, NULL,
         NULL);
@@ -204,9 +223,19 @@ BOOL LStringA::FormatV(__in PCSTR lpszFormat, __in va_list argList)
     return TRUE;
 }
 
+void LStringA::FreeString(__in PSTR lpString)
+{
+    delete [] lpString;
+}
+
 int LStringA::GetLength(void) const
 {
     return lstrlenA(m_lpszData);
+}
+
+PSTR LStringA::InternalAlloc(__in DWORD nChars)
+{
+    return new char[nChars + 1];
 }
 
 LStringA LStringA::Left(__in int nChars)
@@ -238,12 +267,12 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
     if (0 == nStrLen)
         return 0;
 
-    int nOldLen = strlen(pszOld);
+    int nOldLen = lstrlenA(pszOld);
     if (0 == nOldLen)
         return 0;
 
     // 计算要替换的子串个数
-    int nNewLen = strlen(pszNew);
+    int nNewLen = lstrlenA(pszNew);
     int cnt = 0;
     PCSTR lpStart = m_lpszData;
     PCSTR lpEnd = m_lpszData + nOldLen;
@@ -261,7 +290,7 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
         return 0;
 
     nStrLen += (nNewLen - nOldLen) * cnt;
-    PSTR pNewBuf = new char[nStrLen + 1];
+    PSTR pNewBuf = InternalAlloc(nStrLen);
     PSTR dst = pNewBuf;
     PSTR src = m_lpszData;
     PSTR p = NULL;
@@ -285,7 +314,7 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
     // 复制剩余的字符串
     strcpy(dst, src);
 
-    delete [] m_lpszData;
+    FreeString(m_lpszData);
     m_lpszData = pNewBuf;
     return cnt;
 }
@@ -337,11 +366,12 @@ int LStringA::Trim(__in PCSTR trimchars)
 ///////////////////////////////////////////////////////////////////////////////
 // LStringW
 
+const WCHAR nullstrW[] = { L'\0' };
+
 LStringW::LStringW(void)
 {
     m_dwMaxLen = 0;
-    m_lpszData = new WCHAR[1];
-    *m_lpszData = L'\0';
+    m_lpszData = AllocString(nullstrW);
 }
 
 LStringW::LStringW(__in PCSTR lpszString)
@@ -356,8 +386,7 @@ LStringW::LStringW(__in PCWSTR lpszString /* = NULL */)
     m_dwMaxLen = 0;
     if (NULL == lpszString)
     {
-        m_lpszData = new WCHAR[1];
-        *m_lpszData = L'\0';
+        m_lpszData = AllocString(nullstrW);
     }
     else
     {
@@ -376,7 +405,7 @@ LStringW::LStringW(__in const LStringW& obj)
 LStringW::~LStringW(void)
 {
     if (NULL != m_lpszData)
-        delete [] m_lpszData;
+        FreeString(m_lpszData);
 }
 
 LStringW::operator PCWSTR(void) const
@@ -412,8 +441,18 @@ LStringW& LStringW::operator=(__in const LStringW& str)
 const LStringW& LStringW::operator+=(__in PCWSTR lpszString)
 {
     int nLen = GetLength();
-    AllocBuffer(nLen + wcslen(lpszString));
+    AllocBuffer(nLen + lstrlenW(lpszString));
     lstrcpyW(&m_lpszData[nLen], lpszString);
+    return *this;
+}
+
+const LStringW& LStringW::operator+=(__in WCHAR ch)
+{
+    int len = GetLength();
+    if (len == m_dwMaxLen)
+        AllocBuffer(m_dwMaxLen * 2, TRUE);
+    m_lpszData[len] = ch;
+    m_lpszData[len + 1] = L'\0';
     return *this;
 }
 
@@ -428,14 +467,14 @@ PWSTR LStringW::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
     if (m_dwMaxLen < nChars)
     {
         m_dwMaxLen = nChars;
-        PWSTR pszNewData = new WCHAR[nChars + 1];
+        PWSTR pszNewData = InternalAlloc(nChars);
         if (bSaveData)
         {
-            wcsncpy(pszNewData, m_lpszData, nChars);
+            lstrcpynW(pszNewData, m_lpszData, nChars);
             pszNewData[nChars] = L'\0';
         }
         if (NULL != m_lpszData)
-            delete [] m_lpszData;
+            FreeString(m_lpszData);
         m_lpszData = pszNewData;
     }
 
@@ -445,12 +484,21 @@ PWSTR LStringW::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
     return m_lpszData;
 }
 
+PWSTR LStringW::AllocString(__in PCWSTR lpString)
+{
+    if (NULL == lpString)
+        lpString = nullstrW;
+    PWSTR ret = InternalAlloc(lstrlenW(lpString));
+    lstrcpyW(ret, lpString);
+    return ret;
+}
+
 void LStringW::Attach(__in PWSTR lpszString)
 {
     if (NULL != m_lpszData)
-        delete [] m_lpszData;
+        FreeString(m_lpszData);
     m_lpszData = lpszString;
-    m_dwMaxLen = wcslen(lpszString);
+    m_dwMaxLen = lstrlenW(lpszString);
 }
 
 BSTR LStringW::ConvertToBSTR(void)
@@ -466,8 +514,8 @@ void LStringW::Copy(__in PCSTR lpszString)
     if (len > m_dwMaxLen)
     {
         m_dwMaxLen = len;
-        delete [] m_lpszData;
-        m_lpszData = new WCHAR[len + 1];
+        FreeString(m_lpszData);
+        m_lpszData = InternalAlloc(len);
     }
     MultiByteToWideChar(CP_ACP, 0, lpszString, -1, m_lpszData, len);
     m_lpszData[len] = L'\0';
@@ -479,9 +527,8 @@ void LStringW::Copy(__in PCWSTR lpszString)
     if (len > m_dwMaxLen)
     {
         m_dwMaxLen = len;
-        if (NULL != m_lpszData)
-            delete [] m_lpszData;
-        m_lpszData = new WCHAR[len + 1];
+        FreeString(m_lpszData);
+        m_lpszData = InternalAlloc(len);
     }
     wcscpy(m_lpszData, lpszString);
 }
@@ -533,9 +580,19 @@ BOOL LStringW::FormatV(__in PCWSTR lpszFormat, __in va_list argList)
     return TRUE;
 }
 
+void LStringW::FreeString(__in PWSTR lpString)
+{
+    delete [] lpString;
+}
+
 int LStringW::GetLength(void) const
 {
     return lstrlenW(m_lpszData);
+}
+
+PWSTR LStringW::InternalAlloc(__in DWORD nChars)
+{
+    return new WCHAR[nChars + 1];
 }
 
 LStringW LStringW::Left(__in int nChars)
@@ -567,12 +624,12 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
     if (0 == nStrLen)
         return 0;
 
-    int nOldLen = wcslen(pszOld);
+    int nOldLen = lstrlenW(pszOld);
     if (0 == nOldLen)
         return 0;
 
     // 计算要替换的子串个数
-    int nNewLen = wcslen(pszNew);
+    int nNewLen = lstrlenW(pszNew);
     int cnt = 0;
     PCWSTR lpStart = m_lpszData;
     PCWSTR lpEnd = m_lpszData + nOldLen;
@@ -590,7 +647,7 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
         return 0;
 
     nStrLen += (nNewLen - nOldLen) * cnt;
-    PWSTR pNewBuf = new WCHAR[nStrLen + 1];
+    PWSTR pNewBuf = InternalAlloc(nStrLen);
     PWSTR dst = pNewBuf;
     PWSTR src = m_lpszData;
     PWSTR p = NULL;
@@ -602,19 +659,19 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
 
         // 复制非替换串
         cbCopy = p - src;
-        wcsncpy(dst, src, cbCopy);
+        lstrcpynW(dst, src, cbCopy);
         dst += cbCopy;
         src = p;
 
         // 复制替换串
-        wcsncpy(dst, pszNew, nNewLen);
+        lstrcpynW(dst, pszNew, nNewLen);
         dst += nNewLen;
         src += nOldLen;
     }
     // 复制剩余的字符串
-    wcscpy(dst, src);
+    lstrcpyW(dst, src);
 
-    delete [] m_lpszData;
+    FreeString(m_lpszData);
     m_lpszData = pNewBuf;
     return cnt;
 }
