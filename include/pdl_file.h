@@ -121,6 +121,24 @@ public:
     ~LTxtFile(void);
 public:
 
+    BOOL Close(void);
+
+    /**
+     * 是否已达文件末尾。
+     * @return 如果当前已经到达文件末尾则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Eof(void);
+
+    BOOL Flush(void);
+
+    /**
+     * 读取一个字符。
+     * @return 如果读取成功则返回读取到的字符，否则返回 LEOF。
+     */
+    int GetChar(void);
+
+    BOOL IsUnicode(void);
+
     /**
      * 以指定的模式打开一个文本文件。
      * @param [in] lpFileName 要打开的文件名。
@@ -138,22 +156,6 @@ public:
      * \sa Close
      */
     BOOL Open(__in PCWSTR lpFileName, __in MODE mode);
-
-    BOOL Close(void);
-
-    /**
-     * 是否已达文件末尾。
-     * @return 如果当前已经到达文件末尾则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL Eof(void);
-
-    BOOL Flush(void);
-
-    /**
-     * 读取一个字符。
-     * @return 如果读取成功则返回读取到的字符，否则返回 LEOF。
-     */
-    int GetChar(void);
 
     /**
      * 写入格式化的字符串。
