@@ -1,3 +1,9 @@
+xxxx.x.xx - 0.03.xxx
+* 加入 LStack 和 LPtrTree 容器。
+* 加入 LXmlParser。
+* 修改 LIterator 的定义。
+* 增加部分接口。
+
 2009.8.17 - 0.02.128
 * 为 LTxtFile 加入 Unicode 支持。
 * 为 LStrListA 加入 Unicode 支持，改名为 LStrList。

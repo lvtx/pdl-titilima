@@ -87,30 +87,31 @@ LRESULT CPageFinish::OnNotify(
             CHAR proj[MAX_PATH];
             lstrcpyA(proj, theConfig.szName);
             lstrcatA(proj, ".vcproj");
-            LTxtFile file;
-            if (!file.Open(proj, LTxtFile::modeReset))
+            LXmlParser xml;
+
+            CProjectConfig cfg;
+            LXmlNode node = cfg.OutputHeader(&xml);
+            if (CONFIG_ANSI & theConfig.Flags)
+            {
+                cfg.SetCharacterSet(MultiByte);
+                cfg.OutputCfgDebug(&xml, node);
+                cfg.OutputCfgRelease(&xml, node);
+            }
+            if (CONFIG_UNICODE & theConfig.Flags)
+            {
+                cfg.SetCharacterSet(Unicode);
+                cfg.OutputCfgDebug(&xml, node);
+                cfg.OutputCfgRelease(&xml, node);
+            }
+            cfg.OutputFiles(&xml, node);
+            cfg.CreateFiles();
+
+            if (!xml.Save(proj))
             {
                 MessageBox(_T("创建工程失败。"), _T("错误"),
                     MB_ICONINFORMATION);
                 break;
             }
-
-            CProjectConfig cfg;
-            cfg.OutputHeader(&file);
-            if (CONFIG_ANSI & theConfig.Flags)
-            {
-                cfg.SetCharacterSet(MultiByte);
-                cfg.OutputCfgDebug(&file);
-                cfg.OutputCfgRelease(&file);
-            }
-            if (CONFIG_UNICODE & theConfig.Flags)
-            {
-                cfg.SetCharacterSet(Unicode);
-                cfg.OutputCfgDebug(&file);
-                cfg.OutputCfgRelease(&file);
-            }
-            cfg.OutputFiles(&file);
-            cfg.CreateFiles();
         }
         break;
     default:

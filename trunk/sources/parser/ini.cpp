@@ -288,7 +288,7 @@ PSTR LIniParser::GetStringA(__in PCSTR lpszSection, __in PCSTR lpszKey)
     return str.Detach();
 }
 
-BOOL LIniParser::Open(__in_opt PCSTR lpszFileName)
+BOOL LIniParser::Open(__in PCSTR lpszFileName)
 {
     LStrList::Clear();
     m_secList.Clear();
@@ -316,7 +316,7 @@ BOOL LIniParser::Open(__in_opt PCSTR lpszFileName)
     return TRUE;
 }
 
-BOOL LIniParser::Open(__in_opt PCWSTR lpszFileName)
+BOOL LIniParser::Open(__in PCWSTR lpszFileName)
 {
     LStrList::Clear();
     m_secList.Clear();

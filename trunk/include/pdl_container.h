@@ -5,6 +5,7 @@
  *   \li \c LPtrList PDL 链表类
  *   \li \c LPtrTree PDL 树类
  *   \li \c LPtrVector PDL 向量类
+ *   \li \c LStack PDL 泛型栈容器类
  *   \li \c LStrList PDL 字符串链表类
  */
 
@@ -80,6 +81,15 @@ public:
     BOOL Clear(void);
 
     /**
+     * 复制指定位置的元素。
+     * @param [in] it 一个有效位置的迭代器。
+     * @param [out] p 用于接收元素数据的缓冲区指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     * \note 当获取的元素不再使用时，需要调用销毁函数（如果有）。
+     */
+    BOOL CopyAt(__in LIterator it, __out PVOID p);
+
+    /**
      * 创建链表。
      * @param [in] dwUnitSize 元素的大小。
      * @param [in] pfnCopy 元素的复制函数。
@@ -110,6 +120,7 @@ public:
      * @param [in] it 一个有效位置的迭代器。
      * @param [out] p 用于接收元素数据的缓冲区指针。
      * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     * \note 当获取的元素不再使用时，不能对其调用销毁函数。
      */
     BOOL GetAt(__in LIterator it, __out PVOID p);
 
@@ -256,6 +267,15 @@ public:
     BOOL Clear(void);
 
     /**
+     * 复制指定位置的元素。
+     * @param [in] it 一个有效位置的迭代器。
+     * @param [out] p 用于接收元素数据的缓冲区指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     * \note 当获取的元素不再使用时，需要调用销毁函数（如果有）。
+     */
+    BOOL CopyAt(__in LIterator it, __out PVOID p);
+
+    /**
      * 创建树。
      * @param [in] dwUnitSize 元素的大小。
      * @param [in] pfnCopy 元素的复制函数。
@@ -275,6 +295,7 @@ public:
      * @param [in] it 一个有效位置的迭代器。
      * @param [out] p 用于接收元素数据的缓冲区指针。
      * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     * \note 当获取的元素不再使用时，不能对其调用销毁函数。
      */
     BOOL GetAt(__in LIterator it, __out PVOID p);
 
@@ -394,6 +415,15 @@ public:
     BOOL Clear(void);
 
     /**
+     * 复制指定位置的数据。
+     * @param [in] idx 要复制数据的索引位置。
+     * @param [out] buf 用于接收数据的缓冲区指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     * \note 当获取的数据不再使用时，需要调用销毁函数（如果有）。
+     */
+    BOOL CopyAt(__in int idx, __out PVOID buf);
+
+    /**
      * 创建向量。
      * @param [in] dwUnitSize 元素的大小。
      * @param [in] dwMaxCnt 初始化的向量大小。
@@ -426,6 +456,7 @@ public:
      * @param [in] idx 要获取数据的索引位置。
      * @param [out] buf 用于接收数据的缓冲区指针。
      * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     * \note 当获取的元素不再使用时，不能对其调用销毁函数。
      */
     BOOL GetAt(__in int idx, __out PVOID buf);
 
@@ -526,6 +557,63 @@ protected:
      * 操作锁
      */
     ILock* m_lock;
+};
+
+/**
+ * \class LStack
+ * \brief PDL 泛型栈容器类
+ */
+
+template <typename T>
+class LStack
+{
+public:
+
+    /**
+     * 构造函数。
+     * @param [in] pfnCopy 元素的复制函数。
+     * @param [in] pfnDestroy 元素的销毁函数。
+     * @param [in] dwInitCnt 栈初始化的大小。
+     */
+    LStack(__in CopyPtr pfnCopy = NULL, __in DestructPtr pfnDestroy = NULL,
+        __in DWORD dwInitCnt = 16)
+    {
+        v.Create(sizeof(T), dwInitCnt, -1, pfnCopy, pfnDestroy);
+    }
+
+    /**
+     * 析构函数。
+     */
+    ~LStack(void)
+    {
+        v.Destroy();
+    }
+
+    /**
+     * 压栈。
+     * @param [in] data 要压入的元素。
+     */
+    void Push(__in const T& data)
+    {
+        v.InsertAfter(-1, &data);
+    }
+
+    /**
+     * 弹出栈顶。
+     * @param [out] data 用于接收弹出元素的缓冲区。
+     * @return 如果弹出成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Pop(__out T* data = NULL)
+    {
+        if (NULL != data)
+        {
+            if (!v.CopyAt(-1, data))
+                return FALSE;
+        }
+        return v.Remove(-1);
+    }
+private:
+    LPtrVector v;
 };
 
 /**

@@ -352,6 +352,10 @@
 				RelativePath="..\sources\parser\parser.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\sources\parser\xml.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="file"

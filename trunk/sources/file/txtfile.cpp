@@ -80,21 +80,24 @@ int LTxtFile::GetChar(void)
     if (OPFLAG_EOF & m_dwFlags)
         return LEOF;
 
-    if (m_ptr >= TXTBUF_SIZE)
+    StartRead();
+    if (m_ptr >= TXTBUF_SIZE || 0 == m_rwptr)
         ReadBlock();
 
     int ch;
     if (FILEFLAG_UNICODE & m_dwFlags)
     {
-        ch = *(PCWSTR)m_buf;
+        ch = *(PCWSTR)(m_buf + m_ptr);
         m_ptr += sizeof(WCHAR);
     }
     else
     {
-        ch = *(PCSTR)m_buf;
+        ch = *(PCSTR)(m_buf + m_ptr);
         m_ptr += sizeof(char);
     }
 
+    if (m_rwptr < TXTBUF_SIZE && m_ptr >= m_rwptr)
+        m_dwFlags |= OPFLAG_EOF;
     if (m_ptr >= TXTBUF_SIZE)
         ReadBlock();
     return ch;
@@ -244,6 +247,30 @@ BOOL LTxtFile::Open(__in PCWSTR lpFileName, __in MODE mode)
     m_ptr = 0;
     m_rwptr = 0;
     return TRUE;
+}
+
+int LTxtFile::PrintF(__in PCSTR format, ...)
+{
+    char str[1024];
+    va_list arglist;
+    va_start(arglist, format);
+    int cnt = wvsprintfA(str, format, arglist);
+    va_end(arglist);
+
+    Write(str);
+    return cnt;
+}
+
+int LTxtFile::PrintF(__in PCWSTR format, ...)
+{
+    WCHAR str[1024];
+    va_list arglist;
+    va_start(arglist, format);
+    int cnt = wvsprintfW(str, format, arglist);
+    va_end(arglist);
+
+    Write(str);
+    return cnt;
 }
 
 void LTxtFile::PutChar(int ch)
