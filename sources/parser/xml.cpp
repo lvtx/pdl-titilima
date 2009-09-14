@@ -9,6 +9,7 @@
 
 #include "..\include\pdl_parser.h"
 #include "..\include\pdl_file.h"
+#include "..\include\pdl_module.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // xmlAttrib
@@ -353,29 +354,63 @@ BOOL LXmlParser::IsEndChar(__in PCSTR lpEnd, __in char ch)
 
 BOOL LXmlParser::Open(__in PCSTR lpszFileName)
 {
+    Clear();
+    if (NULL == lpszFileName)
+        return FALSE;
+
+    LStringA path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+    if (!LFile::Exists(path))
+        return FALSE;
+
     LTxtFile file;
-    if (!file.Open(lpszFileName, LTxtFile::modeReadWrite))
+    if (!file.Open(path, LTxtFile::modeReadWrite))
         return FALSE;
 
     LXmlFile stream(&file);
     if (Parse(&stream))
         return TRUE;
 
-    // delete
+    Clear();
     return FALSE;
 }
 
 BOOL LXmlParser::Open(__in PCWSTR lpszFileName)
 {
+    Clear();
+    if (NULL == lpszFileName)
+        return FALSE;
+
+    LStringW path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+    if (!LFile::Exists(path))
+        return FALSE;
+
     LTxtFile file;
-    if (!file.Open(lpszFileName, LTxtFile::modeReadWrite))
+    if (!file.Open(path, LTxtFile::modeReadWrite))
         return FALSE;
 
     LXmlFile stream(&file);
     if (Parse(&stream))
         return TRUE;
 
-    // delete
+    Clear();
     return FALSE;
 }
 
@@ -566,11 +601,53 @@ BOOL LXmlParser::Parse(__in LXmlStream* s)
 
 BOOL LXmlParser::Save(__in PCSTR lpszFileName, __in PCSTR strIndent)
 {
+    if (NULL == lpszFileName)
+        return FALSE;
+
+    LStringA path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+
+    LTxtFile file;
+    if (!file.Open(path, LTxtFile::modeReset))
+        return FALSE;
+
+    if (NULL == strIndent)
+        strIndent = "    ";
+    Save(&file, strIndent);
     return TRUE;
 }
 
 BOOL LXmlParser::Save(__in PCWSTR lpszFileName, __in PCSTR strIndent)
 {
+    if (NULL == lpszFileName)
+        return FALSE;
+
+    LStringW path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+
+    LTxtFile file;
+    if (!file.Open(path, LTxtFile::modeReset))
+        return FALSE;
+
+    if (NULL == strIndent)
+        strIndent = "    ";
+    Save(&file, strIndent);
     return TRUE;
 }
 
