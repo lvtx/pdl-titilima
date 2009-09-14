@@ -122,6 +122,18 @@ BOOL LPtrTree::Clear(void)
     return TRUE;
 }
 
+BOOL LPtrTree::CopyAt(__in LIterator it, __out PVOID p)
+{
+    if (NULL == it)
+        return FALSE;
+
+    PTNODE node = (PTNODE)it;
+    CopyMemory(p, node->data, m_dwUnitSize);
+    if (NULL != m_pfnCopy)
+        m_pfnCopy(p, node->data);
+    return TRUE;
+}
+
 void LPtrTree::Create(
     __in DWORD dwUnitSize,
     __in CopyPtr pfnCopy /* = NULL */,
@@ -243,14 +255,13 @@ BOOL LPtrTree::Remove(__in LIterator it)
     node->prev = NULL;
 
     // 迭代删除子树
-    LPtrVector stack;
-    stack.Create(sizeof(PTNODE), 16);
+    LStack<PTNODE> stack;
     while (NULL != node)
     {
         if (NULL != node->firstchild)
         {
             // 如含有子结点，则将结点入栈
-            stack.InsertAfter(-1, &node);
+            stack.Push(node);
             node = node->firstchild;
             continue;
         }
@@ -267,9 +278,8 @@ BOOL LPtrTree::Remove(__in LIterator it)
         if (NULL == node)
         {
             // 本层已无结点，弹出父结点
-            if (stack.GetAt(-1, &node))
+            if (stack.Pop(&node))
             {
-                stack.Remove(-1);
                 node->firstchild = NULL;
                 node->lastchild = NULL;
             }

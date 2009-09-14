@@ -89,11 +89,7 @@ const LStringA& LStringA::operator+=(__in PCSTR lpszString)
 
 const LStringA& LStringA::operator+=(__in char ch)
 {
-    int len = GetLength();
-    if (len == m_dwMaxLen)
-        AllocBuffer(m_dwMaxLen * 2, TRUE);
-    m_lpszData[len] = ch;
-    m_lpszData[len + 1] = '\0';
+    Append(ch);
     return *this;
 }
 
@@ -105,6 +101,8 @@ char LStringA::operator[](__in int idx)
 
 PSTR LStringA::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
 {
+    if (0 == nChars)
+        nChars = 1;
     if (m_dwMaxLen < nChars)
     {
         m_dwMaxLen = nChars;
@@ -132,6 +130,15 @@ PSTR LStringA::AllocString(__in PCSTR lpString)
     PSTR ret = InternalAlloc(lstrlenA(lpString));
     lstrcpyA(ret, lpString);
     return ret;
+}
+
+void LStringA::Append(__in char ch)
+{
+    int len = GetLength();
+    if (len == m_dwMaxLen)
+        AllocBuffer(m_dwMaxLen * 2, TRUE);
+    m_lpszData[len] = ch;
+    m_lpszData[len + 1] = '\0';
 }
 
 void LStringA::Attach(__in PSTR lpszString)
@@ -182,6 +189,14 @@ PSTR LStringA::Detach(void)
     m_lpszData = NULL;
     m_dwMaxLen = 0;
     return pszRet;
+}
+
+void LStringA::Empty(void)
+{
+    if (NULL == m_lpszData)
+        AllocString(nullstrA);
+    else
+        m_lpszData[0] = '\0';
 }
 
 int LStringA::Find(__in char ch, int iStart /* = 0 */)
@@ -319,6 +334,19 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
     return cnt;
 }
 
+int LStringA::SetAt(__in int pos, __in char ch)
+{
+    if (NULL == m_lpszData || '\0' == m_lpszData[0])
+        return LEOF;
+
+    int len = GetLength();
+    if (pos < 0 || pos >= len)
+        pos = len - 1;
+    int ret = m_lpszData[pos];
+    m_lpszData[pos] = ch;
+    return ret;
+}
+
 int LStringA::Trim(__in PSTR string, __in PCSTR trimchars)
 {
     if (NULL == string)
@@ -448,11 +476,7 @@ const LStringW& LStringW::operator+=(__in PCWSTR lpszString)
 
 const LStringW& LStringW::operator+=(__in WCHAR ch)
 {
-    int len = GetLength();
-    if (len == m_dwMaxLen)
-        AllocBuffer(m_dwMaxLen * 2, TRUE);
-    m_lpszData[len] = ch;
-    m_lpszData[len + 1] = L'\0';
+    Append(ch);
     return *this;
 }
 
@@ -464,6 +488,8 @@ WCHAR LStringW::operator[](__in int idx)
 
 PWSTR LStringW::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
 {
+    if (0 == nChars)
+        nChars = 1;
     if (m_dwMaxLen < nChars)
     {
         m_dwMaxLen = nChars;
@@ -491,6 +517,15 @@ PWSTR LStringW::AllocString(__in PCWSTR lpString)
     PWSTR ret = InternalAlloc(lstrlenW(lpString));
     lstrcpyW(ret, lpString);
     return ret;
+}
+
+void LStringW::Append(__in WCHAR ch)
+{
+    int len = GetLength();
+    if (len == m_dwMaxLen)
+        AllocBuffer(m_dwMaxLen * 2, TRUE);
+    m_lpszData[len] = ch;
+    m_lpszData[len + 1] = L'\0';
 }
 
 void LStringW::Attach(__in PWSTR lpszString)
@@ -539,6 +574,14 @@ PWSTR LStringW::Detach(void)
     m_lpszData = NULL;
     m_dwMaxLen = 0;
     return pszRet;
+}
+
+void LStringW::Empty(void)
+{
+    if (NULL == m_lpszData)
+        AllocString(nullstrW);
+    else
+        m_lpszData[0] = L'\0';
 }
 
 int LStringW::Find(__in WCHAR ch, int iStart /* = 0 */)
@@ -674,6 +717,19 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
     FreeString(m_lpszData);
     m_lpszData = pNewBuf;
     return cnt;
+}
+
+int LStringW::SetAt(__in int pos, __in WCHAR ch)
+{
+    if (NULL == m_lpszData || L'\0' == m_lpszData[0])
+        return LEOF;
+
+    int len = GetLength();
+    if (pos < 0 || pos >= len)
+        pos = len - 1;
+    int ret = m_lpszData[pos];
+    m_lpszData[pos] = ch;
+    return ret;
 }
 
 int LStringW::Trim(__in PWSTR string, __in PCWSTR trimchars)

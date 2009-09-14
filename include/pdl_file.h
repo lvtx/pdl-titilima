@@ -156,6 +156,20 @@ public:
     int GetChar(void);
 
     /**
+     * 写入格式化的字符串。
+     * @param [in] format 字符串的格式。
+     * @return 实际写入的字符数。
+     */
+    int PrintF(__in PCSTR format, ...);
+
+    /**
+     * 写入格式化的字符串。
+     * @param [in] format 字符串的格式。
+     * @return 实际写入的字符数。
+     */
+    int PrintF(__in PCWSTR format, ...);
+
+    /**
      * 写入一个字符。
      * @param [in] ch 要写入的字符。
      */

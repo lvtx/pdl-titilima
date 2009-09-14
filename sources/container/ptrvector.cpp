@@ -49,6 +49,20 @@ BOOL LPtrVector::Clear(void)
     return TRUE;
 }
 
+BOOL LPtrVector::CopyAt(__in int idx, __out PVOID buf)
+{
+    if (NULL == m_pvData || (int)m_dwUnitCnt <= idx || 0 == m_dwUnitCnt)
+        return FALSE;
+
+    if (idx < 0)
+        idx = m_dwUnitCnt - 1;
+    PVOID src = DataFromPos(idx);
+    CopyMemory(buf, src, m_dwUnitSize);
+    if (NULL != m_pfnCopy)
+        m_pfnCopy(buf, src);
+    return TRUE;
+}
+
 BOOL LPtrVector::Create(
     __in DWORD dwUnitSize,
     __in DWORD dwMaxCnt,

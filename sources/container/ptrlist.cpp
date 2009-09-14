@@ -107,6 +107,18 @@ BOOL LPtrList::Clear(void)
     return TRUE;
 }
 
+BOOL LPtrList::CopyAt(__in LIterator it, __out PVOID p)
+{
+    if (NULL == it)
+        return FALSE;
+
+    PNODE node = (PNODE)it;
+    CopyMemory(p, node->data, m_dwUnitSize);
+    if (NULL != m_pfnCopy)
+        m_pfnCopy(p, node->data);
+    return TRUE;
+}
+
 void LPtrList::Create(
     __in DWORD dwUnitSize,
     __in CopyPtr pfnCopy /* = NULL */,

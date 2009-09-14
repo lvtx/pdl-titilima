@@ -32,11 +32,13 @@ public:
 public:
     PSTR AllocBuffer(__in DWORD nChars, __in BOOL bSaveData = TRUE);
     static PSTR AllocString(__in PCSTR lpString);
+    void Append(__in char ch);
     void Attach(__in PSTR lpszString);
     BSTR ConvertToBSTR(void);
     void Copy(__in PCSTR lpszString);
     void Copy(__in PCWSTR lpszString);
     PSTR Detach(void);
+    void Empty(void);
     int Find(__in char ch, int iStart = 0);
     int Find(__in PCSTR pszSub, int iStart = 0);
     BOOL Format(__in PCSTR lpszFormat, ...);
@@ -46,6 +48,7 @@ public:
     LStringA Left(__in int nChars);
     LStringA Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
+    int SetAt(__in int pos, __in char ch);
     static int Trim(__in PSTR string, __in PCSTR trimchars);
     int Trim(__in PCSTR trimchars);
 protected:
@@ -79,11 +82,13 @@ public:
 public:
     PWSTR AllocBuffer(__in DWORD nChars, __in BOOL bSaveData = TRUE);
     static PWSTR AllocString(__in PCWSTR lpString);
+    void Append(__in WCHAR ch);
     void Attach(__in PWSTR lpszString);
     void Copy(__in PCSTR lpszString);
     void Copy(__in PCWSTR lpszString);
     BSTR ConvertToBSTR(void);
     PWSTR Detach(void);
+    void Empty(void);
     int Find(__in WCHAR ch, int iStart = 0);
     int Find(__in PCWSTR pszSub, int iStart = 0);
     BOOL Format(__in PCWSTR lpszFormat, ...);
@@ -93,6 +98,7 @@ public:
     LStringW Left(__in int nChars);
     LStringW Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
+    int SetAt(__in int pos, __in WCHAR ch);
     static int Trim(__in PWSTR string, __in PCWSTR trimchars);
     int Trim(__in PCWSTR trimchars);
 protected:
