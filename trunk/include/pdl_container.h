@@ -244,6 +244,7 @@ protected:
 
 class LPtrTree
 {
+    friend class LXmlParser;
 public:
     LPtrTree(void);
     ~LPtrTree(void);

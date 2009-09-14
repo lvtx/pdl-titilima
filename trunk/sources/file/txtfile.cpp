@@ -103,6 +103,11 @@ int LTxtFile::GetChar(void)
     return ch;
 }
 
+BOOL LTxtFile::IsUnicode(void)
+{
+    return (FILEFLAG_UNICODE & m_dwFlags) ? TRUE : FALSE;
+}
+
 BOOL LTxtFile::Open(__in PCSTR lpFileName, __in MODE mode)
 {
     DWORD dwAccess = 0;

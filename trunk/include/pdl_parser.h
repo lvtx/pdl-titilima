@@ -270,6 +270,26 @@ public:
 public:
 
     /**
+     * 添加并解析一段 xml 字符串。
+     * @param [in] parent 要添加的父结点。
+     * @param [in] lpXmlString 要添加的 xml 字符串。
+     * @param [in] dwOrder 创建结点的排列顺序。
+     * @return 如果添加成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL AddXml(__in LXmlNode parent, __in PCSTR lpXmlString,
+        __in DWORD dwOrder);
+
+    /**
+     * 添加并解析一段 xml 字符串。
+     * @param [in] parent 要添加的父结点。
+     * @param [in] lpXmlString 要添加的 xml 字符串。
+     * @param [in] dwOrder 创建结点的排列顺序。
+     * @return 如果添加成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL AddXml(__in LXmlNode parent, __in PCWSTR lpXmlString,
+        __in DWORD dwOrder);
+
+    /**
      * 关闭一个 xml 文件，不予保存。
      */
     void Close(void);
@@ -450,6 +470,10 @@ protected:
      */
     void OutputIndent(__in LTxtFile* file, __in int level,
         __in PCSTR strIndent);
+    /**
+     * 解析 xml 流。
+     */
+    BOOL ParseXml(__in LXmlNode parent, __in LXmlStream* s);
     /**
      * 通过 LTxtFile 来保存文件。
      */
