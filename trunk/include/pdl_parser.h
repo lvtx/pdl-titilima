@@ -188,16 +188,6 @@ public:
         __in PCWSTR lpszValue);
 private:
     /**
-     * 根据给定的文件名生成全路径。
-     */
-    void GetFilePath(__out PSTR lpFilePath, __in DWORD dwSize,
-        __in PCSTR lpFileName);
-    /**
-     * 根据给定的文件名生成全路径。
-     */
-    void GetFilePath(__out PWSTR lpFilePath, __in DWORD dwSize,
-        __in PCWSTR lpFileName);
-    /**
      * 查找一个 Key。
      */
     LIterator FindKey(__in PCSTR lpszSection, __in PCSTR lpszKey);
@@ -446,16 +436,6 @@ protected:
      * 读取一个有效的字符。
      */
     int GetChar(__in LXmlStream* s);
-    /**
-     * 根据给定的文件名生成全路径。
-     */
-    void GetFilePath(__out PSTR lpFilePath, __in DWORD dwSize,
-        __in PCSTR lpFileName);
-    /**
-     * 根据给定的文件名生成全路径。
-     */
-    void GetFilePath(__out PWSTR lpFilePath, __in DWORD dwSize,
-        __in PCWSTR lpFileName);
     /**
      * 根据指定的结束符读取一个字符串。
      */

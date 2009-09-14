@@ -102,72 +102,6 @@ LIterator LIniParser::FindSection(__in PCSTR lpszSection)
     return NULL;
 }
 
-// LIniParser::GetFilePath
-// 从给定的文件名获取完成的文件名。
-// [out] lpFilePath: 完整的文件名。
-// [in] dwSize: lpFilePath 的缓冲区大小。
-// [in] lpFileName: 给定的文件名，这个文件名可能不是完整路径。
-
-void LIniParser::GetFilePath(
-    __out PSTR lpFilePath,
-    __in DWORD dwSize,
-    __in PCSTR lpFileName)
-{
-    char szPathName[MAX_PATH];
-    if (NULL == lpFileName)
-    {
-        // 默认文件名为 "<应用程序名>.ini"
-        ::GetModuleFileNameA(NULL, szPathName, MAX_PATH);
-        lstrcpyA(strrchr(szPathName, '.') + 1, "ini");
-    }
-    else
-    {
-        if (isalpha(lpFileName[0])
-            && (':' == lpFileName[1])
-            && ('\\' == lpFileName[2]))
-        {
-            // 完整路径
-            lstrcpynA(szPathName, lpFileName, MAX_PATH);
-        }
-        else
-        {
-            ::GetModuleFileNameA(NULL, szPathName, MAX_PATH);
-            lstrcpyA(strrchr(szPathName, '\\') + 1, lpFileName);
-        }
-    }
-    lstrcpynA(lpFilePath, szPathName, MAX_PATH);
-}
-
-void LIniParser::GetFilePath(
-    __out PWSTR lpFilePath,
-    __in DWORD dwSize,
-    __in PCWSTR lpFileName)
-{
-    WCHAR szPathName[MAX_PATH];
-    if (NULL == lpFileName)
-    {
-        // 默认文件名为 "<应用程序名>.ini"
-        ::GetModuleFileNameW(NULL, szPathName, MAX_PATH);
-        lstrcpyW(wcsrchr(szPathName, L'.') + 1, L"ini");
-    }
-    else
-    {
-        if (iswalpha(lpFileName[0])
-            && (L':' == lpFileName[1])
-            && (L'\\' == lpFileName[2]))
-        {
-            // 完整路径
-            lstrcpynW(szPathName, lpFileName, MAX_PATH);
-        }
-        else
-        {
-            ::GetModuleFileNameW(NULL, szPathName, MAX_PATH);
-            lstrcpyW(wcsrchr(szPathName, L'\\') + 1, lpFileName);
-        }
-    }
-    lstrcpynW(lpFilePath, szPathName, MAX_PATH);
-}
-
 int LIniParser::GetInt(
     __in PCSTR lpszSection,
     __in PCSTR lpszKey,
@@ -377,18 +311,38 @@ void LIniParser::RemoveSection(__in PCSTR lpszSection)
 
 BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
 {
-    CHAR szFileName[MAX_PATH];
-    GetFilePath(szFileName, MAX_PATH, lpszFileName);
-    return LStrList::SaveToFile(szFileName,
-        SLFILE_CLEAR | SLFILE_INCLUDENULL);
+    if (NULL == lpszFileName)
+        return FALSE;
+
+    LStringA path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+    return LStrList::SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
 }
 
 BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
 {
-    WCHAR szFileName[MAX_PATH];
-    GetFilePath(szFileName, MAX_PATH, lpszFileName);
-    return LStrList::SaveToFile(szFileName,
-        SLFILE_CLEAR | SLFILE_INCLUDENULL);
+    if (NULL == lpszFileName)
+        return FALSE;
+
+    LStringW path;
+    if (LFile::IsFullPathName(lpszFileName))
+    {
+        path = lpszFileName;
+    }
+    else
+    {
+        LAppModule::GetAppPath(&path);
+        path += lpszFileName;
+    }
+    return LStrList::SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
 }
 
 BOOL LIniParser::WriteInt(
