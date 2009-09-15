@@ -1,4 +1,4 @@
-xxxx.x.xx - 0.03.xxx
+2009.9.15 - 0.03.144
 * 加入 LStack 和 LPtrTree 容器。
 * 加入 LXmlParser。
 * 修改 LIterator 的定义。
