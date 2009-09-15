@@ -23,6 +23,7 @@ void LStrList_Destroy(void* ptr)
 
 LStrList::LStrList(__in ILock* lock /* = NULL */) : LPtrList()
 {
+    m_lock = LDummyLock::Get();
     LPtrList::Create(sizeof(PCSTR), LStrList_Copy, LStrList_Destroy, lock);
 }
 

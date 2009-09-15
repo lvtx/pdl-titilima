@@ -27,7 +27,7 @@ LPtrList::LPtrList(void)
     m_dwUnitSize = 0;
     m_pfnCopy = NULL;
     m_pfnDestroy = NULL;
-    m_lock = &g_lock;
+    m_lock = LDummyLock::Get();
 }
 
 LPtrList::~LPtrList(void)
@@ -133,7 +133,7 @@ void LPtrList::Create(
     if (NULL != lock)
         m_lock = lock;
     else
-        m_lock = &g_lock;
+        m_lock = LDummyLock::Get();
 }
 
 void LPtrList::Destroy(void)
@@ -214,7 +214,7 @@ LIterator LPtrList::GetPrevIterator(__in LIterator it)
 
 PDLINLINE ILock* LPtrList::GetSafeLock(void) const
 {
-    return (LIST_ITERATING & m_dwStatus) ? &g_lock : m_lock;
+    return (LIST_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
 }
 
 LIterator LPtrList::GetTailIterator(void)

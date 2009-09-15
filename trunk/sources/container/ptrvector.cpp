@@ -22,7 +22,7 @@ LPtrVector::LPtrVector(void)
     m_nGrowCnt = 0;
     m_pfnCopy = NULL;
     m_pfnDestroy = NULL;
-    m_lock = &g_lock;
+    m_lock = LDummyLock::Get();
 }
 
 LPtrVector::~LPtrVector(void)
@@ -83,7 +83,7 @@ BOOL LPtrVector::Create(
     if (NULL != lock)
         m_lock = lock;
     else
-        m_lock = &g_lock;
+        m_lock = LDummyLock::Get();
 
     m_pvData = new BYTE[dwUnitSize * dwMaxCnt];
     return NULL != m_pvData;
@@ -152,7 +152,7 @@ DWORD LPtrVector::GetCount(void)
 
 PDLINLINE ILock* LPtrVector::GetSafeLock(void) const
 {
-    return (VECTOR_ITERATING & m_dwStatus) ? &g_lock : m_lock;
+    return (VECTOR_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
 }
 
 void LPtrVector::Grow(void)

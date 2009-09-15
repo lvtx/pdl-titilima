@@ -20,7 +20,7 @@ LPtrTree::LPtrTree(void)
     m_dwUnitSize = 0;
     m_pfnCopy = NULL;
     m_pfnDestroy = NULL;
-    m_lock = &g_lock;
+    m_lock = LDummyLock::Get();
 }
 
 LPtrTree::~LPtrTree(void)
@@ -137,7 +137,7 @@ void LPtrTree::Create(
     if (NULL != lock)
         m_lock = lock;
     else
-        m_lock = &g_lock;
+        m_lock = LDummyLock::Get();
 }
 
 void LPtrTree::Destroy(void)
@@ -196,7 +196,7 @@ LIterator LPtrTree::GetPrevSibling(__in LIterator it)
 
 PDLINLINE ILock* LPtrTree::GetSafeLock(void) const
 {
-    return (TREE_ITERATING & m_dwStatus) ? &g_lock : m_lock;
+    return (TREE_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
 }
 
 LIterator LPtrTree::New(__in LPCVOID ptr)
