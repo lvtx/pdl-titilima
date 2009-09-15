@@ -591,6 +591,15 @@ public:
     }
 
     /**
+     * 判断栈是否空栈。
+     * @return 如果栈是空栈则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL IsEmpty(void)
+    {
+        return 0 == v.GetCount();
+    }
+
+    /**
      * 压栈。
      * @param [in] data 要压入的元素。
      */
