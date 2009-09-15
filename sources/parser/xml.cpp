@@ -65,14 +65,10 @@ public:
     {
         xmlAttrib* attr = new xmlAttrib(name, value);
         if (NULL == m_props)
-        {
             m_props = attr;
-            m_lastprop = attr;
-        }
         else
-        {
             m_lastprop->m_next = attr;
-        }
+        m_lastprop = attr;
     }
     BOOL GetProperty(__in PCSTR name, __out LStringA* value)
     {
@@ -262,7 +258,7 @@ BOOL LXmlParser::AddXml(
     __in DWORD dwOrder)
 {
     LXmlString stream(lpXmlString);
-    return ParseXml(parent, &stream);
+    return ParseXml(parent, &stream, dwOrder);
 }
 
 BOOL LXmlParser::AddXml(
@@ -271,7 +267,7 @@ BOOL LXmlParser::AddXml(
     __in DWORD dwOrder)
 {
     LXmlString stream(lpXmlString);
-    return ParseXml(parent, &stream);
+    return ParseXml(parent, &stream, dwOrder);
 }
 
 void LXmlParser::Close(void)
@@ -411,7 +407,7 @@ int LXmlParser::GetString(
     while (!IsEndChar(lpEnd, ch))
     {
         if (s->Eos())
-            return 0;
+            return -1;
 
         str->Append(ch);
         ch = s->GetChar();
@@ -506,10 +502,13 @@ void LXmlParser::OutputIndent(
 
 BOOL LXmlParser::Parse(__in LXmlStream* s)
 {
-    return ParseXml(XML_ROOT, s);
+    return ParseXml(XML_ROOT, s, XML_FIRST);
 }
 
-BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
+BOOL LXmlParser::ParseXml(
+    __in LXmlNode parent,
+    __in LXmlStream* s,
+    __in DWORD dwOrder)
 {
     LStringA str, strValue;
     xmlNode* p = NULL;
@@ -532,7 +531,7 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
             if ('/' == ch)
             {
                 // 结点闭合，如 </p>
-                if (0 == GetString(s, &str, ">", &ch))
+                if (-1 == GetString(s, &str, ">", &ch))
                 {
                     ret = FALSE;
                     break;
@@ -551,7 +550,7 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
             else if ('?' == ch)
             {
                 // 新序言结点，如 <?xml ... ?>
-                if (0 == GetString(s, &str, " \t?", &ch))
+                if (-1 == GetString(s, &str, " \t?", &ch))
                 {
                     ret = FALSE;
                     break;
@@ -570,7 +569,7 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
             {
                 // 普通结点，如 <p ... >
                 str.Append(ch);
-                if (0 == GetString(s, &str, " \t/>", &ch))
+                if (-1 == GetString(s, &str, " \t/>", &ch))
                 {
                     ret = FALSE;
                     break;
@@ -647,7 +646,7 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
             // 属性名称
             str.Append(ch);
             len = GetString(s, &str, "=", &ch);
-            if (0 == len)
+            if (-1 == len)
                 return FALSE;
 
             // 属性值
@@ -656,7 +655,7 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
                 return FALSE;
             strValue.Empty();
             len = GetString(s, &strValue, "\"", &ch);
-            if (0 == len)
+            if (-1 == len)
                 return FALSE;
 
             str.Trim(" \t");
@@ -667,7 +666,7 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
             // 普通文本结点
             str.Append(ch);
             len = GetString(s, &str, "<", &ch);
-            if (0 == len)
+            if (-1 == len)
                 return FALSE;
 
             str.Trim(" \t\r\n");
@@ -687,9 +686,50 @@ BOOL LXmlParser::ParseXml(__in LXmlNode parent, __in LXmlStream* s)
     }
 
     LAutoLock lock(m_lock);
-    PTNODE pnode = (PTNODE)parent;
-    pnode->firstchild = (PTNODE)tree.m_itRootFirst;
-    pnode->lastchild = (PTNODE)tree.m_itRootLast;
+
+    // 确定前后两个接头结点
+    LXmlNode* first = NULL;
+    LXmlNode* last = NULL;
+    if (XML_ROOT == parent)
+    {
+        first = &m_itRootFirst;
+        last = &m_itRootLast;
+    }
+    else
+    {
+        PTNODE pnode = (PTNODE)parent;
+        first = (LXmlNode*)&pnode->firstchild;
+        last = (LXmlNode*)&pnode->lastchild;
+    }
+
+    // 改变结点的接头
+    if (NULL == *first)
+    {
+        *first = tree.m_itRootFirst;
+        *last = tree.m_itRootLast;
+    }
+    else if (XML_FIRST == dwOrder)
+    {
+        ((PTNODE)tree.m_itRootLast)->next = (PTNODE)*first;
+        ((PTNODE)*first)->prev = (PTNODE)tree.m_itRootLast;
+        *first = tree.m_itRootFirst;
+    }
+    else
+    {
+        ((PTNODE)tree.m_itRootFirst)->prev = (PTNODE)*last;
+        ((PTNODE)*last)->next = (PTNODE)tree.m_itRootFirst;
+        *last = tree.m_itRootLast;
+    }
+
+    // 改变结点的所属关系
+    it = tree.m_itRootFirst;
+    while (NULL != it)
+    {
+        ((PTNODE)it)->parent = (PTNODE)parent;
+        it = tree.GetNextSibling(it);
+    }
+
+    // 从树中剥离结点
     tree.m_itRootFirst = NULL;
     tree.m_itRootLast = NULL;
     return TRUE;
@@ -715,8 +755,9 @@ BOOL LXmlParser::Save(__in PCSTR lpszFileName, __in PCSTR strIndent)
     if (!file.Open(path, LTxtFile::modeReset))
         return FALSE;
 
+    char defindent[] = { '\t', '\0' };
     if (NULL == strIndent)
-        strIndent = "    ";
+        strIndent = defindent;
     Save(&file, strIndent);
     return TRUE;
 }
@@ -741,8 +782,9 @@ BOOL LXmlParser::Save(__in PCWSTR lpszFileName, __in PCSTR strIndent)
     if (!file.Open(path, LTxtFile::modeReset))
         return FALSE;
 
+    char defindent[] = { '\t', '\0' };
     if (NULL == strIndent)
-        strIndent = "    ";
+        strIndent = defindent;
     Save(&file, strIndent);
     return TRUE;
 }
@@ -756,12 +798,15 @@ void LXmlParser::Save(__in LTxtFile* file, __in PCSTR strIndent)
     LXmlNode node = m_itRootFirst;
     int level = 0;
     LStack<LXmlNode> stack;
+
+    LAutoLock lock(m_lock);
     while (NULL != node)
     {
         // 输出结点本身
         LPtrTree::GetAt(node, &p);
         OutputIndent(file, level, strIndent);
-        file->PutChar('<');
+        if (LXmlParser::Text != p->m_type)
+            file->PutChar('<');
         p->Output(file);
 
         LXmlNode child = GetChild(node, XML_FIRST);
@@ -769,17 +814,33 @@ void LXmlParser::Save(__in LTxtFile* file, __in PCSTR strIndent)
         {
             stack.Push(node);
             node = child;
-            file->WriteLn(">\r\n");
+            file->WriteLn(">");
             ++level;
             continue;
         }
 
-        file->WriteLn("/>\r\n");
+        if (LXmlParser::Text == p->m_type)
+            file->Write("\r\n");
+        else if (LXmlParser::Prolog == p->m_type)
+            file->WriteLn(">");
+        else
+            file->WriteLn("/>");
+
         node = GetNextSibling(node);
-        if (NULL == node)
+        while (NULL == node)
         {
-            stack.Pop(&node);
-            --level;
+            if (stack.Pop(&node))
+            {
+                LPtrTree::GetAt(node, &p);
+                --level;
+                OutputIndent(file, level, strIndent);
+                file->PrintF("</%s>\r\n", p->m_name);
+                node = GetNextSibling(node);
+            }
+            else
+            {
+                break;
+            }
         }
     }
 }
@@ -796,6 +857,7 @@ BOOL LXmlParser::SetNodeProperty(
     if (!LPtrTree::GetAt(node, &p))
         return FALSE;
 
+    LAutoLock lock(m_lock);
     return p->SetProperty(name, value);
 }
 
@@ -811,6 +873,7 @@ BOOL LXmlParser::SetNodeProperty(
     if (!LPtrTree::GetAt(node, &p))
         return FALSE;
 
+    LAutoLock lock(m_lock);
     return p->SetProperty(name, value);
 }
 

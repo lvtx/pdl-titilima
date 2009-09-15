@@ -411,7 +411,7 @@ public:
      * @param [in] strIndent 缩进的分隔字符串。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL Save(__in PCSTR lpszFileName, __in PCSTR strIndent);
+    BOOL Save(__in PCSTR lpszFileName, __in PCSTR strIndent = NULL);
 
     /**
      * 保存一个 xml 文件。
@@ -419,7 +419,7 @@ public:
      * @param [in] strIndent 缩进的分隔字符串。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL Save(__in PCWSTR lpszFileName, __in PCSTR strIndent);
+    BOOL Save(__in PCWSTR lpszFileName, __in PCSTR strIndent = NULL);
 
     /**
      * 设置结点的属性。
@@ -473,7 +473,8 @@ protected:
     /**
      * 解析 xml 流。
      */
-    BOOL ParseXml(__in LXmlNode parent, __in LXmlStream* s);
+    BOOL ParseXml(__in LXmlNode parent, __in LXmlStream* s,
+        __in DWORD dwOrder);
     /**
      * 通过 LTxtFile 来保存文件。
      */
