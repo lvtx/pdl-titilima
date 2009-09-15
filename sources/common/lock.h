@@ -14,12 +14,11 @@
 class LDummyLock : public ILock
 {
 public:
+    static ILock* Get(void);
     void Destroy(void) { delete this; }
     void Lock(void) { /* Dummy */ }
     void Unlock(void) { /* Dummy */ }
 };
-
-extern LDummyLock g_lock;
 
 class LLock : public ILock
 {

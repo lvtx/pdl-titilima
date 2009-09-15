@@ -10,7 +10,11 @@
 #include "..\..\include\pdl_container.h"
 #include "lock.h"
 
-LDummyLock g_lock;
+ILock* LDummyLock::Get(void)
+{
+    static LDummyLock lock;
+    return &lock;
+}
 
 ILock* ILock::Create(void)
 {

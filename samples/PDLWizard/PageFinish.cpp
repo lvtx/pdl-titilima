@@ -80,15 +80,13 @@ LRESULT CPageFinish::OnNotify(
         break;
     case PSN_WIZFINISH:
         {
-            ::SetCurrentDirectoryA(theConfig.szPath);
-            ::CreateDirectoryA(theConfig.szName, NULL);
-            ::SetCurrentDirectoryA(theConfig.szName);
+            LStringA proj = theConfig.szPath;
+            if ('\\' != proj[proj.GetLength() - 1])
+                proj += '\\';
+            proj += theConfig.szName;
+            ::CreateDirectoryA(proj, NULL);
 
-            CHAR proj[MAX_PATH];
-            lstrcpyA(proj, theConfig.szName);
-            lstrcatA(proj, ".vcproj");
             LXmlParser xml;
-
             CProjectConfig cfg;
             LXmlNode node = cfg.OutputHeader(&xml);
             if (CONFIG_ANSI & theConfig.Flags)
@@ -106,6 +104,9 @@ LRESULT CPageFinish::OnNotify(
             cfg.OutputFiles(&xml, node);
             cfg.CreateFiles();
 
+            proj += '\\';
+            proj += theConfig.szName;
+            proj += ".vcproj";
             if (!xml.Save(proj))
             {
                 MessageBox(_T("创建工程失败。"), _T("错误"),
