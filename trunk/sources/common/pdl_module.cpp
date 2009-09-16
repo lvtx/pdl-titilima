@@ -21,20 +21,24 @@ LAppModule::LAppModule(__in HINSTANCE hInstance)
     m_pvWndData = new PVOID[PDL_INIT_WNDDATA];
 
     // 检测日志标志，并决定是否生成日志
-    TCHAR strFile[MAX_PATH];
-    ::GetModuleFileName(NULL, strFile, MAX_PATH);
-    lstrcpy(_tcsrchr(strFile, _T('\\')) + 1, _T("debuglog.yes"));
+    LString strPath, strFile;
+    GetAppPath(&strPath);
+    strFile = strPath;
+    strFile += _T("debuglog.yes");
     if (LFile::Exists(strFile))
     {
         SYSTEMTIME st;
+        LString str;
         GetLocalTime(&st);
-        wsprintf(_tcsrchr(strFile, _T('\\')) + 1,
-            _T("%d%02d%02d%02d%02d%02d.log"),
+        str.Format(_T("%d%02d%02d%02d%02d%02d.log"),
             st.wYear, st.wMonth, st.wDay,
             st.wHour, st.wMinute, st.wSecond);
+        strFile = strPath;
+        strFile += str;
+
         g_log = new LFile;
         g_log->Create(strFile, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
-        PDLTRACE(_T("[PDL] log file: %s\n"), strFile);
+        PDLTRACE(_T("[PDL] log file: %s\n"), (PCTSTR)strFile);
     }
 
     // 初始化 PDL 窗口消息
