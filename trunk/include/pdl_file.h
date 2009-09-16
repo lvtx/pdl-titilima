@@ -30,6 +30,8 @@ public:
         __in DWORD dwShareMode, __in DWORD dwCreationDisposition,
         __in DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL);
 
+    static BOOL PDLAPI CreateFolder(__in PCSTR lpszFolder);
+    static BOOL PDLAPI CreateFolder(__in PCWSTR lpszFolder);
     /**
      * 判断给定的文件是否存在。
      * @param [in] lpszFileName 要判断的文件名。

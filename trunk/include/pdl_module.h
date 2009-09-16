@@ -76,6 +76,20 @@ public:
     HRSRC FindResourceW(__in PCWSTR lpName, __in PCWSTR lpType);
 
     /**
+     * 获取应用程序的文件名。
+     * @param [out] path 用于接收应用程序文件名的 LStringA 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL GetAppName(__in LStringA* name);
+
+    /**
+     * 获取应用程序的文件名。
+     * @param [out] path 用于接收应用程序文件名的 LStringW 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL GetAppName(__in LStringW* name);
+
+    /**
      * 获取应用程序所在路径。
      * @param [out] path 用于接收应用程序路径的 LStringA 对象指针。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。

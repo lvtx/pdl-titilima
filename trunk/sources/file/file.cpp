@@ -1,4 +1,5 @@
 #include "..\..\include\pdl_file.h"
+#include "..\..\include\pdl_string.h"
 
 LFile::LFile(void) : m_hFile(INVALID_HANDLE_VALUE)
 {
@@ -47,6 +48,48 @@ BOOL LFile::Create(
     m_hFile = ::CreateFileW(lpFileName, dwDesiredAccess, dwShareMode, NULL,
         dwCreationDisposition, dwFlagsAndAttributes, NULL);
     return INVALID_HANDLE_VALUE != m_hFile;
+}
+
+BOOL PDLAPI LFile::CreateFolder(__in PCSTR lpszFolder)
+{
+    if (::CreateDirectoryA(lpszFolder, NULL))
+        return TRUE;
+
+    LStringA dir;
+    PCSTR p = lpszFolder;
+    PSTR q = dir.AllocBuffer(lstrlenA(lpszFolder), FALSE);
+    while ('\0' != *p)
+    {
+        if ('\\' == *p)
+        {
+            if (':' != *(p - 1))
+                ::CreateDirectoryA(dir, NULL);
+        }
+        *q++ = *p++;
+        *q = '\0';
+    }
+    return ::CreateDirectoryA(dir, NULL);
+}
+
+BOOL PDLAPI LFile::CreateFolder(__in PCWSTR lpszFolder)
+{
+    if (::CreateDirectoryW(lpszFolder, NULL))
+        return TRUE;
+
+    LStringW dir;
+    PCWSTR p = lpszFolder;
+    PWSTR q = dir.AllocBuffer(lstrlenW(lpszFolder), FALSE);
+    while (L'\0' != *p)
+    {
+        if (L'\\' == *p)
+        {
+            if (L':' != *(p - 1))
+                ::CreateDirectoryW(dir, NULL);
+        }
+        *q++ = *p++;
+        *q = L'\0';
+    }
+    return ::CreateDirectoryW(dir, NULL);
 }
 
 BOOL PDLAPI LFile::Exists(

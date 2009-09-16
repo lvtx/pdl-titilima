@@ -136,6 +136,54 @@ LAppModule* LAppModule::GetApp(void)
     return m_pApp;
 }
 
+BOOL LAppModule::GetAppName(__in LStringA* name)
+{
+#ifndef _WIN32_WCE
+    LStringA str;
+    DWORD dwSize = MAX_PATH;
+    PSTR buf = str.AllocBuffer(dwSize, FALSE);
+    DWORD ret = ::GetModuleFileNameA(NULL, buf, dwSize);
+    if (0 == ret)
+        return FALSE;
+
+    while (ret == dwSize && ERROR_INSUFFICIENT_BUFFER == ::GetLastError())
+    {
+        dwSize *= 2;
+        buf = str.AllocBuffer(dwSize, FALSE);
+        ret = ::GetModuleFileNameA(NULL, buf, dwSize);
+    }
+
+    name->Copy(strrchr(buf, '\\') + 1);
+#else
+    LStringW strW;
+    if (!GetAppName(&strW))
+        return FALSE;
+
+    name->Copy(strW);
+#endif // _WIN32_WCE
+    return TRUE;
+}
+
+BOOL LAppModule::GetAppName(__in LStringW* name)
+{
+    LStringW str;
+    DWORD dwSize = MAX_PATH;
+    PWSTR buf = str.AllocBuffer(dwSize, FALSE);
+    DWORD ret = ::GetModuleFileNameW(NULL, buf, dwSize);
+    if (0 == ret)
+        return FALSE;
+
+    while (ret == dwSize && ERROR_INSUFFICIENT_BUFFER == ::GetLastError())
+    {
+        dwSize *= 2;
+        buf = str.AllocBuffer(dwSize, FALSE);
+        ret = ::GetModuleFileNameW(NULL, buf, dwSize);
+    }
+
+    name->Copy(wcsrchr(buf, L'\\') + 1);
+    return TRUE;
+}
+
 BOOL LAppModule::GetAppPath(__out LStringA* path)
 {
 #ifndef _WIN32_WCE

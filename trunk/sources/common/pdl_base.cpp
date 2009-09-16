@@ -1,4 +1,6 @@
 #include "..\..\include\pdl_base.h"
+#include "..\..\include\pdl_string.h"
+#include "..\..\include\pdl_module.h"
 
 #pragma pack(push, 1)
 typedef struct _tagThisThunk {
@@ -13,11 +15,10 @@ typedef struct _tagThisThunk {
 
 int PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
 {
-    WCHAR app[MAX_PATH];
-    ::GetModuleFileNameW(NULL, app, MAX_PATH);
-    PCWSTR p = wcsrchr(app, L'\\') + 1;
+    LStringW app;
+    LAppModule::GetAppName(&app);
 
-    int n = 128 + lstrlenW(p) + lstrlenW(expr) + lstrlenW(srcfile);
+    int n = 128 + app.GetLength() + lstrlenW(expr) + lstrlenW(srcfile);
     PWSTR text = new WCHAR[n];
     wsprintfW(text, L"您的程序 %s 发生断言。\n\n"
         L"表达式：%s\n"
@@ -25,7 +26,7 @@ int PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
         L"代码行：%d\n\n"
         L"您可以点击“终止”以终止程序运行，“重试”中断到调试器，"
         L"“忽略”继续运行程序。",
-        p, expr, srcfile, nLine);
+        (PCWSTR)app, expr, srcfile, nLine);
     n = ::MessageBoxW(NULL, text, L"PDL 断言",
         MB_ABORTRETRYIGNORE | MB_DEFBUTTON2 | MB_SYSTEMMODAL \
         | MB_ICONEXCLAMATION);
