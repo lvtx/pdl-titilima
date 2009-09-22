@@ -9,8 +9,7 @@
 LAppModule* LAppModule::m_pApp = NULL;
 UINT WM_PDL_GETOBJECTA = 0;
 UINT WM_PDL_GETOBJECTW = 0;
-UINT WM_PDL_GETDRAWITEM = 0;
-UINT WM_PDL_GETCUSTOMDRAW = 0;
+UINT WM_PDL_GETNOTIFY = 0;
 static LFile* g_log = NULL;
 
 LAppModule::LAppModule(__in HINSTANCE hInstance)
@@ -44,8 +43,7 @@ LAppModule::LAppModule(__in HINSTANCE hInstance)
     // 初始化 PDL 窗口消息
     WM_PDL_GETOBJECTA = ::RegisterWindowMessage(_T("WM_PDL_GETOBJECTA"));
     WM_PDL_GETOBJECTW = ::RegisterWindowMessage(_T("WM_PDL_GETOBJECTW"));
-    WM_PDL_GETDRAWITEM = ::RegisterWindowMessage(_T("WM_PDL_GETDRAWITEM"));
-    WM_PDL_GETCUSTOMDRAW = ::RegisterWindowMessage(_T("WM_PDL_GETCUSTOMDRAW"));
+    WM_PDL_GETNOTIFY = ::RegisterWindowMessage(_T("WM_PDL_GETNOTIFY"));
 }
 
 LAppModule::~LAppModule(void)
