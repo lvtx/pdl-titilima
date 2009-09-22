@@ -1035,7 +1035,8 @@ void LMsgWnd::HandleCommand(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
         if (0 == wCode || 1 == wCode)
             break;
 
-        LNotify* n = (LNotify*)::SendMessage(hCtrl, WM_PDL_GETNOTIFY, 0, 0);
+        LNotify* n = (LNotify*)::SendMessage(hCtrl, WM_PDL_GETNOTIFY,
+            PDL_NOTIFY, 0);
         if (NULL == n)
             break;
 
@@ -1110,7 +1111,7 @@ LRESULT LMsgWnd::HandleNotify(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     // 控件自处理
     bHandled = TRUE;
     LNotify* n = (LNotify*)::SendMessage(nmh->hwndFrom, WM_PDL_GETNOTIFY,
-        0, 0);
+        PDL_NOTIFY, 0);
     if (NULL != n)
         ret = n->OnMsgNotify(id, nmh, bHandled);
     else
