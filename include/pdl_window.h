@@ -80,7 +80,7 @@ HWND x::GetHandle(void)                                     \
  */
 #define NOTIFY_ITEM(x)                                      \
     if (x == nType)                                         \
-        return this;
+        return (LRESULT)this;
 
 /**
  * \def END_NOTIFY_MAP
@@ -88,6 +88,7 @@ HWND x::GetHandle(void)                                     \
  * \note 请在 PDL 窗口类的实现文件中使用。
  */
 #define END_NOTIFY_MAP(Class)                               \
+        return 0;                                           \
     }
 
 /**
