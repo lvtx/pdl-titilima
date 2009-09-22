@@ -78,9 +78,9 @@ HWND x::GetHandle(void)                                     \
  * \brief 用于定义 PDL 窗口类的通知支持。
  * \note 请在 PDL 窗口类的实现文件中使用。
  */
-#define NOTIFY_ITEM(x)                                      \
+#define NOTIFY_ITEM(x, t)                                      \
     if (x == nType)                                         \
-        return (LRESULT)this;
+        return (LRESULT)(t*)this;
 
 /**
  * \def END_NOTIFY_MAP
