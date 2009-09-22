@@ -989,7 +989,7 @@ BOOL LWnd::UpdateWindow(void)
     return ::UpdateWindow(m_hWnd);
 }
 
-//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // LMsgWnd
 
 LMsgWnd::LMsgWnd(void)
@@ -1021,6 +1021,117 @@ WNDPROC LMsgWnd::Attach(__in HWND hWnd, __in WNDPROC proc)
     }
 
     return pfnWndProc;
+}
+
+void LMsgWnd::HandleCommand(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    WORD id = LOWORD(wParam);
+    WORD wCode = HIWORD(lParam);
+    HWND hCtrl = (HWND)lParam;
+
+    bHandled = FALSE;
+    do
+    {
+        if (0 == wCode || 1 == wCode)
+            break;
+
+        LNotify* n = (LNotify*)::SendMessage(hCtrl, WM_PDL_GETNOTIFY, 0, 0);
+        if (NULL == n)
+            break;
+
+        bHandled = TRUE;
+        n->OnCmdNotify(id, wCode, hCtrl, bHandled);
+    } while (FALSE);
+
+    if (!bHandled)
+        OnCommand(HIWORD(wParam), LOWORD(wParam), (HWND)lParam, bHandled);
+}
+
+LRESULT LMsgWnd::HandleNotify(WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    int id = (int)wParam;
+    LPNMHDR nmh = (LPNMHDR)lParam;
+    LRESULT ret = 0;
+
+    // 自绘消息
+    bHandled = TRUE;
+    if (NM_CUSTOMDRAW == nmh->code)
+    {
+        LCustomDraw* cd = (LCustomDraw*)::SendMessage(nmh->hwndFrom,
+            WM_PDL_GETNOTIFY, PDL_NOTIFY_CUSTOMDRAW, 0);
+        if (NULL != cd)
+        {
+            LPNMCUSTOMDRAW nmcd = (LPNMCUSTOMDRAW)nmh;
+            switch (nmcd->dwDrawStage)
+            {
+            case CDDS_PREPAINT:
+                ret = cd->OnPrePaint(id, nmcd);
+                break;
+            case CDDS_POSTPAINT:
+                ret = cd->OnPostPaint(id, nmcd);
+                break;
+            case CDDS_PREERASE:
+                ret = cd->OnPreErase(id, nmcd);
+                break;
+            case CDDS_POSTERASE:
+                ret = cd->OnPostErase(id, nmcd);
+                break;
+            case CDDS_ITEMPREPAINT:
+                ret = cd->OnItemPrePaint(id, nmcd);
+                break;
+            case CDDS_ITEMPOSTPAINT:
+                ret = cd->OnItemPostPaint(id, nmcd);
+                break;
+            case CDDS_ITEMPREERASE:
+                ret = cd->OnItemPreErase(id, nmcd);
+                break;
+            case CDDS_ITEMPOSTERASE:
+                ret = cd->OnItemPostErase(id, nmcd);
+                break;
+            case (CDDS_ITEMPREPAINT | CDDS_SUBITEM):
+                ret = cd->OnSubItemPrePaint(id, nmcd);
+                break;
+            default:
+                bHandled = FALSE;
+            }
+        }
+        else
+        {
+            bHandled = FALSE;
+        }
+    }
+    else
+    {
+        bHandled = FALSE;
+    }
+    if (bHandled)
+        return ret;
+
+    // 控件自处理
+    bHandled = TRUE;
+    LNotify* n = (LNotify*)::SendMessage(nmh->hwndFrom, WM_PDL_GETNOTIFY,
+        0, 0);
+    if (NULL != n)
+        ret = n->OnMsgNotify(id, nmh, bHandled);
+    else
+        bHandled = FALSE;
+    if (bHandled)
+        return ret;
+
+    // 默认处理
+    bHandled = TRUE;
+    return OnNotify(id, nmh, bHandled);
+}
+
+LRESULT LMsgWnd::HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    if (WM_PDL_GETOBJECTA == uMsg)
+        return (LRESULT)OnGetPDLObject((PSTR)lParam, wParam);
+    else if (WM_PDL_GETOBJECTW == uMsg)
+        return (LRESULT)OnGetPDLObject((PWSTR)lParam, wParam);
+    else if (WM_PDL_GETNOTIFY == uMsg)
+        return OnGetPDLNotify(wParam);
+    return 0;
 }
 
 void LMsgWnd::OnMsgProcceded(
@@ -1072,14 +1183,9 @@ BOOL LMsgWnd::OnEraseBkgnd(HDC hdc, BOOL& bHandled)
     return FALSE;
 }
 
-LCustomDraw* LMsgWnd::OnGetPDLCustomDraw(void)
+LRESULT LMsgWnd::OnGetPDLNotify(UINT nType)
 {
-    return NULL;
-}
-
-LDrawItem* LMsgWnd::OnGetPDLDrawItem(void)
-{
-    return NULL;
+    return 0;
 }
 
 PVOID LMsgWnd::OnGetPDLObject(PSTR lpClassName, DWORD dwSize)
@@ -1214,16 +1320,6 @@ LRESULT LMsgWnd::OnMessage(
     BOOL& bHandled)
 {
     LRESULT lRet = 0;
-
-    if (WM_PDL_GETOBJECTA == uMsg)
-        return (LRESULT)OnGetPDLObject((PSTR)lParam, wParam);
-    else if (WM_PDL_GETOBJECTW == uMsg)
-        return (LRESULT)OnGetPDLObject((PWSTR)lParam, wParam);
-    else if (WM_PDL_GETCUSTOMDRAW == uMsg)
-        return (LRESULT)OnGetPDLCustomDraw();
-    else if (WM_PDL_GETDRAWITEM == uMsg)
-        return (LRESULT)OnGetPDLDrawItem();
-
     switch (uMsg)
     {
     case WM_ACTIVATE:
@@ -1241,7 +1337,7 @@ LRESULT LMsgWnd::OnMessage(
             PCOMPAREITEMSTRUCT cis = (PCOMPAREITEMSTRUCT)lParam;
 
             LDrawItem* di = (LDrawItem*)::SendMessage(cis->hwndItem,
-                WM_PDL_GETDRAWITEM, 0, 0);
+                WM_PDL_GETNOTIFY, PDL_NOTIFY_DRAWITEM, 0);
             if (NULL != di)
                 lRet = di->OnCompareItem(wParam, cis);
             else
@@ -1260,7 +1356,7 @@ LRESULT LMsgWnd::OnMessage(
         {
             PDELETEITEMSTRUCT dis = (PDELETEITEMSTRUCT)lParam;
             LDrawItem* di = (LDrawItem*)::SendMessage(dis->hwndItem,
-                WM_PDL_GETDRAWITEM, 0, 0);
+                WM_PDL_GETNOTIFY, PDL_NOTIFY_DRAWITEM, 0);
             if (NULL != di)
                 lRet = di->OnDeleteItem(wParam, dis);
             else
@@ -1281,7 +1377,7 @@ LRESULT LMsgWnd::OnMessage(
                 h = GetHandle();
 
             LDrawItem* di = (LDrawItem*)::SendMessage(dis->hwndItem,
-                    WM_PDL_GETDRAWITEM, 0, 0);
+                    WM_PDL_GETNOTIFY, PDL_NOTIFY_DRAWITEM, 0);
             if (NULL != di)
                 lRet = di->OnDrawItem(wParam, dis);
             else
@@ -1340,12 +1436,12 @@ LRESULT LMsgWnd::OnMessage(
             LDrawItem* di = NULL;
             if (ODT_MENU == mis->CtlType)
             {
-                di = OnGetPDLDrawItem();
+                di = (LDrawItem*)OnGetPDLNotify(PDL_NOTIFY_DRAWITEM);
             }
             else
             {
                 di = (LDrawItem*)::SendDlgItemMessage(GetHandle(), mis->CtlID,
-                    WM_PDL_GETDRAWITEM, 0, 0);
+                    WM_PDL_GETNOTIFY, PDL_NOTIFY_DRAWITEM, 0);
             }
             if (NULL != di)
                 lRet = di->OnMeasureItem(wParam, mis);
@@ -1441,54 +1537,7 @@ LRESULT LMsgWnd::OnMessage(
 LRESULT LMsgWnd::OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     LRESULT ret = 0;
-    if (NM_CUSTOMDRAW == pnmh->code)
-    {
-        LPNMCUSTOMDRAW nmcd = (LPNMCUSTOMDRAW)pnmh;
-        LCustomDraw* cd = (LCustomDraw*)::SendMessage(pnmh->hwndFrom,
-            WM_PDL_GETCUSTOMDRAW, 0, 0);
-        if (NULL == cd)
-        {
-            bHandled = FALSE;
-            return 0;
-        }
-
-        switch (nmcd->dwDrawStage)
-        {
-        case CDDS_PREPAINT:
-            ret = cd->OnPrePaint(idCtrl, nmcd);
-            break;
-        case CDDS_POSTPAINT:
-            ret = cd->OnPostPaint(idCtrl, nmcd);
-            break;
-        case CDDS_PREERASE:
-            ret = cd->OnPreErase(idCtrl, nmcd);
-            break;
-        case CDDS_POSTERASE:
-            ret = cd->OnPostErase(idCtrl, nmcd);
-            break;
-        case CDDS_ITEMPREPAINT:
-            ret = cd->OnItemPrePaint(idCtrl, nmcd);
-            break;
-        case CDDS_ITEMPOSTPAINT:
-            ret = cd->OnItemPostPaint(idCtrl, nmcd);
-            break;
-        case CDDS_ITEMPREERASE:
-            ret = cd->OnItemPreErase(idCtrl, nmcd);
-            break;
-        case CDDS_ITEMPOSTERASE:
-            ret = cd->OnItemPostErase(idCtrl, nmcd);
-            break;
-        case (CDDS_ITEMPREPAINT | CDDS_SUBITEM):
-            ret = cd->OnSubItemPrePaint(idCtrl, nmcd);
-            break;
-        default:
-            bHandled = FALSE;
-        }
-    }
-    else
-    {
-        bHandled = FALSE;
-    }
+    bHandled = FALSE;
     return ret;
 }
 
@@ -1519,20 +1568,16 @@ LRESULT CALLBACK LSubclassWnd::WindowProc(
     LPARAM lParam)
 {
     BOOL bHandled = TRUE;
-    LRESULT lRet = 0;
+    LRESULT lRet = This->HandlePDLMessage(uMsg, wParam, lParam);
+    if (0 != lRet)
+        return lRet;
+
     if (WM_COMMAND == uMsg)
-    {
-        This->OnCommand(HIWORD(wParam), LOWORD(wParam), (HWND)lParam,
-            bHandled);
-    }
+        This->HandleCommand(wParam, lParam, bHandled);
     else if (WM_NOTIFY == uMsg)
-    {
-        lRet = This->OnNotify((int)wParam, (LPNMHDR)lParam, bHandled);
-    }
+        lRet = This->HandleNotify(wParam, lParam, bHandled);
     else
-    {
         bHandled = FALSE;
-    }
 
     if (!bHandled)
     {
@@ -1838,21 +1883,16 @@ LRESULT CALLBACK LWindow::WindowProc(
     LPARAM lParam)
 {
     BOOL bHandled = TRUE;
-    LRESULT lRet = 0;
+    LRESULT lRet = This->HandlePDLMessage(uMsg, wParam, lParam);
+    if (0 != lRet)
+        return lRet;
 
     if (WM_COMMAND == uMsg)
-    {
-        This->OnCommand(HIWORD(wParam), LOWORD(wParam),
-            (HWND)lParam, bHandled);
-    }
+        This->HandleCommand(wParam, lParam, bHandled);
     else if (WM_NOTIFY == uMsg)
-    {
-        lRet = This->OnNotify((int)wParam, (LPNMHDR)lParam, bHandled);
-    }
+        lRet = This->HandleNotify(wParam, lParam, bHandled);
     else
-    {
         bHandled = FALSE;
-    }
 
     if (!bHandled)
     {
@@ -1990,20 +2030,16 @@ INT_PTR CALLBACK LDialog::DialogProc(
     LPARAM lParam)
 {
     BOOL bHandled = TRUE;
-    LRESULT lRet = 0;
+    LRESULT lRet = This->HandlePDLMessage(uMsg, wParam, lParam);
+    if (0 != lRet)
+        return lRet;
+
     if (WM_COMMAND == uMsg)
-    {
-        This->OnCommand(HIWORD(wParam), LOWORD(wParam), (HWND)lParam,
-            bHandled);
-    }
+        This->HandleCommand(wParam, lParam, bHandled);
     else if (WM_NOTIFY == uMsg)
-    {
-        lRet = This->OnNotify((int)wParam, (LPNMHDR)lParam, bHandled);
-    }
+        lRet = This->HandleNotify(wParam, lParam, bHandled);
     else
-    {
         bHandled = FALSE;
-    }
 
     if (WM_INITDIALOG == uMsg)
         This->LoadLanguageRes();
@@ -2087,4 +2123,15 @@ DWORD LCustomDraw::OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd)
 DWORD LCustomDraw::OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
 {
     return CDRF_DODEFAULT;
+}
+
+void LNotify::OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+LRESULT LNotify::OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled)
+{
+    bHandled = FALSE;
+    return 0;
 }

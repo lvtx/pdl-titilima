@@ -9,6 +9,7 @@
  *   \li \c LDialog PDL 基本对话框封装类
  *   \li \c LDrawItem PDL 自绘辅助类
  *   \li \c LCustomDraw PDL 自绘辅助类
+ *   \li \c LNotify PDL 通知消息自处理类
  */
 
 #pragma once
@@ -52,17 +53,41 @@ HWND x::GetHandle(void)                                     \
 }
 
 /**
- * \def PDL_ENABLE_DRAW
- * \brief 用于启用 PDL 窗口类的自绘机制，包括 LDrawItem 和 LCustomDraw。
+ * \def PDL_ENABLE_NOTIFY
+ * \brief 用于启用 PDL 窗口类的通知机制，包括 LDrawItem、LCustomDraw 和 LNotify。
  * \note 请在 PDL 窗口类的定义中使用。
  * \sa LDrawItem
  * \sa LCustomDraw
+ * \sa LNotify
  */
 
-#define PDL_ENABLE_DRAW(x)                                  \
-    private: x* OnGetPD##x(void)                            \
-    {                                                       \
-        return this;                                        \
+#define PDL_ENABLE_NOTIFY()                                 \
+    private: LRESULT OnGetPDLNotify(UINT nType);
+
+/**
+ * \def BEGIN_NOTIFY_MAP
+ * \brief 用于定义 PDL 窗口类的通知支持。
+ * \note 请在 PDL 窗口类的实现文件中使用。
+ */
+#define BEGIN_NOTIFY_MAP(Class)                             \
+    LRESULT Class::OnGetPDLNotify(UINT nType)               \
+    {
+
+/**
+ * \def NOTIFY_ITEM
+ * \brief 用于定义 PDL 窗口类的通知支持。
+ * \note 请在 PDL 窗口类的实现文件中使用。
+ */
+#define NOTIFY_ITEM(x)                                      \
+    if (x == nType)                                         \
+        return this;
+
+/**
+ * \def END_NOTIFY_MAP
+ * \brief 用于定义 PDL 窗口类的通知支持。
+ * \note 请在 PDL 窗口类的实现文件中使用。
+ */
+#define END_NOTIFY_MAP(Class)                               \
     }
 
 /**
@@ -477,6 +502,7 @@ protected:
 class LThunk;
 class LDrawItem;
 class LCustomDraw;
+class LNotify;
 
 class PDL_NO_VTABLE LMsgWnd
 {
@@ -517,16 +543,10 @@ protected:
     virtual BOOL OnEraseBkgnd(HDC hdc, BOOL& bHandled);
 
     /**
-     * 用于响应 WM_PDL_GETCUSTOMDRAW
-     * \sa WM_PDL_GETCUSTOMDRAW
+     * 用于响应 WM_PDL_GETNOTIFY
+     * \sa WM_PDL_GETNOTIFY
      */
-    virtual LCustomDraw* OnGetPDLCustomDraw(void);
-
-    /**
-     * 用于响应 WM_PDL_GETDRAWITEM
-     * \sa WM_PDL_GETDRAWITEM
-     */
-    virtual LDrawItem* OnGetPDLDrawItem(void);
+    virtual LRESULT OnGetPDLNotify(UINT nType);
 
     /**
      * 用于响应 WM_PDL_GETOBJECTA
@@ -565,6 +585,10 @@ protected:
     virtual void OnTimer(UINT_PTR nIDEvent, BOOL& bHandled);
     virtual void OnVScroll(UINT nCode, UINT nPos, HWND hScrollBar, BOOL& bHandled);
 protected:
+    void HandleCommand(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT HandleNotify(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
     virtual void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
         BOOL& bHandled);
 
@@ -971,4 +995,12 @@ protected:
     virtual DWORD OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd);
 
     virtual DWORD OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
+};
+
+class LNotify
+{
+    friend class LMsgWnd;
+protected:
+    virtual void OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled);
+    virtual LRESULT OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled);
 };

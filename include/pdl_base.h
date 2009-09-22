@@ -139,20 +139,6 @@ extern UINT WM_PDL_GETOBJECTA;
 extern UINT WM_PDL_GETOBJECTW;
 
 /**
- * \var WM_PDL_GETDRAWITEM
- * \brief 获取窗口对应的 LDrawItem 指针。
- * @return 窗口对应的 LDrawItem 指针。
- */
-extern UINT WM_PDL_GETDRAWITEM;
-
-/**
- * \var WM_PDL_GETCUSTOMDRAW
- * \brief 获取窗口对应的 LCustomDraw 指针。
- * @return 窗口对应的 LCustomDraw 指针。
- */
-extern UINT WM_PDL_GETCUSTOMDRAW;
-
-/**
  * \def WM_PDL_GETOBJECT
  * WM_PDL_GETOBJECTA 与 WM_PDL_GETOBJECTW 的 UNICODE 兼容宏。
  */
@@ -161,6 +147,18 @@ extern UINT WM_PDL_GETCUSTOMDRAW;
 #else
 #define WM_PDL_GETOBJECT    WM_PDL_GETOBJECTA
 #endif // UNICODE
+
+#define PDL_NOTIFY              0
+#define PDL_NOTIFY_DRAWITEM     1
+#define PDL_NOTIFY_CUSTOMDRAW   2
+
+/**
+ * \var WM_PDL_GETNOTIFY
+ * \brief 获取窗口对应的通知对象指针。
+ * @param [in] wParam 用于指定通知对象的类型。
+ * @return 窗口对应的通知对象指针。
+ */
+extern UINT WM_PDL_GETNOTIFY;
 
 /**
  * 指针类型转换，可以突破类成员函数的限制。
