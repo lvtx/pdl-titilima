@@ -1602,6 +1602,11 @@ void LTreeView::SetChildState(__in HTREEITEM hParent, __in BOOL bHasChild)
     SetItem(&item);
 }
 
+BOOL LTreeView::SortChildrenCB(__in LPTVSORTCB psort, BOOL fRecurse)
+{
+    return (BOOL)SendMessage(TVM_SORTCHILDRENCB, fRecurse, (LPARAM)psort);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LUpDown
 
