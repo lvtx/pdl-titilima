@@ -49,6 +49,8 @@ public:
     LStringA Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
     int SetAt(__in int pos, __in char ch);
+    void ToLower(void);
+    void ToUpper(void);
     static int Trim(__in PSTR string, __in PCSTR trimchars);
     int Trim(__in PCSTR trimchars);
 protected:
@@ -99,6 +101,8 @@ public:
     LStringW Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
     int SetAt(__in int pos, __in WCHAR ch);
+    void ToLower(void);
+    void ToUpper(void);
     static int Trim(__in PWSTR string, __in PCWSTR trimchars);
     int Trim(__in PCWSTR trimchars);
 protected:

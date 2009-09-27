@@ -350,6 +350,20 @@ int LStringA::SetAt(__in int pos, __in char ch)
     return ret;
 }
 
+void LStringA::ToLower(void)
+{
+    if (NULL == m_lpszData || '\0' == m_lpszData[0])
+        return;
+    _strlwr(m_lpszData);
+}
+
+void LStringA::ToUpper(void)
+{
+    if (NULL == m_lpszData || '\0' == m_lpszData[0])
+        return;
+    _strupr(m_lpszData);
+}
+
 int LStringA::Trim(__in PSTR string, __in PCSTR trimchars)
 {
     if (NULL == string)
@@ -736,6 +750,20 @@ int LStringW::SetAt(__in int pos, __in WCHAR ch)
     int ret = m_lpszData[pos];
     m_lpszData[pos] = ch;
     return ret;
+}
+
+void LStringW::ToLower(void)
+{
+    if (NULL == m_lpszData || L'\0' == m_lpszData[0])
+        return;
+    _wcslwr(m_lpszData);
+}
+
+void LStringW::ToUpper(void)
+{
+    if (NULL == m_lpszData || L'\0' == m_lpszData[0])
+        return;
+    _wcsupr(m_lpszData);
 }
 
 int LStringW::Trim(__in PWSTR string, __in PCWSTR trimchars)

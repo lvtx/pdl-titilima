@@ -505,6 +505,7 @@ public:
     HIMAGELIST SetImageList(__in HIMAGELIST himl, __in int iImage);
     BOOL SetItem(__in LPTVITEMA pItem);
     BOOL SetItem(__in LPTVITEMW pItem);
+    BOOL SortChildrenCB(__in LPTVSORTCB psort, BOOL fRecurse);
 protected:
     void SetChildState(__in HTREEITEM hParent, __in BOOL bHasChild);
 };

@@ -529,7 +529,7 @@ protected:
     /**
      * 向量数据
      */
-    PVOID m_pvData;
+    PBYTE m_data;
     /**
      * 元素大小
      */
