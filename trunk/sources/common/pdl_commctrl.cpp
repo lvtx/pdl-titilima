@@ -374,12 +374,17 @@ BOOL LImageList::Remove(__in int i)
 
 BOOL LImageList::RemoveAll(void)
 {
-    return ImageList_RemoveAll(m_hImageList);
+    return ::ImageList_RemoveAll(m_hImageList);
 }
 
 int LImageList::ReplaceIcon(__in int i, __in HICON hicon)
 {
-    return ImageList_ReplaceIcon(m_hImageList, i, hicon);
+    return ::ImageList_ReplaceIcon(m_hImageList, i, hicon);
+}
+
+BOOL LImageList::SetOverlayImage(__in int iImage, __in int iOverlay)
+{
+    return ::ImageList_SetOverlayImage(m_hImageList, iImage, iOverlay);
 }
 
 //////////////////////////////////////////////////////////////////////////

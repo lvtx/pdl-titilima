@@ -86,7 +86,7 @@ BOOL LPtrVector::Create(
     else
         m_lock = LDummyLock::Get();
 
-    m_data = new BYTE[dwUnitSize * dwMaxCnt];
+    m_data = new BYTE[dwUnitSize * m_dwMaxCnt];
     return NULL != m_data;
 }
 
@@ -245,15 +245,18 @@ BOOL LPtrVector::Remove(__in int idx)
 
 BOOL LPtrVector::SetAt(__in int idx, __in LPCVOID pvData)
 {
-    if (NULL == m_data || idx >= (int)m_dwUnitCnt || 0 == m_dwUnitCnt)
+    if (NULL == m_data || idx >= (int)m_dwUnitCnt)
+        return FALSE;
+    if (idx > 0 && (idx >= (int)m_dwUnitCnt || 0 == m_dwUnitCnt))
         return FALSE;
 
     LAutoLock lock(GetSafeLock());
     if (idx < 0)
     {
-        idx = m_dwUnitCnt - 1;
+        idx = m_dwUnitCnt;
         if (m_dwUnitCnt == m_dwMaxCnt)
             Grow();
+        ++m_dwUnitCnt;
     }
 
     PVOID p = DataFromPos(idx);
