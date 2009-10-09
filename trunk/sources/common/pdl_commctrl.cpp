@@ -1153,6 +1153,110 @@ void LTabCtrl::AdjustRect(__in BOOL fLarger, __inout LPRECT prc)
     SendMessage(TCM_ADJUSTRECT, (WPARAM)fLarger, (LPARAM)prc);
 }
 
+BOOL LTabCtrl::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::Create(WC_TABCONTROLA, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, lpParam);
+}
+
+BOOL LTabCtrl::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::Create(WC_TABCONTROLW, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, lpParam);
+}
+
+BOOL LTabCtrl::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::Create(WC_TABCONTROLA, lpWindowName, dwStyle, x, y,
+        nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+}
+
+BOOL LTabCtrl::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::Create(WC_TABCONTROLW, lpWindowName, dwStyle, x, y,
+        nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+}
+
+BOOL LTabCtrl::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::CreateEx(dwExStyle, WC_TABCONTROLA, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, lpParam);
+}
+
+BOOL LTabCtrl::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::CreateEx(dwExStyle, WC_TABCONTROLW, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, lpParam);
+}
+
+BOOL LTabCtrl::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::CreateEx(dwExStyle, WC_TABCONTROLA, lpWindowName, dwStyle,
+        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+}
+
+BOOL LTabCtrl::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
+{
+    return LWnd::CreateEx(dwExStyle, WC_TABCONTROLW, lpWindowName, dwStyle,
+        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+}
+
 int LTabCtrl::GetCurSel(void)
 {
     return (int)SendMessage(TCM_GETCURSEL);
