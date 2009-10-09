@@ -377,6 +377,32 @@ public:
     operator HWND(void) const;
 public:
     void AdjustRect(__in BOOL fLarger, __inout LPRECT prc);
+    BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
+        __in LPCRECT lpRect, __in HWND hWndParent,
+        __in UINT nID, __in PVOID lpParam);
+    BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
+        __in LPCRECT lpRect, __in HWND hWndParent,
+        __in UINT nID, __in PVOID lpParam);
+    BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
+        __in int x, __in int y, __in int nWidth, __in int nHeight,
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+    BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
+        __in int x, __in int y, __in int nWidth, __in int nHeight,
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
+        __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
+        __in UINT nID, __in PVOID lpParam);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
+        __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
+        __in UINT nID, __in PVOID lpParam);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
+        __in DWORD dwStyle, __in int X, __in int Y,
+        __in int nWidth, __in int nHeight, __in HWND hWndParent,
+        __in UINT nID, __in PVOID lpParam);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
+        __in DWORD dwStyle, __in int X, __in int Y,
+        __in int nWidth, __in int nHeight, __in HWND hWndParent,
+        __in UINT nID, __in PVOID lpParam);
     int GetCurSel(void);
     int InsertItem(__in int iItem, __in const LPTCITEMA pitem);
     int InsertItem(__in int iItem, __in const LPTCITEMW pitem);
