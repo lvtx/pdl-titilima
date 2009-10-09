@@ -166,6 +166,7 @@ class LDC
 public:
     LDC(__in HDC hDC = NULL);
     virtual ~LDC(void);
+    operator HDC(void) const;
 public:
 
     /**
@@ -298,7 +299,7 @@ public:
      * @param [in] hWnd 要处理 WM_PAINT 的窗口句柄。
      * \note 在这个函数之中，会调用 BeginPaint。
      */
-    LPaintDC(__in HWND hWnd = NULL);
+    LPaintDC(__in HWND hWnd);
 
     /**
      * 析构函数。
@@ -306,6 +307,7 @@ public:
      */
     ~LPaintDC(void);
 
+    operator HDC(void) const;
 public:
     /**
      * WM_PAINT 绘制结构
@@ -340,6 +342,7 @@ public:
      */
     ~LClientDC(void);
 
+    operator HDC(void) const;
 protected:
     /**
      * 要进行绘制的窗口句柄
@@ -369,6 +372,7 @@ public:
      */
     ~LWindowDC(void);
 
+    operator HDC(void) const;
 protected:
     /**
      * 要进行绘制的窗口句柄
@@ -385,6 +389,7 @@ class LBufferDC : public LDC
 {
 public:
     ~LBufferDC(void);
+    operator HDC(void) const;
 public:
 
     /**

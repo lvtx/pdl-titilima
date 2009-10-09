@@ -255,6 +255,11 @@ LDC::~LDC(void)
 {
 }
 
+LDC::operator HDC(void) const
+{
+    return m_hDC;
+}
+
 void LDC::Attach(__in HDC hDC)
 {
     m_hDC = hDC;
@@ -518,7 +523,7 @@ COLORREF LDC::SetTextColor(COLORREF crColor)
 //////////////////////////////////////////////////////////////////////////
 // LPaintDC
 
-LPaintDC::LPaintDC(HWND hWnd /* = NULL */) : m_hWnd(hWnd)
+LPaintDC::LPaintDC(HWND hWnd) : m_hWnd(hWnd)
 {
     m_hDC = ::BeginPaint(m_hWnd, &ps);
 }
@@ -526,6 +531,11 @@ LPaintDC::LPaintDC(HWND hWnd /* = NULL */) : m_hWnd(hWnd)
 LPaintDC::~LPaintDC(void)
 {
     ::EndPaint(m_hWnd, &ps);
+}
+
+LPaintDC::operator HDC(void) const
+{
+    return m_hDC;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -541,6 +551,11 @@ LClientDC::~LClientDC(void)
     ::ReleaseDC(m_hWnd, m_hDC);
 }
 
+LClientDC::operator HDC(void) const
+{
+    return m_hDC;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // LWindowDC
 
@@ -554,12 +569,22 @@ LWindowDC::~LWindowDC(void)
     ::ReleaseDC(m_hWnd, m_hDC);
 }
 
+LWindowDC::operator HDC(void) const
+{
+    return m_hDC;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // LBufferDC
 
 LBufferDC::~LBufferDC(void)
 {
     ::DeleteDC(m_hDC);
+}
+
+LBufferDC::operator HDC(void) const
+{
+    return m_hDC;
 }
 
 void LBufferDC::CommitDraw(void)
