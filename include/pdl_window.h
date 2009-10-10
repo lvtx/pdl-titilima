@@ -535,6 +535,8 @@ protected:
     virtual void OnActivate(UINT nState, HWND hWndOther, BOOL bMinimized,
         BOOL& bHandled);
     virtual void OnClose(BOOL& bHandled);
+    virtual void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
+        BOOL& bHandled);
     virtual int OnCreate(LPCREATESTRUCTA lpCs, BOOL& bHandled);
     virtual int OnCreate(LPCREATESTRUCTW lpCs, BOOL& bHandled);
     virtual void OnDestroy(BOOL& bHandled);
@@ -569,11 +571,14 @@ protected:
     virtual void OnLButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnLButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnLButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
+    virtual LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
+        BOOL& bHandled);
     virtual void OnMouseLeave(BOOL& bHandled);
     virtual void OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnNcCalcSize(BOOL bCalcValidRects,
         LPNCCALCSIZE_PARAMS lpncsp, BOOL& bHandled);
     virtual LRESULT OnNcHitTest(int x, int y, BOOL& bHandled);
+    virtual LRESULT OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     virtual void OnPaint(BOOL& bHandled);
     virtual void OnRButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnRButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
@@ -584,23 +589,14 @@ protected:
     virtual void OnSize(UINT nType, int cx, int cy, BOOL& bHandled);
     virtual void OnSizing(UINT nSize, LPRECT lpRect, BOOL& bHandled);
     virtual void OnTimer(UINT_PTR nIDEvent, BOOL& bHandled);
-    virtual void OnVScroll(UINT nCode, UINT nPos, HWND hScrollBar, BOOL& bHandled);
+    virtual void OnVScroll(UINT nCode, UINT nPos, HWND hScrollBar,
+        BOOL& bHandled);
 protected:
-    void HandleCommand(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT HandleNotify(WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT HandleNotify(UINT uMsg, WPARAM wParam, LPARAM lParam,
+        BOOL& bHandled);
     LRESULT HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    virtual void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
+    LRESULT HandleWndMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
         BOOL& bHandled);
-
-    /**
-     * 用于第一时间处理所有的窗口消息。
-     * \note 如派生类的 OnMessage 中有未处理的消息，仍要交于基类的 OnMessage 处理。
-     */
-    virtual LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
-        BOOL& bHandled);
-
-    virtual LRESULT OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     /**
      * 消息处理完毕后的通知函数。
@@ -960,17 +956,17 @@ protected:
  * \class LDrawItem
  * \brief PDL 自绘辅助类
  * \details LDrawItem 是 PDL 中对 WM_DRAWITEM 的封装类，它封装了对 WM_DRAWITEM 各种处理的响应。
- * \sa PDL_ENABLE_DRAW
+ * \sa PDL_ENABLE_NOTIFY
  */
 
 class LDrawItem
 {
     friend class LMsgWnd;
 protected:
-    virtual int OnCompareItem(UINT idCtl, PCOMPAREITEMSTRUCT cis);
-    virtual BOOL OnDeleteItem(UINT idCtl, PDELETEITEMSTRUCT dis);
-    virtual BOOL OnDrawItem(UINT idCtl, PDRAWITEMSTRUCT dis);
-    virtual BOOL OnMeasureItem(UINT idCtl, PMEASUREITEMSTRUCT mis);
+    virtual int OnCompareItem(PCOMPAREITEMSTRUCT cis);
+    virtual BOOL OnDeleteItem(PDELETEITEMSTRUCT dis);
+    virtual BOOL OnDrawItem(PDRAWITEMSTRUCT dis);
+    virtual BOOL OnMeasureItem(PMEASUREITEMSTRUCT mis);
 };
 
 
@@ -978,7 +974,7 @@ protected:
  * \class LCustomDraw
  * \brief PDL 自绘辅助类
  * \details LCustomDraw 是 PDL 中对 NM_CUSTOMDRAW 的封装类，它封装了对 NM_CUSTOMDRAW 各种处理的响应。
- * \sa PDL_ENABLE_DRAW
+ * \sa PDL_ENABLE_NOTIFY
  */
 
 class LCustomDraw
@@ -997,6 +993,13 @@ protected:
 
     virtual DWORD OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
 };
+
+/**
+ * \class LNotify
+ * \brief PDL 通知处理类
+ * \details LNotify 封装了对 WM_COMMAND 和 WM_NOTIFY 的通知处理。
+ * \sa PDL_ENABLE_NOTIFY
+ */
 
 class LNotify
 {
