@@ -250,21 +250,26 @@ BOOL LPtrVector::SetAt(__in int idx, __in LPCVOID pvData)
     if (idx > 0 && (idx >= (int)m_dwUnitCnt || 0 == m_dwUnitCnt))
         return FALSE;
 
+    BOOL bAdd = FALSE;
     LAutoLock lock(GetSafeLock());
     if (idx < 0)
     {
+        bAdd = TRUE;
         idx = m_dwUnitCnt;
         if (m_dwUnitCnt == m_dwMaxCnt)
             Grow();
-        ++m_dwUnitCnt;
     }
 
     PVOID p = DataFromPos(idx);
-    if (NULL != m_pfnDestroy)
+    if (NULL != m_pfnDestroy && !bAdd)
         m_pfnDestroy(p);
+
     CopyMemory(p, pvData, m_dwUnitSize);
     if (NULL != m_pfnCopy)
         m_pfnCopy(p, pvData);
+
+    if (bAdd)
+        ++m_dwUnitCnt;
     return TRUE;
 }
 
