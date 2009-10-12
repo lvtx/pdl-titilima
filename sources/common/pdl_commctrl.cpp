@@ -1605,8 +1605,17 @@ BOOL LTreeView::GetItem(__inout LPTVITEMW pitem)
     return (BOOL)SendMessage(TVM_GETITEMW, 0, (LPARAM)pitem);
 }
 
-HTREEITEM LTreeView::GetNextItem(__in HTREEITEM hItem,
-                                 __in UINT uFlag)
+BOOL LTreeView::GetItemRect(
+    __in HTREEITEM hitem,
+    __out LPRECT prc,
+    __in BOOL fItemRect)
+{
+    return TreeView_GetItemRect(m_hWnd, hitem, prc, fItemRect);
+}
+
+HTREEITEM LTreeView::GetNextItem(
+    __in HTREEITEM hItem,
+    __in UINT uFlag)
 {
     return TreeView_GetNextItem(m_hWnd, hItem, uFlag);
 }
@@ -1614,6 +1623,11 @@ HTREEITEM LTreeView::GetNextItem(__in HTREEITEM hItem,
 HTREEITEM LTreeView::GetSelection(void)
 {
     return TreeView_GetSelection(m_hWnd);
+}
+
+HTREEITEM LTreeView::HitTest(__inout LPTVHITTESTINFO lpht)
+{
+    return TreeView_HitTest(m_hWnd, lpht);
 }
 
 HTREEITEM LTreeView::InsertItem(

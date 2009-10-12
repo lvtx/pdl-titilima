@@ -537,6 +537,7 @@ protected:
     virtual void OnClose(BOOL& bHandled);
     virtual void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
         BOOL& bHandled);
+    virtual void OnContextMenu(HWND hWnd, int x, int y, BOOL& bHandled);
     virtual int OnCreate(LPCREATESTRUCTA lpCs, BOOL& bHandled);
     virtual int OnCreate(LPCREATESTRUCTW lpCs, BOOL& bHandled);
     virtual void OnDestroy(BOOL& bHandled);

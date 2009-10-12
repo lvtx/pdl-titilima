@@ -134,7 +134,7 @@ LAppModule* LAppModule::GetApp(void)
     return m_pApp;
 }
 
-BOOL LAppModule::GetAppName(__in LStringA* name)
+BOOL PDLAPI LAppModule::GetAppName(__out LStringA* name, __in BOOL bFullPath)
 {
 #ifndef _WIN32_WCE
     LStringA str;
@@ -151,10 +151,13 @@ BOOL LAppModule::GetAppName(__in LStringA* name)
         ret = ::GetModuleFileNameA(NULL, buf, dwSize);
     }
 
-    name->Copy(strrchr(buf, '\\') + 1);
+    if (bFullPath)
+        name->Copy(buf);
+    else
+        name->Copy(strrchr(buf, '\\') + 1);
 #else
     LStringW strW;
-    if (!GetAppName(&strW))
+    if (!GetAppName(&strW, bFullPath))
         return FALSE;
 
     name->Copy(strW);
@@ -162,7 +165,7 @@ BOOL LAppModule::GetAppName(__in LStringA* name)
     return TRUE;
 }
 
-BOOL LAppModule::GetAppName(__in LStringW* name)
+BOOL PDLAPI LAppModule::GetAppName(__out LStringW* name, __in BOOL bFullPath)
 {
     LStringW str;
     DWORD dwSize = MAX_PATH;
@@ -178,7 +181,10 @@ BOOL LAppModule::GetAppName(__in LStringW* name)
         ret = ::GetModuleFileNameW(NULL, buf, dwSize);
     }
 
-    name->Copy(wcsrchr(buf, L'\\') + 1);
+    if (bFullPath)
+        name->Copy(buf);
+    else
+        name->Copy(wcsrchr(buf, L'\\') + 1);
     return TRUE;
 }
 

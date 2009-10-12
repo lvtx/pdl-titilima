@@ -517,8 +517,11 @@ public:
     HTREEITEM GetDropHilight(void);
     BOOL GetItem(__inout LPTVITEMA pitem);
     BOOL GetItem(__inout LPTVITEMW pitem);
+    BOOL GetItemRect(__in HTREEITEM hitem, __out LPRECT prc,
+        __in BOOL fItemRect);
     HTREEITEM GetNextItem(__in HTREEITEM hItem, __in UINT uFlag);
     HTREEITEM GetSelection(void);
+    HTREEITEM HitTest(__inout LPTVHITTESTINFO lpht);
     HTREEITEM InsertItem(__in HTREEITEM hParent, __in HTREEITEM hInsertAfter,
         __in PCSTR lpszItem, __in int nImage = -1, __in int nSelImage = -1,
         __in LPARAM lParam = 0);

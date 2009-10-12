@@ -156,6 +156,68 @@ DWORD LFile::GetSize(void)
     return ::GetFileSize(m_hFile, NULL);
 }
 
+BOOL PDLAPI LFile::GetSysDir(__out LStringA* dir)
+{
+    DWORD dwSize = MAX_PATH;
+    PSTR buf = dir->AllocBuffer(dwSize, FALSE);
+    DWORD ret = ::GetSystemDirectoryA(buf, dwSize);
+    if (0 == ret)
+        return FALSE;
+
+    if (ret > dwSize)
+    {
+        buf = dir->AllocBuffer(ret - 1, FALSE);
+        ::GetSystemDirectoryA(buf, ret--);
+    }
+
+    if ('\\' != buf[ret - 1])
+        dir->Append('\\');
+    return TRUE;
+}
+
+BOOL PDLAPI LFile::GetSysDir(__out LStringW* dir)
+{
+    DWORD dwSize = MAX_PATH;
+    PWSTR buf = dir->AllocBuffer(dwSize, FALSE);
+    DWORD ret = ::GetSystemDirectoryW(buf, dwSize);
+    if (0 == ret)
+        return FALSE;
+
+    if (ret > dwSize)
+    {
+        buf = dir->AllocBuffer(ret - 1, FALSE);
+        ::GetSystemDirectoryW(buf, ret--);
+    }
+
+    if (L'\\' != buf[ret - 1])
+        dir->Append(L'\\');
+    return TRUE;
+}
+
+BOOL PDLAPI LFile::GetWinDir(__out LStringA* dir)
+{
+    PSTR buf = dir->AllocBuffer(MAX_PATH, FALSE);
+    DWORD ret = ::GetWindowsDirectoryA(buf, MAX_PATH);
+    if (0 == ret)
+        return FALSE;
+
+    if ('\\' != buf[ret - 1])
+        dir->Append('\\');
+    return TRUE;
+}
+
+BOOL PDLAPI LFile::GetWinDir(__out LStringW* dir)
+{
+    PWSTR buf = dir->AllocBuffer(MAX_PATH, FALSE);
+    DWORD ret = ::GetWindowsDirectoryW(buf, MAX_PATH);
+    if (0 == ret)
+        return FALSE;
+
+    if (L'\\' != buf[ret - 1])
+        dir->Append(L'\\');
+    return TRUE;
+}
+
 BOOL PDLAPI LFile::IsFullPathName(__in PCSTR lpszFileName)
 {
     if (NULL == lpszFileName)

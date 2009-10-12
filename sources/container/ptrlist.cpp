@@ -266,6 +266,14 @@ LIterator LPtrList::InsertBefore(__in LIterator it, __in LPCVOID ptr)
     return (LIterator)node;
 }
 
+void LPtrList::Modify(__in LIterator it, __in LPCVOID ptr)
+{
+    LAutoLock lock(GetSafeLock());
+
+    PNODE node = (PNODE)it;
+    CopyMemory(node->data, ptr, m_dwUnitSize);
+}
+
 LIterator LPtrList::New(__in LPCVOID ptr)
 {
     PNODE node = (PNODE)new BYTE[sizeof(NODE) + m_dwUnitSize - 1];
