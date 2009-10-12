@@ -16,6 +16,8 @@
  * \details LFile 是 PDL 最基本文件操作封装，它封装了大部分常用的文件操作 API 函数。
  */
 
+class LStringA;
+class LStringW;
 class LFile
 {
 public:
@@ -32,6 +34,7 @@ public:
 
     static BOOL PDLAPI CreateFolder(__in PCSTR lpszFolder);
     static BOOL PDLAPI CreateFolder(__in PCWSTR lpszFolder);
+
     /**
      * 判断给定的文件是否存在。
      * @param [in] lpszFileName 要判断的文件名。
@@ -60,6 +63,10 @@ public:
 
     DWORD GetPointer(void);
     DWORD GetSize(void);
+    static BOOL PDLAPI GetSysDir(__out LStringA* dir);
+    static BOOL PDLAPI GetSysDir(__out LStringW* dir);
+    static BOOL PDLAPI GetWinDir(__out LStringA* dir);
+    static BOOL PDLAPI GetWinDir(__out LStringW* dir);
 
     /**
      * 判断给定的文件名是否全路径。

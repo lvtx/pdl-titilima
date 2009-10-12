@@ -173,9 +173,25 @@ public:
     LIterator InsertBefore(__in LIterator it, __in LPCVOID ptr);
 
     /**
+     * 修改指定位置的数据。
+     * @param [in] it 要修改新数据的位置。
+     * @param [in] ptr 要修改的新数据。
+     * \note 在修改新数据的过程中不会调用销毁和拷贝函数。
+     */
+    void Modify(__in LIterator it, __in LPCVOID ptr);
+
+    /**
+     * 移除指定位置的数据。
+     * @param [in] it 要移除的位置。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL Remove(__in LIterator it);
+
+    /**
      * 设置指定位置的数据。
      * @param [in] it 要设置新数据的位置。
      * @param [in] ptr 要设置的新数据。
+     * \note 在设置新数据的过程中会调用销毁和拷贝函数。
      */
     void SetAt(__in LIterator it, __in LPCVOID ptr);
 
@@ -185,13 +201,6 @@ public:
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Sort(__in ComparePtr pfnCompare);
-
-    /**
-     * 移除指定位置的数据。
-     * @param [in] it 要移除的位置。
-     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL Remove(__in LIterator it);
 
 protected:
     /**
@@ -341,11 +350,12 @@ public:
     LIterator InsertBefore(__in LIterator it, __in LPCVOID ptr);
 
     /**
-     * 设置指定位置的数据。
-     * @param [in] it 要设置新数据的位置。
-     * @param [in] ptr 要设置的新数据。
+     * 修改指定位置的数据。
+     * @param [in] it 要修改新数据的位置。
+     * @param [in] ptr 要修改的新数据。
+     * \note 在修改新数据的过程中不会调用销毁和拷贝函数。
      */
-    void SetAt(__in LIterator it, __in LPCVOID ptr);
+    void Modify(__in LIterator it, __in LPCVOID ptr);
 
     /**
      * 移除指定位置的数据。
@@ -353,6 +363,13 @@ public:
      * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Remove(__in LIterator it);
+
+    /**
+     * 设置指定位置的数据。
+     * @param [in] it 要设置新数据的位置。
+     * @param [in] ptr 要设置的新数据。
+     */
+    void SetAt(__in LIterator it, __in LPCVOID ptr);
 
 protected:
     /**
@@ -482,6 +499,14 @@ public:
      * @return 如果插入成功则返回插入后的索引，否则返回 -1。
      */
     int InsertBefore(__in int idx, __in LPCVOID pvData);
+
+    /**
+     * 修改指定位置的数据。
+     * @param [in] idx 要修改新数据的位置。
+     * @param [in] pvData 要修改的新数据。
+     * \note 在修改新数据的过程中不会调用销毁和拷贝函数。
+     */
+    BOOL Modify(__in int idx, __in LPCVOID pvData);
 
     /**
      * 移除指定位置的数据。

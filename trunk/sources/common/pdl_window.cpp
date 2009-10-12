@@ -1228,6 +1228,12 @@ LRESULT LMsgWnd::HandleWndMessage(
             OnCommand(HIWORD(wParam), LOWORD(wParam), (HWND)lParam, bHandled);
         }
         break;
+    case WM_CONTEXTMENU:
+        {
+            OnContextMenu((HWND)wParam, LOWORD(lParam), HIWORD(lParam),
+                bHandled);
+        }
+        break;
     case WM_CREATE:
         {
             if (::IsWindowUnicode(GetHandle()))
@@ -1395,6 +1401,20 @@ void LMsgWnd::OnClose(BOOL& bHandled)
     bHandled = FALSE;
 }
 
+void LMsgWnd::OnCommand(
+    WORD wNotifyCode,
+    WORD wID,
+    HWND hWndCtrl,
+    BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+void LMsgWnd::OnContextMenu(HWND hWnd, int x, int y, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
 int LMsgWnd::OnCreate(LPCREATESTRUCTA lpCs, BOOL& bHandled)
 {
     bHandled = FALSE;
@@ -1542,15 +1562,6 @@ void LMsgWnd::OnTimer(UINT_PTR nIDEvent, BOOL& bHandled)
 }
 
 void LMsgWnd::OnVScroll(UINT nCode, UINT nPos, HWND hScrollBar, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnCommand(
-    WORD wNotifyCode,
-    WORD wID,
-    HWND hWndCtrl,
-    BOOL& bHandled)
 {
     bHandled = FALSE;
 }

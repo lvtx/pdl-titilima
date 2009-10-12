@@ -199,6 +199,14 @@ PDLINLINE ILock* LPtrTree::GetSafeLock(void) const
     return (TREE_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
 }
 
+void LPtrTree::Modify(__in LIterator it, __in LPCVOID ptr)
+{
+    LAutoLock lock(GetSafeLock());
+
+    PTNODE node = (PTNODE)it;
+    CopyMemory(node->data, ptr, m_dwUnitSize);
+}
+
 LIterator LPtrTree::New(__in LPCVOID ptr)
 {
     PTNODE node = (PTNODE)new BYTE[sizeof(TNODE) + m_dwUnitSize - 1];

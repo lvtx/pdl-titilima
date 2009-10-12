@@ -218,6 +218,20 @@ int LPtrVector::InsertBefore(__in int idx, __in LPCVOID pvData)
     return idx;
 }
 
+BOOL LPtrVector::Modify(__in int idx, __in LPCVOID pvData)
+{
+    if (NULL == m_data)
+        return FALSE;
+    if (idx < 0 || idx >= (int)m_dwUnitCnt)
+        return FALSE;
+
+    LAutoLock lock(GetSafeLock());
+
+    PVOID p = DataFromPos(idx);
+    CopyMemory(p, pvData, m_dwUnitSize);
+    return TRUE;
+}
+
 BOOL LPtrVector::Remove(__in int idx)
 {
     if (VECTOR_ITERATING & m_dwStatus)
