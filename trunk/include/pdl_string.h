@@ -46,6 +46,7 @@ public:
     BOOL FormatV(__in PCSTR lpszFormat, __in va_list argList);
     static void FreeString(__in PSTR lpString);
     int GetLength(void) const;
+    BOOL IsEmpty(void) const;
     LStringA Left(__in int nChars);
     LStringA Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
@@ -100,6 +101,7 @@ public:
     BOOL FormatV(__in PCWSTR lpszFormat, __in va_list argList);
     static void FreeString(__in PWSTR lpString);
     int GetLength(void) const;
+    BOOL IsEmpty(void) const;
     LStringW Left(__in int nChars);
     LStringW Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
