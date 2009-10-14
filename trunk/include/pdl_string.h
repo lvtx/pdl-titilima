@@ -34,6 +34,7 @@ public:
     static PSTR AllocString(__in PCSTR lpString);
     void Append(__in char ch);
     void Attach(__in PSTR lpszString);
+    int Compare(__in PCSTR lpszString, __in BOOL bCase = TRUE);
     BSTR ConvertToBSTR(void);
     void Copy(__in PCSTR lpszString);
     void Copy(__in PCWSTR lpszString);
@@ -48,6 +49,7 @@ public:
     LStringA Left(__in int nChars);
     LStringA Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
+    int ReverseFind(__in char ch);
     int SetAt(__in int pos, __in char ch);
     void ToLower(void);
     void ToUpper(void);
@@ -86,6 +88,7 @@ public:
     static PWSTR AllocString(__in PCWSTR lpString);
     void Append(__in WCHAR ch);
     void Attach(__in PWSTR lpszString);
+    int Compare(__in PCWSTR lpszString, __in BOOL bCase = TRUE);
     void Copy(__in PCSTR lpszString);
     void Copy(__in PCWSTR lpszString);
     BSTR ConvertToBSTR(void);
@@ -100,6 +103,7 @@ public:
     LStringW Left(__in int nChars);
     LStringW Mid(__in int iStart, int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
+    int ReverseFind(__in WCHAR ch);
     int SetAt(__in int pos, __in WCHAR ch);
     void ToLower(void);
     void ToUpper(void);

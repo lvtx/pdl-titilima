@@ -16,7 +16,7 @@ typedef struct _tagThisThunk {
 int PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
 {
     LStringW app;
-    LAppModule::GetAppName(&app, FALSE);
+    LAppModule::GetModuleName(NULL, &app, FALSE);
 
     int n = 128 + app.GetLength() + lstrlenW(expr) + lstrlenW(srcfile);
     PWSTR text = new WCHAR[n];
