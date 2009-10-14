@@ -149,6 +149,14 @@ void LStringA::Attach(__in PSTR lpszString)
     m_dwMaxLen = strlen(lpszString);
 }
 
+int LStringA::Compare(__in PCSTR lpszString, __in BOOL bCase /* = TRUE */)
+{
+    if (bCase)
+        return lstrcmpA(m_lpszData, lpszString);
+    else
+        return lstrcmpiA(m_lpszData, lpszString);
+}
+
 BSTR LStringA::ConvertToBSTR(void)
 {
     LStringW strW = m_lpszData;
@@ -335,6 +343,14 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
     m_lpszData = pNewBuf;
     m_dwMaxLen = nStrLen;
     return cnt;
+}
+
+int LStringA::ReverseFind(__in char ch)
+{
+    PCSTR p = strrchr(m_lpszData, ch);
+    if (NULL == p)
+        return -1;
+    return p - m_lpszData;
 }
 
 int LStringA::SetAt(__in int pos, __in char ch)
@@ -553,6 +569,14 @@ void LStringW::Attach(__in PWSTR lpszString)
     m_dwMaxLen = wcslen(lpszString);
 }
 
+int LStringW::Compare(__in PCWSTR lpszString, __in BOOL bCase /* = TRUE */)
+{
+    if (bCase)
+        return lstrcmpW(m_lpszData, lpszString);
+    else
+        return lstrcmpiW(m_lpszData, lpszString);
+}
+
 BSTR LStringW::ConvertToBSTR(void)
 {
     if (NULL == m_lpszData)
@@ -737,6 +761,14 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
     m_lpszData = pNewBuf;
     m_dwMaxLen = nStrLen;
     return cnt;
+}
+
+int LStringW::ReverseFind(__in WCHAR ch)
+{
+    PCWSTR p = wcsrchr(m_lpszData, ch);
+    if (NULL == p)
+        return -1;
+    return p - m_lpszData;
 }
 
 int LStringW::SetAt(__in int pos, __in WCHAR ch)

@@ -236,7 +236,7 @@ BOOL LIniParser::Open(__in PCSTR lpszFileName)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
     if (!LFile::Exists(path))
@@ -264,7 +264,7 @@ BOOL LIniParser::Open(__in PCWSTR lpszFileName)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
     if (!LFile::Exists(path))
@@ -321,7 +321,7 @@ BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
     return LStrList::SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
@@ -339,7 +339,7 @@ BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
     return LStrList::SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);

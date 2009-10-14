@@ -21,7 +21,7 @@ LAppModule::LAppModule(__in HINSTANCE hInstance)
 
     // 检测日志标志，并决定是否生成日志
     LString strPath, strFile;
-    GetAppPath(&strPath);
+    GetPath(&strPath);
     strFile = strPath;
     strFile += _T("debuglog.yes");
     if (LFile::Exists(strFile))
@@ -134,13 +134,21 @@ LAppModule* LAppModule::GetApp(void)
     return m_pApp;
 }
 
-BOOL PDLAPI LAppModule::GetAppName(__out LStringA* name, __in BOOL bFullPath)
+HINSTANCE LAppModule::GetInstance(void) const
+{
+    return m_hInstance;
+}
+
+BOOL PDLAPI LAppModule::GetModuleName(
+    __in HMODULE hMod,
+    __out LStringA* name,
+    __in BOOL bFullPath)
 {
 #ifndef _WIN32_WCE
     LStringA str;
     DWORD dwSize = MAX_PATH;
     PSTR buf = str.AllocBuffer(dwSize, FALSE);
-    DWORD ret = ::GetModuleFileNameA(NULL, buf, dwSize);
+    DWORD ret = ::GetModuleFileNameA(hMod, buf, dwSize);
     if (0 == ret)
         return FALSE;
 
@@ -148,7 +156,7 @@ BOOL PDLAPI LAppModule::GetAppName(__out LStringA* name, __in BOOL bFullPath)
     {
         dwSize *= 2;
         buf = str.AllocBuffer(dwSize, FALSE);
-        ret = ::GetModuleFileNameA(NULL, buf, dwSize);
+        ret = ::GetModuleFileNameA(hMod, buf, dwSize);
     }
 
     if (bFullPath)
@@ -162,15 +170,17 @@ BOOL PDLAPI LAppModule::GetAppName(__out LStringA* name, __in BOOL bFullPath)
 
     name->Copy(strW);
 #endif // _WIN32_WCE
-    return TRUE;
 }
 
-BOOL PDLAPI LAppModule::GetAppName(__out LStringW* name, __in BOOL bFullPath)
+BOOL PDLAPI LAppModule::GetModuleName(
+    __in HMODULE hMod,
+    __out LStringW* name,
+    __in BOOL bFullPath)
 {
     LStringW str;
     DWORD dwSize = MAX_PATH;
     PWSTR buf = str.AllocBuffer(dwSize, FALSE);
-    DWORD ret = ::GetModuleFileNameW(NULL, buf, dwSize);
+    DWORD ret = ::GetModuleFileNameW(hMod, buf, dwSize);
     if (0 == ret)
         return FALSE;
 
@@ -178,7 +188,7 @@ BOOL PDLAPI LAppModule::GetAppName(__out LStringW* name, __in BOOL bFullPath)
     {
         dwSize *= 2;
         buf = str.AllocBuffer(dwSize, FALSE);
-        ret = ::GetModuleFileNameW(NULL, buf, dwSize);
+        ret = ::GetModuleFileNameW(hMod, buf, dwSize);
     }
 
     if (bFullPath)
@@ -188,55 +198,46 @@ BOOL PDLAPI LAppModule::GetAppName(__out LStringW* name, __in BOOL bFullPath)
     return TRUE;
 }
 
-BOOL LAppModule::GetAppPath(__out LStringA* path)
+BOOL PDLAPI LAppModule::GetModulePath(__in HMODULE hMod, __out LStringA* path)
 {
-#ifndef _WIN32_WCE
-    DWORD dwSize = MAX_PATH;
-    PSTR buf = path->AllocBuffer(dwSize, FALSE);
-    DWORD ret = ::GetModuleFileNameA(NULL, buf, dwSize);
-    if (0 == ret)
+    if (!GetModuleName(hMod, path, TRUE))
         return FALSE;
 
-    while (ret == dwSize && ERROR_INSUFFICIENT_BUFFER == ::GetLastError())
-    {
-        dwSize *= 2;
-        buf = path->AllocBuffer(dwSize, FALSE);
-        ret = ::GetModuleFileNameA(NULL, buf, dwSize);
-    }
-
-    *(strrchr(buf, '\\') + 1) = '\0';
-#else
-    LStringW strW;
-    if (!GetAppPath(&strW))
-        return FALSE;
-
-    path->Copy(strW);
-#endif // _WIN32_WCE
+    int n = path->ReverseFind('\\');
+    if (-1 != n)
+        path->SetAt(n + 1, '\0');
     return TRUE;
 }
 
-BOOL LAppModule::GetAppPath(__out LStringW* path)
+BOOL PDLAPI LAppModule::GetModulePath(__in HMODULE hMod, __out LStringW* path)
 {
-    DWORD dwSize = MAX_PATH;
-    PWSTR buf = path->AllocBuffer(dwSize, FALSE);
-    DWORD ret = ::GetModuleFileNameW(NULL, buf, dwSize);
-    if (0 == ret)
+    if (!GetModuleName(hMod, path, TRUE))
         return FALSE;
 
-    while (ret == dwSize && ERROR_INSUFFICIENT_BUFFER == ::GetLastError())
-    {
-        dwSize *= 2;
-        buf = path->AllocBuffer(dwSize, FALSE);
-        ret = ::GetModuleFileNameW(NULL, buf, dwSize);
-    }
-
-    *(wcsrchr(buf, L'\\') + 1) = L'\0';
+    int n = path->ReverseFind(L'\\');
+    if (-1 != n)
+        path->SetAt(n + 1, L'\0');
     return TRUE;
 }
 
-HINSTANCE LAppModule::GetInstance(void) const
+BOOL LAppModule::GetName(__out LStringA* name, __in BOOL bFullPath)
 {
-    return m_hInstance;
+    return GetModuleName(m_hInstance, name, bFullPath);
+}
+
+BOOL LAppModule::GetName(__out LStringW* name, __in BOOL bFullPath)
+{
+    return GetModuleName(m_hInstance, name, bFullPath);
+}
+
+BOOL LAppModule::GetPath(__out LStringA* path)
+{
+    return GetModulePath(m_hInstance, path);
+}
+
+BOOL LAppModule::GetPath(__out LStringW* path)
+{
+    return GetModulePath(m_hInstance, path);
 }
 
 LAppModule* LAppModule::Initialize(__in HINSTANCE hInstance)

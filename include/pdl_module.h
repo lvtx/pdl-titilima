@@ -76,33 +76,68 @@ public:
     HRSRC FindResourceW(__in PCWSTR lpName, __in PCWSTR lpType);
 
     /**
-     * 获取应用程序的文件名。
-     * @param [out] path 用于接收应用程序文件名的 LStringA 对象指针。
+     * 获取模块的文件名。
+     * @param [in] hMod 一个有效的模块句柄。
+     * @param [out] path 用于接收模块文件名的 LStringA 对象指针。
      * @param [in] bFullPath 是否获取全路径的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL PDLAPI GetAppName(__out LStringA* name, __in BOOL bFullPath);
+    static BOOL PDLAPI GetModuleName(__in HMODULE hMod, __out LStringA* name,
+        __in BOOL bFullPath);
 
     /**
-     * 获取应用程序的文件名。
-     * @param [out] path 用于接收应用程序文件名的 LStringW 对象指针。
+     * 获取模块的文件名。
+     * @param [in] hMod 一个有效的模块句柄。
+     * @param [out] path 用于接收模块文件名的 LStringW 对象指针。
      * @param [in] bFullPath 是否获取全路径的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL PDLAPI GetAppName(__out LStringW* name, __in BOOL bFullPath);
+    static BOOL PDLAPI GetModuleName(__in HMODULE hMod, __out LStringW* path,
+        __in BOOL bFullPath);
 
     /**
-     * 获取应用程序所在路径。
-     * @param [out] path 用于接收应用程序路径的 LStringA 对象指针。
+     * 获取模块所在路径。
+     * @param [out] path 用于接收模块路径的 LStringA 对象指针。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL PDLAPI GetAppPath(__out LStringA* path);
+    static BOOL PDLAPI GetModulePath(__in HMODULE hMod, __out LStringA* path);
 
     /**
-     * @param [out] path 用于接收应用程序路径的 LStringW 对象指针。
+     * 获取 LAppModule 对象的文件名。
+     * @param [out] path 用于接收 LAppModule 对象文件名的 LStringA 对象指针。
+     * @param [in] bFullPath 是否获取全路径的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    static BOOL PDLAPI GetAppPath(__out LStringW* path);
+    BOOL GetName(__out LStringA* name, __in BOOL bFullPath);
+
+    /**
+     * 获取 LAppModule 对象的文件名。
+     * @param [out] path 用于接收 LAppModule 对象文件名的 LStringW 对象指针。
+     * @param [in] bFullPath 是否获取全路径的文件名。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetName(__out LStringW* name, __in BOOL bFullPath);
+
+    /**
+     * 获取 LAppModule 对象文件所在路径。
+     * @param [out] path 用于接收 LAppModule 对象文件路径的 LStringA 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetPath(__out LStringA* path);
+
+    /**
+     * 获取 LAppModule 对象文件所在路径。
+     * @param [out] path 用于接收 LAppModule 对象文件路径的 LStringW 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetPath(__out LStringW* path);
+
+    /**
+     * 获取模块所在路径。
+     * @param [out] path 用于接收模块路径的 LStringW 对象指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL PDLAPI GetModulePath(__in HMODULE hMod, __out LStringW* path);
 
     HACCEL LoadAcceleratorsA(__in PCSTR lpTableName);
     HACCEL LoadAcceleratorsW(__in PCWSTR lpTableName);

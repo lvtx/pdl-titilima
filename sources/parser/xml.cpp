@@ -442,7 +442,7 @@ BOOL LXmlParser::Open(__in PCSTR lpszFileName)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
     if (!LFile::Exists(path))
@@ -473,7 +473,7 @@ BOOL LXmlParser::Open(__in PCWSTR lpszFileName)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
     if (!LFile::Exists(path))
@@ -747,7 +747,7 @@ BOOL LXmlParser::Save(__in PCSTR lpszFileName, __in PCSTR strIndent)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
 
@@ -774,7 +774,7 @@ BOOL LXmlParser::Save(__in PCWSTR lpszFileName, __in PCSTR strIndent)
     }
     else
     {
-        LAppModule::GetAppPath(&path);
+        LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
 
