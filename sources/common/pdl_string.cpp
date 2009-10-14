@@ -261,6 +261,11 @@ PSTR LStringA::InternalAlloc(__in DWORD nChars)
     return new char[nChars + 1];
 }
 
+BOOL LStringA::IsEmpty(void) const
+{
+    return (NULL == m_lpszData || '\0' == *m_lpszData);
+}
+
 LStringA LStringA::Left(__in int nChars)
 {
     LStringA ret;
@@ -677,6 +682,11 @@ int LStringW::GetLength(void) const
 PWSTR LStringW::InternalAlloc(__in DWORD nChars)
 {
     return new WCHAR[nChars + 1];
+}
+
+BOOL LStringW::IsEmpty(void) const
+{
+    return (NULL == m_lpszData || L'\0' == *m_lpszData);
 }
 
 LStringW LStringW::Left(__in int nChars)
