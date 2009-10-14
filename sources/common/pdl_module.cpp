@@ -170,6 +170,7 @@ BOOL PDLAPI LAppModule::GetModuleName(
 
     name->Copy(strW);
 #endif // _WIN32_WCE
+    return TRUE;
 }
 
 BOOL PDLAPI LAppModule::GetModuleName(
