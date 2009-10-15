@@ -1,4 +1,5 @@
 #include "..\..\include\pdl_string.h"
+#include "stringt.h"
 #ifdef _WIN32_WCE
 #include "..\adaptor\wince_adaptor.h"
 #endif // #ifdef _WIN32_WCE
@@ -101,60 +102,33 @@ char LStringA::operator[](__in int idx)
 
 PSTR LStringA::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
 {
-    if (0 == nChars)
-        nChars = 1;
-    if (m_dwMaxLen < nChars)
-    {
-        m_dwMaxLen = nChars;
-        PSTR pszNewData = InternalAlloc(nChars);
-        if (bSaveData)
-        {
-            strncpy(pszNewData, m_lpszData, nChars);
-            pszNewData[nChars] = '\0';
-        }
-        if (NULL != m_lpszData)
-            FreeString(m_lpszData);
-        m_lpszData = pszNewData;
-    }
-
-    if (!bSaveData)
-        ZeroMemory(m_lpszData, m_dwMaxLen + 1);
-
-    return m_lpszData;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.AllocBuffer(nChars, bSaveData);
 }
 
 PSTR LStringA::AllocString(__in PCSTR lpString)
 {
     if (NULL == lpString)
         lpString = nullstrA;
-    PSTR ret = InternalAlloc(strlen(lpString));
-    strcpy(ret, lpString);
-    return ret;
+    return CharTraitsA::Alloc(lpString);
 }
 
 void LStringA::Append(__in char ch)
 {
-    int len = GetLength();
-    if (len == m_dwMaxLen)
-        AllocBuffer(m_dwMaxLen * 2, TRUE);
-    m_lpszData[len] = ch;
-    m_lpszData[len + 1] = '\0';
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    str.Append(ch);
 }
 
 void LStringA::Attach(__in PSTR lpszString)
 {
-    if (NULL != m_lpszData)
-        FreeString(lpszString);
-    m_lpszData = lpszString;
-    m_dwMaxLen = strlen(lpszString);
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    str.Attach(lpszString);
 }
 
 int LStringA::Compare(__in PCSTR lpszString, __in BOOL bCase /* = TRUE */)
 {
-    if (bCase)
-        return lstrcmpA(m_lpszData, lpszString);
-    else
-        return lstrcmpiA(m_lpszData, lpszString);
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.Compare(lpszString, bCase);
 }
 
 BSTR LStringA::ConvertToBSTR(void)
@@ -165,26 +139,19 @@ BSTR LStringA::ConvertToBSTR(void)
 
 void LStringA::Copy(__in PCSTR lpszString)
 {
-    size_t len = strlen(lpszString);
-    if (len > m_dwMaxLen)
-    {
-        m_dwMaxLen = len;
-        if (NULL != m_lpszData)
-            FreeString(m_lpszData);
-        m_lpszData = InternalAlloc(len);
-    }
-    strcpy(m_lpszData, lpszString);
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    str.Copy(lpszString);
 }
 
 void LStringA::Copy(__in PCWSTR lpszString)
 {
-    size_t len = WideCharToMultiByte(CP_ACP, 0, lpszString, -1, NULL, 0,
+    int len = WideCharToMultiByte(CP_ACP, 0, lpszString, -1, NULL, 0,
         NULL, NULL);
-    if (len > m_dwMaxLen)
+    if (len > (int)m_dwMaxLen)
     {
         m_dwMaxLen = len;
         FreeString(m_lpszData);
-        m_lpszData = InternalAlloc(len);
+        m_lpszData = CharTraitsA::Alloc(len);
     }
     WideCharToMultiByte(CP_ACP, 0, lpszString, -1, m_lpszData, len, NULL,
         NULL);
@@ -193,72 +160,49 @@ void LStringA::Copy(__in PCWSTR lpszString)
 
 PSTR LStringA::Detach(void)
 {
-    PSTR pszRet = m_lpszData;
-    m_lpszData = NULL;
-    m_dwMaxLen = 0;
-    return pszRet;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.Detach();
 }
 
 void LStringA::Empty(void)
 {
-    if (NULL == m_lpszData)
-        AllocString(nullstrA);
-    else
-        m_lpszData[0] = '\0';
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    str.Empty();
 }
 
-int LStringA::Find(__in char ch, int iStart /* = 0 */)
+int LStringA::Find(__in char ch, __in int iStart /* = 0 */)
 {
-    if (NULL == m_lpszData || GetLength() < iStart)
-        return -1;
-
-    PCSTR p = strchr(m_lpszData + iStart, ch);
-    if (NULL == p)
-        return -1;
-    return p - m_lpszData;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.Find(ch, iStart);
 }
 
-int LStringA::Find(__in PCSTR pszSub, int iStart /* = 0 */)
+int LStringA::Find(__in PCSTR pszSub, __in int iStart /* = 0 */)
 {
-    if (NULL == m_lpszData || GetLength() < iStart)
-        return -1;
-
-    PCSTR p = strstr(m_lpszData + iStart, pszSub);
-    if (NULL == p)
-        return -1;
-    return p - m_lpszData;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.Find(pszSub, iStart);
 }
 
-BOOL LStringA::Format(__in PCSTR lpszFormat, ...)
+int LStringA::Format(__in PCSTR lpszFormat, ...)
 {
+    char tmp[1024];
     va_list argList;
-    va_start(argList, lpszFormat);
-    BOOL bRet = FormatV(lpszFormat, argList);
-    va_end(argList);
-    return bRet;
-}
 
-BOOL LStringA::FormatV(__in PCSTR lpszFormat, __in va_list argList)
-{
-    CHAR szTemp[1024];
-    wvsprintfA(szTemp, lpszFormat, argList);
-    Copy(szTemp);
-    return TRUE;
+    va_start(argList, lpszFormat);
+    int ret = CharTraitsA::VSprintF(tmp, lpszFormat, argList);
+    va_end(argList);
+
+    Copy(tmp);
+    return ret;
 }
 
 void LStringA::FreeString(__in PSTR lpString)
 {
-    delete [] lpString;
+    CharTraitsA::Free(lpString);
 }
 
 int LStringA::GetLength(void) const
 {
-    return strlen(m_lpszData);
-}
-
-PSTR LStringA::InternalAlloc(__in DWORD nChars)
-{
-    return new char[nChars + 1];
+    return CharTraitsA::Len(m_lpszData);
 }
 
 BOOL LStringA::IsEmpty(void) const
@@ -268,107 +212,38 @@ BOOL LStringA::IsEmpty(void) const
 
 LStringA LStringA::Left(__in int nChars)
 {
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+
     LStringA ret;
-    PSTR buf = ret.AllocBuffer(nChars, FALSE);
-    strncpy(buf, m_lpszData, nChars);
-    buf[nChars] = '\0';
+    ret.Attach(str.Left(nChars));
     return ret;
 }
 
-LStringA LStringA::Mid(__in int iStart, int nChars /* = -1 */)
+LStringA LStringA::Mid(__in int iStart, __in int nChars /* = -1 */)
 {
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+
     LStringA ret;
-    if (nChars <= 0)
-    {
-        ret = m_lpszData + iStart;
-    }
-    else
-    {
-        PSTR buf = ret.AllocBuffer(nChars);
-        strncpy(buf, m_lpszData + iStart, nChars);
-        buf[nChars] = '\0';
-    }
+    ret.Attach(str.Mid(iStart, nChars));
     return ret;
 }
 
 int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
 {
-    int nStrLen = GetLength();
-    if (0 == nStrLen)
-        return 0;
-
-    int nOldLen = strlen(pszOld);
-    if (0 == nOldLen)
-        return 0;
-
-    // 计算要替换的子串个数
-    int nNewLen = strlen(pszNew);
-    int cnt = 0;
-    PCSTR lpStart = m_lpszData;
-    PCSTR lpEnd = m_lpszData + nOldLen;
-    while (lpStart < lpEnd)
-    {
-        PCSTR lpTarget;
-        while ((lpTarget = strstr(lpStart, pszOld)) != NULL)
-        {
-            ++cnt;
-            lpStart = lpTarget + nOldLen;
-        }
-    }
-
-    if (0 == cnt)
-        return 0;
-
-    nStrLen += (nNewLen - nOldLen) * cnt;
-    PSTR pNewBuf = InternalAlloc(nStrLen);
-    PSTR dst = pNewBuf;
-    PSTR src = m_lpszData;
-    PSTR p = NULL;
-    int cbCopy = 0;
-    for (int i = 0; i < cnt; ++i)
-    {
-        // 查找替换串
-        p = strstr(src, pszOld);
-
-        // 复制非替换串
-        cbCopy = p - src;
-        strncpy(dst, src, cbCopy);
-        dst += cbCopy;
-        src = p;
-
-        // 复制替换串
-        strncpy(dst, pszNew, nNewLen);
-        dst += nNewLen;
-        src += nOldLen;
-    }
-    // 复制剩余的字符串
-    strcpy(dst, src);
-
-    FreeString(m_lpszData);
-    m_lpszData = pNewBuf;
-    m_dwMaxLen = nStrLen;
-    return cnt;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.Replace(pszOld, pszNew);
 }
 
 int LStringA::ReverseFind(__in char ch)
 {
-    PCSTR p = strrchr(m_lpszData, ch);
-    if (NULL == p)
-        return -1;
-    return p - m_lpszData;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.ReverseFind(ch);
 }
 
 int LStringA::SetAt(__in int pos, __in char ch)
 {
-    if (NULL == m_lpszData || '\0' == m_lpszData[0])
-        return LEOF;
-
-    int len = GetLength();
-    if (pos < 0 || pos >= len)
-        pos = len - 1;
-    int ret = m_lpszData[pos];
-    m_lpszData[pos] = ch;
-    return ret;
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.SetAt(pos, ch);
 }
 
 void LStringA::ToLower(void)
@@ -387,41 +262,7 @@ void LStringA::ToUpper(void)
 
 int LStringA::Trim(__in PSTR string, __in PCSTR trimchars)
 {
-    if (NULL == string)
-        return 0;
-
-    char* p;
-    char* start;
-    char* mark = NULL;
-
-    // 消除起始的字符
-    p = string;
-    while ('\0' != *p && strchr(trimchars, *p))
-        ++p;
-    start = p;
-
-    // 消除尾部字符
-    while ('\0' != *p)
-    {
-        if (strchr(trimchars, *p))
-        {
-            if (NULL == mark)
-                mark = p;
-        }
-        else
-        {
-            mark = NULL;
-        }
-        ++p;
-    }
-    if (NULL != mark)
-        *mark = '\0';
-
-    // 重新处理字符串
-    int cnt = strlen(start);
-    if (start > string)
-        memmove(string, start, cnt + 1);
-    return cnt;
+    return LStringT<char, CharTraitsA>::Trim(string, trimchars);
 }
 
 int LStringA::Trim(__in PCSTR trimchars)
@@ -526,60 +367,33 @@ WCHAR LStringW::operator[](__in int idx)
 
 PWSTR LStringW::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
 {
-    if (0 == nChars)
-        nChars = 1;
-    if (m_dwMaxLen < nChars)
-    {
-        m_dwMaxLen = nChars;
-        PWSTR pszNewData = InternalAlloc(nChars);
-        if (bSaveData)
-        {
-            wcsncpy(pszNewData, m_lpszData, nChars);
-            pszNewData[nChars] = L'\0';
-        }
-        if (NULL != m_lpszData)
-            FreeString(m_lpszData);
-        m_lpszData = pszNewData;
-    }
-
-    if (!bSaveData)
-        ZeroMemory(m_lpszData, (m_dwMaxLen + 1) * sizeof(WCHAR));
-
-    return m_lpszData;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.AllocBuffer(nChars, bSaveData);
 }
 
 PWSTR LStringW::AllocString(__in PCWSTR lpString)
 {
     if (NULL == lpString)
         lpString = nullstrW;
-    PWSTR ret = InternalAlloc(wcslen(lpString));
-    wcscpy(ret, lpString);
-    return ret;
+    return CharTraitsW::Alloc(lpString);
 }
 
 void LStringW::Append(__in WCHAR ch)
 {
-    int len = GetLength();
-    if (len == m_dwMaxLen)
-        AllocBuffer(m_dwMaxLen * 2, TRUE);
-    m_lpszData[len] = ch;
-    m_lpszData[len + 1] = L'\0';
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    str.Append(ch);
 }
 
 void LStringW::Attach(__in PWSTR lpszString)
 {
-    if (NULL != m_lpszData)
-        FreeString(m_lpszData);
-    m_lpszData = lpszString;
-    m_dwMaxLen = wcslen(lpszString);
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    str.Attach(lpszString);
 }
 
 int LStringW::Compare(__in PCWSTR lpszString, __in BOOL bCase /* = TRUE */)
 {
-    if (bCase)
-        return lstrcmpW(m_lpszData, lpszString);
-    else
-        return lstrcmpiW(m_lpszData, lpszString);
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.Compare(lpszString, bCase);
 }
 
 BSTR LStringW::ConvertToBSTR(void)
@@ -591,12 +405,12 @@ BSTR LStringW::ConvertToBSTR(void)
 
 void LStringW::Copy(__in PCSTR lpszString)
 {
-    size_t len = MultiByteToWideChar(CP_ACP, 0, lpszString, -1, NULL, 0);
-    if (len > m_dwMaxLen)
+    int len = MultiByteToWideChar(CP_ACP, 0, lpszString, -1, NULL, 0);
+    if (len > (int)m_dwMaxLen)
     {
         m_dwMaxLen = len;
         FreeString(m_lpszData);
-        m_lpszData = InternalAlloc(len);
+        m_lpszData = CharTraitsW::Alloc(len);
     }
     MultiByteToWideChar(CP_ACP, 0, lpszString, -1, m_lpszData, len);
     m_lpszData[len] = L'\0';
@@ -604,84 +418,55 @@ void LStringW::Copy(__in PCSTR lpszString)
 
 void LStringW::Copy(__in PCWSTR lpszString)
 {
-    size_t len = wcslen(lpszString);
-    if (len > m_dwMaxLen)
-    {
-        m_dwMaxLen = len;
-        FreeString(m_lpszData);
-        m_lpszData = InternalAlloc(len);
-    }
-    wcscpy(m_lpszData, lpszString);
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    str.Copy(lpszString);
 }
 
 PWSTR LStringW::Detach(void)
 {
-    PWSTR pszRet = m_lpszData;
-    m_lpszData = NULL;
-    m_dwMaxLen = 0;
-    return pszRet;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.Detach();
 }
 
 void LStringW::Empty(void)
 {
-    if (NULL == m_lpszData)
-        AllocString(nullstrW);
-    else
-        m_lpszData[0] = L'\0';
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    str.Empty();
 }
 
 int LStringW::Find(__in WCHAR ch, int iStart /* = 0 */)
 {
-    if (NULL == m_lpszData || GetLength() < iStart)
-        return -1;
-
-    PCWSTR p = wcschr(m_lpszData + iStart, ch);
-    if (NULL == p)
-        return -1;
-    return p - m_lpszData;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.Find(ch, iStart);
 }
 
 int LStringW::Find(__in PCWSTR pszSub, int iStart /* = 0 */)
 {
-    if (NULL == m_lpszData || GetLength() < iStart)
-        return -1;
-
-    PCWSTR p = wcsstr(m_lpszData + iStart, pszSub);
-    if (NULL == p)
-        return -1;
-    return p - m_lpszData;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.Find(pszSub, iStart);
 }
 
 BOOL LStringW::Format(__in PCWSTR lpszFormat, ...)
 {
+    WCHAR tmp[1024];
     va_list argList;
-    va_start(argList, lpszFormat);
-    BOOL bRet = FormatV(lpszFormat, argList);
-    va_end(argList);
-    return bRet;
-}
 
-BOOL LStringW::FormatV(__in PCWSTR lpszFormat, __in va_list argList)
-{
-    WCHAR szTemp[1024];
-    wvsprintfW(szTemp, lpszFormat, argList);
-    Copy(szTemp);
-    return TRUE;
+    va_start(argList, lpszFormat);
+    int ret = CharTraitsW::VSprintF(tmp, lpszFormat, argList);
+    va_end(argList);
+
+    Copy(tmp);
+    return ret;
 }
 
 void LStringW::FreeString(__in PWSTR lpString)
 {
-    delete [] lpString;
+    CharTraitsW::Free(lpString);
 }
 
 int LStringW::GetLength(void) const
 {
-    return wcslen(m_lpszData);
-}
-
-PWSTR LStringW::InternalAlloc(__in DWORD nChars)
-{
-    return new WCHAR[nChars + 1];
+    return CharTraitsW::Len(m_lpszData);
 }
 
 BOOL LStringW::IsEmpty(void) const
@@ -691,107 +476,38 @@ BOOL LStringW::IsEmpty(void) const
 
 LStringW LStringW::Left(__in int nChars)
 {
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+
     LStringW ret;
-    PWSTR buf = ret.AllocBuffer(nChars, FALSE);
-    wcsncpy(buf, m_lpszData, nChars);
-    buf[nChars] = L'\0';
+    ret.Attach(str.Left(nChars));
     return ret;
 }
 
-LStringW LStringW::Mid(__in int iStart, int nChars /* = -1 */)
+LStringW LStringW::Mid(__in int iStart, __in int nChars /* = -1 */)
 {
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+
     LStringW ret;
-    if (nChars <= 0)
-    {
-        ret = m_lpszData + iStart;
-    }
-    else
-    {
-        PWSTR buf = ret.AllocBuffer(nChars, FALSE);
-        wcsncpy(buf, m_lpszData + iStart, nChars);
-        buf[nChars] = L'\0';
-    }
+    ret.Attach(str.Mid(iStart, nChars));
     return ret;
 }
 
 int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
 {
-    int nStrLen = GetLength();
-    if (0 == nStrLen)
-        return 0;
-
-    int nOldLen = wcslen(pszOld);
-    if (0 == nOldLen)
-        return 0;
-
-    // 计算要替换的子串个数
-    int nNewLen = wcslen(pszNew);
-    int cnt = 0;
-    PCWSTR lpStart = m_lpszData;
-    PCWSTR lpEnd = m_lpszData + nOldLen;
-    while (lpStart < lpEnd)
-    {
-        PCWSTR lpTarget;
-        while ((lpTarget = wcsstr(lpStart, pszOld)) != NULL)
-        {
-            ++cnt;
-            lpStart = lpTarget + nOldLen;
-        }
-    }
-
-    if (0 == cnt)
-        return 0;
-
-    nStrLen += (nNewLen - nOldLen) * cnt;
-    PWSTR pNewBuf = InternalAlloc(nStrLen);
-    PWSTR dst = pNewBuf;
-    PWSTR src = m_lpszData;
-    PWSTR p = NULL;
-    int cbCopy = 0;
-    for (int i = 0; i < cnt; ++i)
-    {
-        // 查找替换串
-        p = wcsstr(src, pszOld);
-
-        // 复制非替换串
-        cbCopy = p - src;
-        wcsncpy(dst, src, cbCopy);
-        dst += cbCopy;
-        src = p;
-
-        // 复制替换串
-        wcsncpy(dst, pszNew, nNewLen);
-        dst += nNewLen;
-        src += nOldLen;
-    }
-    // 复制剩余的字符串
-    wcscpy(dst, src);
-
-    FreeString(m_lpszData);
-    m_lpszData = pNewBuf;
-    m_dwMaxLen = nStrLen;
-    return cnt;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.Replace(pszOld, pszNew);
 }
 
 int LStringW::ReverseFind(__in WCHAR ch)
 {
-    PCWSTR p = wcsrchr(m_lpszData, ch);
-    if (NULL == p)
-        return -1;
-    return p - m_lpszData;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.ReverseFind(ch);
 }
 
 int LStringW::SetAt(__in int pos, __in WCHAR ch)
 {
-    if (NULL == m_lpszData || L'\0' == m_lpszData[0])
-        return LEOF;
-
-    int len = GetLength();
-    if (pos < 0 || pos >= len)
-        pos = len - 1;
-    int ret = m_lpszData[pos];
-    m_lpszData[pos] = ch;
-    return ret;
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.SetAt(pos, ch);
 }
 
 void LStringW::ToLower(void)
@@ -810,41 +526,7 @@ void LStringW::ToUpper(void)
 
 int LStringW::Trim(__in PWSTR string, __in PCWSTR trimchars)
 {
-    if (NULL == string)
-        return 0;
-
-    wchar_t* p;
-    wchar_t* start;
-    wchar_t* mark = NULL;
-
-    // 消除起始的字符
-    p = string;
-    while (L'\0' != *p && wcschr(trimchars, *p))
-        ++p;
-    start = p;
-
-    // 消除尾部字符
-    while (L'\0' != *p)
-    {
-        if (wcschr(trimchars, *p))
-        {
-            if (NULL == mark)
-                mark = p;
-        }
-        else
-        {
-            mark = NULL;
-        }
-        ++p;
-    }
-    if (NULL != mark)
-        *mark = L'\0';
-
-    // 重新处理字符串
-    int cnt = wcslen(start);
-    if (start > string)
-        memmove(string, start, (cnt + 1) * sizeof(wchar_t));
-    return cnt;
+    return LStringT<WCHAR, CharTraitsW>::Trim(string, trimchars);
 }
 
 int LStringW::Trim(__in PCWSTR trimchars)

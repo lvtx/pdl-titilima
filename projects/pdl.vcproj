@@ -305,6 +305,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\sources\common\stringt.h"
+				>
+			</File>
+			<File
 				RelativePath="..\sources\common\thunk.h"
 				>
 			</File>
