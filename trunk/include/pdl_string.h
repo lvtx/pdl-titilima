@@ -42,13 +42,12 @@ public:
     void Empty(void);
     int Find(__in char ch, int iStart = 0);
     int Find(__in PCSTR pszSub, int iStart = 0);
-    BOOL Format(__in PCSTR lpszFormat, ...);
-    BOOL FormatV(__in PCSTR lpszFormat, __in va_list argList);
+    int Format(__in PCSTR lpszFormat, ...);
     static void FreeString(__in PSTR lpString);
     int GetLength(void) const;
     BOOL IsEmpty(void) const;
     LStringA Left(__in int nChars);
-    LStringA Mid(__in int iStart, int nChars = -1);
+    LStringA Mid(__in int iStart, __in int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
     int ReverseFind(__in char ch);
     int SetAt(__in int pos, __in char ch);
@@ -56,8 +55,6 @@ public:
     void ToUpper(void);
     static int Trim(__in PSTR string, __in PCSTR trimchars);
     int Trim(__in PCSTR trimchars);
-protected:
-    static PSTR InternalAlloc(__in DWORD nChars);
 private:
     PSTR m_lpszData;
     DWORD m_dwMaxLen;
@@ -97,13 +94,12 @@ public:
     void Empty(void);
     int Find(__in WCHAR ch, int iStart = 0);
     int Find(__in PCWSTR pszSub, int iStart = 0);
-    BOOL Format(__in PCWSTR lpszFormat, ...);
-    BOOL FormatV(__in PCWSTR lpszFormat, __in va_list argList);
+    int Format(__in PCWSTR lpszFormat, ...);
     static void FreeString(__in PWSTR lpString);
     int GetLength(void) const;
     BOOL IsEmpty(void) const;
     LStringW Left(__in int nChars);
-    LStringW Mid(__in int iStart, int nChars = -1);
+    LStringW Mid(__in int iStart, __in int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
     int ReverseFind(__in WCHAR ch);
     int SetAt(__in int pos, __in WCHAR ch);
@@ -111,8 +107,6 @@ public:
     void ToUpper(void);
     static int Trim(__in PWSTR string, __in PCWSTR trimchars);
     int Trim(__in PCWSTR trimchars);
-protected:
-    static PWSTR InternalAlloc(__in DWORD nChars);
 private:
     PWSTR m_lpszData;
     DWORD m_dwMaxLen;
