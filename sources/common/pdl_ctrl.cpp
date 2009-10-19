@@ -19,19 +19,27 @@ LComboBox::operator HWND(void)
     return m_hWnd;
 }
 
-BOOL LComboBox::Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-                       __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-                       __in PVOID lpParam)
+BOOL LComboBox::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
 {
-    return LWnd::Create("ComboBox", lpWindowName, dwStyle | WS_CHILD,
+    return LWnd::Create(WC_COMBOBOXA, lpWindowName, dwStyle | WS_CHILD,
         lpRect, hWndParent, nID, lpParam);
 }
 
-BOOL LComboBox::Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-                       __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-                       __in PVOID lpParam)
+BOOL LComboBox::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
 {
-    return LWnd::Create(L"ComboBox", lpWindowName, dwStyle | WS_CHILD,
+    return LWnd::Create(WC_COMBOBOXW, lpWindowName, dwStyle | WS_CHILD,
         lpRect, hWndParent, nID, lpParam);
 }
 
@@ -163,36 +171,64 @@ LEdit::operator HWND(void)
     return m_hWnd;
 }
 
-BOOL LEdit::Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-                   __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-                   __in PVOID lpParam)
+BOOL LEdit::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
 {
-    return LWnd::Create("Edit", lpWindowName, dwStyle | WS_CHILD, lpRect,
+    return LWnd::Create(WC_EDITA, lpWindowName, dwStyle | WS_CHILD, lpRect,
         hWndParent, nID, lpParam);
 }
 
-BOOL LEdit::Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-                   __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-                   __in PVOID lpParam)
+BOOL LEdit::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
 {
-    return LWnd::Create(L"Edit", lpWindowName, dwStyle | WS_CHILD, lpRect,
+    return LWnd::Create(WC_EDITW, lpWindowName, dwStyle | WS_CHILD, lpRect,
         hWndParent, nID, lpParam);
 }
 
-BOOL LEdit::CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
-                     __in DWORD dwStyle, __in LPCRECT lpRect,
-                     __in HWND hWndParent, __in UINT nID, __in PVOID lpParam)
+BOOL LEdit::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
 {
-    return LWnd::CreateEx(dwExStyle, "Edit", lpWindowName, dwStyle | WS_CHILD,
-        lpRect, hWndParent, nID, lpParam);
+    return LWnd::CreateEx(dwExStyle, WC_EDITA, lpWindowName,
+        dwStyle | WS_CHILD, lpRect, hWndParent, nID, lpParam);
 }
 
-BOOL LEdit::CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
-                     __in DWORD dwStyle, __in LPCRECT lpRect,
-                     __in HWND hWndParent, __in UINT nID, __in PVOID lpParam)
+BOOL LEdit::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID,
+    __in PVOID lpParam)
 {
-    return LWnd::CreateEx(dwExStyle, L"Edit", lpWindowName, dwStyle | WS_CHILD,
-        lpRect, hWndParent, nID, lpParam);
+    return LWnd::CreateEx(dwExStyle, WC_EDITW, lpWindowName,
+        dwStyle | WS_CHILD, lpRect, hWndParent, nID, lpParam);
+}
+
+DWORD LEdit::GetSelA(__out PDWORD lpdwStart, __out PDWORD lpdwEnd)
+{
+    return SendMessageA(EM_GETSEL, (WPARAM)lpdwStart, (LPARAM)lpdwEnd);
+}
+
+DWORD LEdit::GetSelW(__out PDWORD lpdwStart, __out PDWORD lpdwEnd)
+{
+    return SendMessageW(EM_GETSEL, (WPARAM)lpdwStart, (LPARAM)lpdwEnd);
 }
 
 void LEdit::LimitTextA(__in int nMaxChars)

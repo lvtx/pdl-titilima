@@ -200,10 +200,12 @@ public:
         __in UINT nID, __in PVOID lpParam);
     BOOL DeleteAllItems(void);
     BOOL DeleteItem(__in int nItem);
+    HWND EditLabel(__in int iItem);
     BOOL GetCheckState(__in UINT iIndex);
     BOOL GetColumn(__in int iCol, __out LPLVCOLUMNA pcol);
     BOOL GetColumn(__in int iCol, __out LPLVCOLUMNW pcol);
     int GetColumnWidth(__in int iCol);
+    HWND GetEditControl(void);
     HIMAGELIST GetImageList(__in int iImageList);
     BOOL GetItem(__inout LPLVITEMA pitem);
     BOOL GetItem(__inout LPLVITEMW pitem);
@@ -512,9 +514,11 @@ public:
         __in UINT id, __in PVOID lpParam);
     BOOL DeleteAllItems(void);
     BOOL DeleteItem(__in HTREEITEM hItem);
+    HWND EditLabel(__in HTREEITEM hItem);
     BOOL Expand(__in HTREEITEM hItem, __in UINT flag);
     void ExpandAll(__in HTREEITEM hItem);
     HTREEITEM GetDropHilight(void);
+    HWND GetEditControl(void);
     BOOL GetItem(__inout LPTVITEMA pitem);
     BOOL GetItem(__inout LPTVITEMW pitem);
     BOOL GetItemRect(__in HTREEITEM hitem, __out LPRECT prc,
