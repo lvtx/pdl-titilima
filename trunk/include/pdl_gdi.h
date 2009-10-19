@@ -213,10 +213,15 @@ public:
 
     BOOL DrawEdge(__in LPRECT qrc, __in UINT edge, __in UINT grfFlags);
     BOOL DrawFocusRect(__in LPCRECT lprc);
+    int DrawText(__in PCTSTR lpString, __in int nCount,
+        __inout LPRECT lpRect, __in UINT uFormat);
+#ifdef UNICODE
     int DrawTextA(__in PCSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
+#else
     int DrawTextW(__in PCWSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
+#endif // UNICODE
 
     /**
      * 在给定的矩形范围内绘制文字，如果超出范围，则使用省略号来剪切文字。
@@ -230,12 +235,18 @@ public:
     int DrawTextClipped(__in PCWSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
 
+    BOOL ExtTextOut(__in int X, __in int Y, __in UINT fuOptions,
+        __in CONST RECT* lprc, __in PCTSTR lpString, __in UINT cbCount,
+        __in CONST INT* lpDx);
+#ifdef UNICODE
     BOOL ExtTextOutA(__in int X, __in int Y, __in UINT fuOptions,
         __in CONST RECT* lprc, __in PCSTR lpString, __in UINT cbCount,
         __in CONST INT* lpDx);
+#else
     BOOL ExtTextOutW(__in int X, __in int Y, __in UINT fuOptions,
         __in CONST RECT* lprc, __in PCWSTR lpString, __in UINT cbCount,
         __in CONST INT* lpDx);
+#endif // UNICODE
     int FillRect(__in const RECT *lprc, __in HBRUSH hbr);
 
     /**
@@ -262,8 +273,12 @@ public:
      */
     HDC GetSafeHDC(void) const;
 
+    BOOL GetTextMetrics(__in LPTEXTMETRIC lptm);
+#ifdef UNICODE
     BOOL GetTextMetricsA(__in LPTEXTMETRICA lptm);
+#else
     BOOL GetTextMetricsW(__in LPTEXTMETRICW lptm);
+#endif // UNICODE
     BOOL LineTo(__in int nXEnd, __in int nYEnd);
     BOOL MoveToEx(__in int X, __in int Y, __out LPPOINT lpPoint = NULL);
     BOOL PatBlt(__in int nXLeft, __in int nYLeft,

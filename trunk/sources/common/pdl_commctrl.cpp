@@ -511,6 +511,11 @@ BOOL LListView::DeleteItem(__in int nItem)
     return ListView_DeleteItem(m_hWnd, nItem);
 }
 
+HWND LListView::EditLabel(__in int iItem)
+{
+    return ListView_EditLabel(m_hWnd, iItem);
+}
+
 BOOL LListView::GetCheckState(__in UINT iIndex)
 {
     return ListView_GetCheckState(m_hWnd, iIndex);
@@ -529,6 +534,11 @@ BOOL LListView::GetColumn(__in int iCol, __out LPLVCOLUMNW pcol)
 int LListView::GetColumnWidth(__in int iCol)
 {
     return ListView_GetColumnWidth(m_hWnd, iCol);
+}
+
+HWND LListView::GetEditControl(void)
+{
+    return ListView_GetEditControl(m_hWnd);
 }
 
 HIMAGELIST LListView::GetImageList(__in int iImageList)
@@ -1568,6 +1578,11 @@ BOOL LTreeView::DeleteItem(__in HTREEITEM hItem)
     return TreeView_DeleteItem(m_hWnd, hItem);
 }
 
+HWND LTreeView::EditLabel(__in HTREEITEM hItem)
+{
+    return TreeView_EditLabel(m_hWnd, hItem);
+}
+
 BOOL LTreeView::Expand(__in HTREEITEM hItem, __in UINT flag)
 {
     return TreeView_Expand(m_hWnd, hItem, flag);
@@ -1593,6 +1608,11 @@ void LTreeView::ExpandAll(__in HTREEITEM hItem)
 HTREEITEM LTreeView::GetDropHilight(void)
 {
     return TreeView_GetDropHilight(m_hWnd);
+}
+
+HWND LTreeView::GetEditControl(void)
+{
+    return TreeView_GetEditControl(m_hWnd);
 }
 
 BOOL LTreeView::GetItem(__inout LPTVITEMA pitem)

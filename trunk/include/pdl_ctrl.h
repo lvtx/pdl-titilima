@@ -18,6 +18,12 @@
  * \brief PDL 组合框控件类
  */
 
+#ifdef UNICODE
+#define GetLBTextLen    GetLBTextLenW
+#else
+#define GetLBTextLen    GetLBTextLenA
+#endif // UNICODE
+
 class LComboBox : public LWnd
 {
 public:
@@ -49,8 +55,12 @@ public:
     int GetLBText(__in int nIndex, __out PWSTR lpszText);
     int GetLBText(__in int nIndex, __out LStringA *pStr);
     int GetLBText(__in int nIndex, __out LStringW *pStr);
+    int GetLBTextLen(__in int nIndex);
+#ifdef UNICODE
     int GetLBTextLenA(__in int nIndex);
+#else
     int GetLBTextLenW(__in int nIndex);
+#endif // UNICODE
 
     /**
      * 获取 ComboBox 之中的 List 控件句柄。
@@ -63,16 +73,20 @@ public:
     int SetItemData(__in int nIndex, __in DWORD_PTR dwItemData);
 };
 
-#ifdef UNICODE
-#define GetLBTextLen    GetLBTextLenW
-#else
-#define GetLBTextLen    GetLBTextLenA
-#endif // UNICODE
-
 /**
  * \class LEdit
  * \brief PDL 编辑框控件类
  */
+
+#ifdef UNICODE
+#define GetSel      GetSelW
+#define LimitText   LimitTextW
+#define SetSel      SetSelW
+#else
+#define GetSel      GetSelA
+#define LimitText   LimitTextA
+#define SetSel      SetSelA
+#endif // UNICODE
 
 class LEdit : public LWnd
 {
@@ -93,23 +107,29 @@ public:
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
         __in UINT nID, __in PVOID lpParam);
+    DWORD GetSel(__out PDWORD lpdwStart, __out PDWORD lpdwEnd);
+#ifdef UNICODE
+    DWORD GetSelA(__out PDWORD lpdwStart, __out PDWORD lpdwEnd);
+#else
+    DWORD GetSelW(__out PDWORD lpdwStart, __out PDWORD lpdwEnd);
+#endif // UNICODE
+    void LimitText(__in int nMaxChars);
+#ifdef UNICODE
     void LimitTextA(__in int nMaxChars);
+#else
     void LimitTextW(__in int nMaxChars);
+#endif // UNICODE
     void ReplaceSel(__in PCSTR lpszNewText,
         __in BOOL bCanUndo = FALSE);
     void ReplaceSel(__in PCWSTR lpszNewText,
         __in BOOL bCanUndo = FALSE);
-    void SetSelA(__in int nStartChar, __in int nEndChar);
-    void SetSelW(__in int nStartChar, __in int nEndChar);
-};
-
+    void SetSel(__in int nStartChar, __in int nEndChar);
 #ifdef UNICODE
-#define LimitText   LimitTextW
-#define SetSel      SetSelW
+    void SetSelA(__in int nStartChar, __in int nEndChar);
 #else
-#define LimitText   LimitTextA
-#define SetSel      SetSelA
+    void SetSelW(__in int nStartChar, __in int nEndChar);
 #endif // UNICODE
+};
 
 /**
  * \class LListBox

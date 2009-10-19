@@ -334,17 +334,26 @@ public:
     static int ErrorBox(__in DWORD dwErrCode, __in_opt HWND hWnd,
         __in_opt PCWSTR lpText, __in_opt PCWSTR lpCaption, __in UINT uType);
 
+    DWORD GetClassLong(__in int nIndex);
+#ifdef UNICODE
     DWORD GetClassLongA(__in int nIndex);
+#else
     DWORD GetClassLongW(__in int nIndex);
+#endif // UNICODE
     BOOL GetClientRect(__out LPRECT lpRect);
     int GetDlgCtrlID(void);
     HWND GetDlgItem(__in int nIDDlgItem);
     UINT GetDlgItemInt(__in int nIDDlgItem, __out_opt BOOL *lpTranslated,
         __in BOOL bSigned);
+    UINT GetDlgItemText(__in int nIDDlgItem, __out PTSTR lpString,
+        __in int nMaxCount);
+#ifdef UNICODE
     UINT GetDlgItemTextA(__in int nIDDlgItem, __out PSTR lpString,
         __in int nMaxCount);
+#else
     UINT GetDlgItemTextW(__in int nIDDlgItem, __out PWSTR lpString,
         __in int nMaxCount);
+#endif // UNICODE
 
     /**
      * 获取窗口的扩展样式。
@@ -384,28 +393,38 @@ public:
     DWORD GetStyle(void);
 
     HWND GetWindow(__in UINT uCmd);
+    LONG GetWindowLong(__in int nIndex);
+#ifdef UNICODE
     LONG GetWindowLongA(__in int nIndex);
+#else
     LONG GetWindowLongW(__in int nIndex);
+#endif // UNICODE
     BOOL GetWindowRect(__out LPRECT lpRect);
+    int GetWindowText(__out PTSTR lpString, __in int nMaxCount);
+#ifdef UNICODE
     int GetWindowTextA(__out PSTR lpString, __in int nMaxCount);
+#else
     int GetWindowTextW(__out PWSTR lpString, __in int nMaxCount);
+#endif // UNICODE
 
     /**
      * 获取窗口的文本。
-     * @param [out] pStr 用于接收窗口文本的 LStringA 指针。
+     * @param [out] pStr 用于接收窗口文本的 LString 指针。
      * @return 如果成功则返回 pStr 的长度，否则返回 0。
      */
+    int GetWindowText(__out LString *pStr);
+#ifdef UNICODE
     int GetWindowTextA(__out LStringA *pStr);
-
-    /**
-     * 获取窗口的文本。
-     * @param [out] pStr 用于接收窗口文本的 LStringW 指针。
-     * @return 如果成功则返回 pStr 的长度，否则返回 0。
-     */
+#else
     int GetWindowTextW(__out LStringW *pStr);
+#endif // UNICODE
 
+    int GetWindowTextLength(void);
+#ifdef UNICODE
     int GetWindowTextLengthA(void);
+#else
     int GetWindowTextLengthW(void);
+#endif // UNICODE
     BOOL KillTimer(__in UINT_PTR uIDEvent);
 
     /**
@@ -420,30 +439,49 @@ public:
     BOOL IsWindow(void) const;
     BOOL IsWindowUnicode(void);
     BOOL IsWindowVisible(void);
+    int MessageBox(__in PCTSTR lpszText, __in PCTSTR lpszCaption = NULL,
+        __in UINT nType = MB_OK);
+#ifdef UNICODE
     int MessageBoxA(__in PCSTR lpszText, __in PCSTR lpszCaption = NULL,
         __in UINT nType = MB_OK);
+#else
     int MessageBoxW(__in PCWSTR lpszText, __in PCWSTR lpszCaption = NULL,
         __in UINT nType = MB_OK);
+#endif // UNICODE
     BOOL MoveWindow(__in LPCRECT lprc, __in BOOL bRepaint = TRUE);
     BOOL MoveWindow(__in int X, __in int Y, __in int nWidth,
         __in int nHeight, __in BOOL bRepaint = TRUE);
     BOOL OpenClipboard(void);
+    BOOL PostMessage(__in UINT uMsg, __in WPARAM wParam = 0,
+        __in LPARAM lParam = 0);
+#ifdef UNICODE
     BOOL PostMessageA(__in UINT uMsg, __in WPARAM wParam = 0,
         __in LPARAM lParam = 0);
+#else
     BOOL PostMessageW(__in UINT uMsg, __in WPARAM wParam = 0,
         __in LPARAM lParam = 0);
+#endif // UNICODE
     BOOL ScreenToClient(__inout LPPOINT lpPoint);
     BOOL ScrollWindow(__in int XAmount, __in int YAmount,
         __in_opt CONST RECT *lpRect, __in_opt CONST RECT *lpClipRect);
+    LRESULT SendMessage(__in UINT uMsg, __in WPARAM wParam = 0,
+        __in LPARAM lParam = 0);
+#ifdef UNICODE
     LRESULT SendMessageA(__in UINT uMsg, __in WPARAM wParam = 0,
         __in LPARAM lParam = 0);
+#else
     LRESULT SendMessageW(__in UINT uMsg, __in WPARAM wParam = 0,
         __in LPARAM lParam = 0);
+#endif // UNICODE
     HWND SetCapture(void);
     BOOL SetDlgItemInt(__in int nIDDlgItem, __in UINT uValue,
         __in BOOL bSigned);
+    BOOL SetDlgItemText(__in int nID, __in PCTSTR lpszString);
+#ifdef UNICODE
     BOOL SetDlgItemTextA(__in int nID, __in PCSTR lpszString);
+#else
     BOOL SetDlgItemTextW(__in int nID, __in PCWSTR lpszString);
+#endif // UNICODE
     HWND SetFocus(void);
 
     /**
@@ -474,8 +512,12 @@ public:
     BOOL SetWindowPos(__in HWND hWndInsertAfter, __in int X, __in int Y,
         __in int cx, __in int cy, __in UINT uFlags);
     int SetWindowRgn(__in_opt HRGN hRgn, __in BOOL bRedraw);
+    BOOL SetWindowText(__in PCTSTR lpszString);
+#ifdef UNICODE
     BOOL SetWindowTextA(__in PCSTR lpszString);
+#else
     BOOL SetWindowTextW(__in PCWSTR lpszString);
+#endif // UNICODE
 
     /**
      * 按照窗口的文本内容改变窗口的大小。
@@ -538,8 +580,12 @@ protected:
     virtual void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
         BOOL& bHandled);
     virtual void OnContextMenu(HWND hWnd, int x, int y, BOOL& bHandled);
+    virtual int OnCreate(LPCREATESTRUCT lpCs, BOOL& bHandled);
+#ifdef UNICODE
     virtual int OnCreate(LPCREATESTRUCTA lpCs, BOOL& bHandled);
+#else
     virtual int OnCreate(LPCREATESTRUCTW lpCs, BOOL& bHandled);
+#endif // UNICODE
     virtual void OnDestroy(BOOL& bHandled);
 #ifndef _WIN32_WCE
     virtual void OnDropFiles(HDROP hDropInfo, BOOL& bHandled);
