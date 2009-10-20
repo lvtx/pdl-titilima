@@ -506,6 +506,11 @@ BOOL LListView::DeleteAllItems(void)
     return ListView_DeleteAllItems(m_hWnd);
 }
 
+BOOL LListView::DeleteColumn(__in int iCol)
+{
+    return ListView_DeleteColumn(m_hWnd, iCol);
+}
+
 BOOL LListView::DeleteItem(__in int nItem)
 {
     return ListView_DeleteItem(m_hWnd, nItem);

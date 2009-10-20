@@ -199,6 +199,7 @@ public:
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
         __in UINT nID, __in PVOID lpParam);
     BOOL DeleteAllItems(void);
+    BOOL DeleteColumn(__in int iCol);
     BOOL DeleteItem(__in int nItem);
     HWND EditLabel(__in int iItem);
     BOOL GetCheckState(__in UINT iIndex);
