@@ -83,8 +83,8 @@ LStringA& LStringA::operator=(__in const LStringA& str)
 const LStringA& LStringA::operator+=(__in PCSTR lpszString)
 {
     int nLen = GetLength();
-    AllocBuffer(nLen + strlen(lpszString), TRUE);
-    strcpy(&m_lpszData[nLen], lpszString);
+    AllocBuffer(nLen + CharTraitsA::Len(lpszString), TRUE);
+    CharTraitsA::Copy(&m_lpszData[nLen], lpszString);
     return *this;
 }
 
@@ -348,8 +348,8 @@ LStringW& LStringW::operator=(__in const LStringW& str)
 const LStringW& LStringW::operator+=(__in PCWSTR lpszString)
 {
     int nLen = GetLength();
-    AllocBuffer(nLen + wcslen(lpszString));
-    wcscpy(&m_lpszData[nLen], lpszString);
+    AllocBuffer(nLen + CharTraitsW::Len(lpszString));
+    CharTraitsW::Copy(&m_lpszData[nLen], lpszString);
     return *this;
 }
 
