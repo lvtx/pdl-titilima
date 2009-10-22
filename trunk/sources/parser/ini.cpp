@@ -16,6 +16,7 @@
 
 LIniParser::LIniParser(__in ILock* lock) : LStrList(lock)
 {
+    m_bDirty = FALSE;
     m_secList.Create(sizeof(LIterator));
 }
 
@@ -295,6 +296,7 @@ void LIniParser::Open(__in LTxtFile* pFile)
         if (len > 0 && '[' == str[0] && ']' == str[len - 1])
             m_secList.AddTail(&m_itTail);
     }
+    m_bDirty = FALSE;
 }
 
 void LIniParser::RemoveSection(__in PCSTR lpszSection)
@@ -311,7 +313,7 @@ void LIniParser::RemoveSection(__in PCSTR lpszSection)
 
 BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
 {
-    if (NULL == lpszFileName)
+    if (NULL == lpszFileName || !m_bDirty)
         return FALSE;
 
     LStringA path;
@@ -329,7 +331,7 @@ BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
 
 BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
 {
-    if (NULL == lpszFileName)
+    if (NULL == lpszFileName || !m_bDirty)
         return FALSE;
 
     LStringW path;
@@ -381,6 +383,8 @@ BOOL LIniParser::WriteString(
 
 BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
 {
+    m_bDirty = TRUE;
+
     LStringA str;
     LIterator itSec = FindSection(lpszSection);
     if (NULL == itSec)

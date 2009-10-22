@@ -172,7 +172,10 @@ void LStringT<CharT, CharTraits>::Append(CharT ch)
     int len = CharTraits::Len(m_str);
     if (len == m_len)
     {
-        m_len *= 2;
+        if (0 == m_len)
+            m_len = 1;
+        else
+            m_len *= 2;
         CharT* buf = CharTraits::Alloc(m_len);
         CharTraits::Copy(buf, m_str);
         CharTraits::Free(m_str);

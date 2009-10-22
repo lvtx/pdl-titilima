@@ -244,6 +244,7 @@ void xmlFree(void* ptr)
 
 LXmlParser::LXmlParser(__in ILock* lock /* = NULL */) : LPtrTree()
 {
+    m_bDirty = FALSE;
     LPtrTree::Create(sizeof(xmlNode*), NULL, xmlFree, lock);
 }
 
@@ -258,6 +259,7 @@ BOOL LXmlParser::AddXml(
     __in DWORD dwOrder)
 {
     LXmlString stream(lpXmlString);
+    m_bDirty = TRUE;
     return ParseXml(parent, &stream, dwOrder);
 }
 
@@ -267,6 +269,7 @@ BOOL LXmlParser::AddXml(
     __in DWORD dwOrder)
 {
     LXmlString stream(lpXmlString);
+    m_bDirty = TRUE;
     return ParseXml(parent, &stream, dwOrder);
 }
 
@@ -286,6 +289,7 @@ LXmlNode LXmlParser::CreateNode(
         return NULL;
 
     node->m_type = type;
+    m_bDirty = TRUE;
     return LPtrTree::AddChild(parent, &node, dwOrder);
 }
 
@@ -297,6 +301,52 @@ LXmlNode LXmlParser::CreateNode(
 {
     LStringA strA = name;
     return CreateNode(parent, type, strA, dwOrder);
+}
+
+LXmlNode LXmlParser::FindChildNode(__in LXmlNode parent, __in PCSTR name)
+{
+    LXmlNode node = LPtrTree::GetChild(parent, LT_FIRST);
+    while (NULL != node)
+    {
+        xmlNode* p = NULL;
+        if (LPtrTree::GetAt(node, &p))
+        {
+            if (0 == lstrcmpiA(p->m_name, name))
+                return node;
+        }
+
+        node = LPtrTree::GetNextSibling(node);
+    }
+    return NULL;
+}
+
+LXmlNode LXmlParser::FindChildNode(__in LXmlNode parent, __in PCWSTR name)
+{
+    LStringA strA = name;
+    return FindChildNode(parent, strA);
+}
+
+LXmlNode LXmlParser::FindSiblingNode(__in LXmlNode node, __in PCSTR name)
+{
+    node = LPtrTree::GetNextSibling(node);
+    while (NULL != node)
+    {
+        xmlNode* p = NULL;
+        if (LPtrTree::GetAt(node, &p))
+        {
+            if (0 == lstrcmpiA(p->m_name, name))
+                return node;
+        }
+
+        node = LPtrTree::GetNextSibling(node);
+    }
+    return NULL;
+}
+
+LXmlNode LXmlParser::FindSiblingNode(__in LXmlNode node, __in PCWSTR name)
+{
+    LStringA strA = name;
+    return FindSiblingNode(node, strA);
 }
 
 int LXmlParser::GetChar(__in LXmlStream* s)
@@ -446,7 +496,12 @@ BOOL LXmlParser::Open(__in PCSTR lpszFileName)
         path += lpszFileName;
     }
     if (!LFile::Exists(path))
-        return FALSE;
+    {
+        LXmlNode prolog = CreateNode(LT_ROOT, Prolog, _T("xml"), LT_FIRST);
+        SetNodeProperty(prolog, "version", _T("1.0"));
+        m_bDirty = FALSE;
+        return TRUE;
+    }
 
     LTxtFile file;
     if (!file.Open(path, LTxtFile::modeReadWrite))
@@ -454,7 +509,10 @@ BOOL LXmlParser::Open(__in PCSTR lpszFileName)
 
     LXmlFile stream(&file);
     if (Parse(&stream))
+    {
+        m_bDirty = FALSE;
         return TRUE;
+    }
 
     Clear();
     return FALSE;
@@ -477,7 +535,12 @@ BOOL LXmlParser::Open(__in PCWSTR lpszFileName)
         path += lpszFileName;
     }
     if (!LFile::Exists(path))
-        return FALSE;
+    {
+        LXmlNode prolog = CreateNode(LT_ROOT, Prolog, _T("xml"), LT_FIRST);
+        SetNodeProperty(prolog, "version", _T("1.0"));
+        m_bDirty = FALSE;
+        return TRUE;
+    }
 
     LTxtFile file;
     if (!file.Open(path, LTxtFile::modeReadWrite))
@@ -485,7 +548,10 @@ BOOL LXmlParser::Open(__in PCWSTR lpszFileName)
 
     LXmlFile stream(&file);
     if (Parse(&stream))
+    {
+        m_bDirty = FALSE;
         return TRUE;
+    }
 
     Clear();
     return FALSE;
@@ -735,9 +801,33 @@ BOOL LXmlParser::ParseXml(
     return TRUE;
 }
 
+BOOL LXmlParser::RemoveChilds(__in LXmlNode parent)
+{
+    NodeType type;
+    if (!GetNodeType(parent, &type) || Prolog == type)
+        return FALSE;
+
+    LXmlNode node = GetChild(parent, LT_FIRST);
+    while (NULL != node)
+    {
+        LXmlNode del = node;
+        node = GetNextSibling(node);
+        RemoveNode(del);
+    }
+    return TRUE;
+}
+
+BOOL LXmlParser::RemoveNode(__in LXmlNode node)
+{
+    NodeType type;
+    if (!GetNodeType(node, &type) || Prolog == type)
+        return FALSE;
+    return LPtrTree::Remove(node);
+}
+
 BOOL LXmlParser::Save(__in PCSTR lpszFileName, __in PCSTR strIndent)
 {
-    if (NULL == lpszFileName)
+    if (NULL == lpszFileName || !m_bDirty)
         return FALSE;
 
     LStringA path;
@@ -764,7 +854,7 @@ BOOL LXmlParser::Save(__in PCSTR lpszFileName, __in PCSTR strIndent)
 
 BOOL LXmlParser::Save(__in PCWSTR lpszFileName, __in PCSTR strIndent)
 {
-    if (NULL == lpszFileName)
+    if (NULL == lpszFileName || !m_bDirty)
         return FALSE;
 
     LStringW path;
@@ -857,6 +947,7 @@ BOOL LXmlParser::SetNodeProperty(
     if (!LPtrTree::GetAt(node, &p))
         return FALSE;
 
+    m_bDirty = TRUE;
     LAutoLock lock(m_lock);
     return p->SetProperty(name, value);
 }
@@ -873,6 +964,7 @@ BOOL LXmlParser::SetNodeProperty(
     if (!LPtrTree::GetAt(node, &p))
         return FALSE;
 
+    m_bDirty = TRUE;
     LAutoLock lock(m_lock);
     return p->SetProperty(name, value);
 }

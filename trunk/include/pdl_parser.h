@@ -217,6 +217,10 @@ private:
      * Section 表
      */
     LPtrList m_secList;
+    /**
+     * Dirty 标志
+     */
+    BOOL m_bDirty;
 };
 
 /**
@@ -317,6 +321,40 @@ public:
         __in PCWSTR name, __in DWORD dwOrder);
 
     /**
+     * 查找指定名称的子结点。
+     * @param [in] parent 要查找子结点的父结点。
+     * @param [in] name 要查找的结点名称。
+     * 如果查找成功则返回结点的指针，否则返回 NULL。
+     */
+    LXmlNode FindChildNode(__in LXmlNode parent, __in PCSTR name);
+
+    /**
+     * 查找指定名称的子结点。
+     * @param [in] parent 要查找子结点的父结点。
+     * @param [in] name 要查找的结点名称。
+     * 如果查找成功则返回结点的指针，否则返回 NULL。
+     */
+    LXmlNode FindChildNode(__in LXmlNode parent, __in PCWSTR name);
+
+    /**
+     * 查找指定名称的兄弟结点。
+     * @param [in] node 要查找的起始结点。
+     * @param [in] name 要查找的结点名称。
+     * 如果查找成功则返回结点的指针，否则返回 NULL。
+     * \note 查找的过程将不包括 node 结点本身。
+     */
+    LXmlNode FindSiblingNode(__in LXmlNode node, __in PCSTR name);
+
+    /**
+     * 查找指定名称的兄弟结点。
+     * @param [in] node 要查找的起始结点。
+     * @param [in] name 要查找的结点名称。
+     * 如果查找成功则返回结点的指针，否则返回 NULL。
+     * \note 查找的过程将不包括 node 结点本身。
+     */
+    LXmlNode FindSiblingNode(__in LXmlNode node, __in PCWSTR name);
+
+    /**
      * 获取指定结点的子结点。
      * @param [in] it 指定的父结点，使用 XML_ROOT 可以获得根结点。
      * @param [in] type 要获得子结点的类型：
@@ -406,6 +444,20 @@ public:
     BOOL Parse(__in LXmlStream* s);
 
     /**
+     * 移除所有的子结点，但保留父结点本身。
+     * @param [in] parent 要移除子结点的父结点。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL RemoveChilds(__in LXmlNode parent);
+
+    /**
+     * 移除一个结点及其子结点。
+     * @param [in] parent 要移除的结点。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL RemoveNode(__in LXmlNode node);
+
+    /**
      * 保存一个 xml 文件。
      * @param [in] lpszFileName xml 文件的文件名。
      * @param [in] strIndent 缩进的分隔字符串。
@@ -479,4 +531,9 @@ protected:
      * 通过 LTxtFile 来保存文件。
      */
     void Save(__in LTxtFile* file, __in PCSTR strIndent);
+private:
+    /**
+     * Dirty 标志
+     */
+    BOOL m_bDirty;
 };
