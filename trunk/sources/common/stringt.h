@@ -212,7 +212,11 @@ void LStringT<CharT, CharTraits>::Copy(PCSTRT lpszString)
             CharTraits::Free(m_str);
         m_str = CharTraits::Alloc(len);
     }
-    CharTraits::Copy(m_str, lpszString);
+
+    if (0 == m_len)
+        Empty();
+    else
+        CharTraits::Copy(m_str, lpszString);
 }
 
 template <typename CharT, class CharTraits>
