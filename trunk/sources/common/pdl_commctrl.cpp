@@ -758,6 +758,11 @@ int LListView::SetSelectionMark(__in int iIndex)
     return ListView_SetSelectionMark(m_hWnd, iIndex);
 }
 
+BOOL LListView::SortItems(__in PFNLVCOMPARE pfnCompare, __in LPARAM lParamSort)
+{
+    return ListView_SortItems(m_hWnd, pfnCompare, lParamSort);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LMonthCal
 
