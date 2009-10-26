@@ -212,6 +212,7 @@ public:
     BOOL GetItem(__inout LPLVITEMW pitem);
     int GetItemCount(void) const;
     BOOL GetItemRect(__in int iItem, __out LPRECT rc, __in int code);
+    UINT GetItemState(__in int iItem, __in UINT mask);
     void GetItemText(__in int iItem, __in int iSubItem, __out PSTR pszText,
         __in int cchTextMax);
     void GetItemText(__in int iItem, __in int iSubItem, __out PWSTR pszText,
@@ -231,7 +232,7 @@ public:
     int InsertItem(__in const LPLVITEMW pitem);
     void SetCheckState(__in UINT iIndex, __in BOOL fCheck);
     BOOL SetColumnWidth(__in int iCol, __in int cx);
-    void SetExtendedListViewStyle(__in DWORD dwExStyle);
+    void SetExtendedListViewStyle(__in DWORD dwExMask, __in DWORD dwExStyle);
     HIMAGELIST SetImageList(__in HIMAGELIST hImageList, __in int iImageList);
     BOOL SetItem(const LPLVITEMA pitem);
     BOOL SetItem(const LPLVITEMW pitem);
@@ -345,6 +346,7 @@ public:
         __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in DWORD dwStyle,
         __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+    static int SizeOfREBARBANDINFO(void);
     BOOL InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOA lpRbbi);
     BOOL InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOW lpRbbi);
     BOOL SetBarInfo(__in LPREBARINFO lpRbi);

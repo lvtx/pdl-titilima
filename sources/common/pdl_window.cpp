@@ -1274,6 +1274,11 @@ LRESULT LMsgWnd::HandleWndMessage(
             OnKeyDown((UINT)wParam, LOWORD(lParam), HIWORD(lParam), bHandled);
         }
         break;
+    case WM_KEYUP:
+        {
+            OnKeyUp((UINT)wParam, LOWORD(lParam), HIWORD(lParam), bHandled);
+        }
+        break;
     case WM_LBUTTONDBLCLK:
         {
             OnLButtonDblClk((UINT)wParam, GET_X_LPARAM(lParam),
@@ -1472,6 +1477,11 @@ BOOL LMsgWnd::OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled)
 }
 
 void LMsgWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+void LMsgWnd::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags, BOOL& bHandled)
 {
     bHandled = FALSE;
 }

@@ -615,6 +615,8 @@ protected:
     virtual BOOL OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled);
     virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags,
         BOOL& bHandled);
+    virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags,
+        BOOL& bHandled);
     virtual void OnLButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnLButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual void OnLButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);

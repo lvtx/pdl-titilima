@@ -41,9 +41,9 @@ LAppModule::LAppModule(__in HINSTANCE hInstance)
     }
 
     // 初始化 PDL 窗口消息
-    WM_PDL_GETOBJECTA = ::RegisterWindowMessage(_T("WM_PDL_GETOBJECTA"));
-    WM_PDL_GETOBJECTW = ::RegisterWindowMessage(_T("WM_PDL_GETOBJECTW"));
-    WM_PDL_GETNOTIFY = ::RegisterWindowMessage(_T("WM_PDL_GETNOTIFY"));
+    PDL_REGMSG(WM_PDL_GETOBJECTA);
+    PDL_REGMSG(WM_PDL_GETOBJECTW);
+    PDL_REGMSG(WM_PDL_GETNOTIFY);
 }
 
 LAppModule::~LAppModule(void)
