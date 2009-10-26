@@ -96,7 +96,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="BuildInc $(ProjectDir)Version.h 3"
+				CommandLine="LuaLine -h $(ProjectDir)Version.h $(ProjectDir)Version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
