@@ -117,6 +117,14 @@
 #define LEOF    (-1)
 #endif
 
+/**
+ * \def PDL_REGMSG
+ * 注册一个窗口消息。
+ */
+#ifndef PDL_REGMSG
+#define PDL_REGMSG(msg)     msg = ::RegisterWindowMessage(_T(#msg))
+#endif // PDL_REGMSG
+
 ///////////////////////////////////////////////////////////////////////////////
 // 全局变量声明
 

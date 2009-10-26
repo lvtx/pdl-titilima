@@ -571,6 +571,11 @@ BOOL LListView::GetItemRect(__in int iItem, __out LPRECT rc, __in int code)
     return ListView_GetItemRect(m_hWnd, iItem, rc, code);
 }
 
+UINT LListView::GetItemState(__in int iItem, __in UINT mask)
+{
+    return ListView_GetItemState(m_hWnd, iItem, mask);
+}
+
 void LListView::GetItemText(
     __in int iItem,
     __in int iSubItem,
@@ -707,9 +712,12 @@ BOOL LListView::SetColumnWidth(__in int iCol, __in int cx)
     return ListView_SetColumnWidth(m_hWnd, iCol, cx);
 }
 
-void LListView::SetExtendedListViewStyle(__in DWORD dwExStyle)
+void LListView::SetExtendedListViewStyle(
+    __in DWORD dwExMask,
+    __in DWORD dwExStyle)
 {
-    ListView_SetExtendedListViewStyle(m_hWnd, dwExStyle);
+    SendMessage(LVM_SETEXTENDEDLISTVIEWSTYLE, (WPARAM)dwExMask,
+        (LPARAM)dwExStyle);
 }
 
 HIMAGELIST LListView::SetImageList(__in HIMAGELIST hImageList,
@@ -1098,6 +1106,19 @@ BOOL LReBar::CreateEx(
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
     return SetBarInfo(&ri);
+}
+
+int LReBar::SizeOfREBARBANDINFO(void)
+{
+    static int s_size = 0;
+    if (0 == s_size)
+    {
+        if (LOBYTE(LOWORD(::GetVersion())) >= 6)
+            s_size = sizeof(REBARBANDINFO);
+        else
+            s_size = REBARBANDINFO_V6_SIZE;
+    }
+    return s_size;
 }
 
 BOOL LReBar::InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOA lpRbbi)
