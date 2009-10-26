@@ -189,12 +189,17 @@ DWORD LStrList::SaveToFile(__in PCSTR lpFile, __in DWORD dwFlags)
     while (NULL != it)
     {
         PCSTR str = GetAt(it);
+        LIterator itNext = GetNextIterator(it);
         if (('\0' != *str) || (SLFILE_INCLUDENULL & dwFlags))
         {
-            file.WriteLn(str);
+            if (NULL != itNext)
+                file.WriteLn(str);
+            else
+                file.Write(str);
             ++ret;
         }
-        it = GetNextIterator(it);
+
+        it = itNext;
     }
 
     return ret;

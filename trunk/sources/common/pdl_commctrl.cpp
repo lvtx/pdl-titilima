@@ -1067,10 +1067,17 @@ BOOL LReBar::Create(
     __in UINT nID,
     __in PVOID lpParam)
 {
-    RECT rc = { 0 };
-    rc.bottom = 20;
-    return LWnd::Create(REBARCLASSNAME, _T(""),
-        dwStyle | WS_CHILD | WS_VISIBLE, &rc, hWndParent, nID, lpParam);
+    RECT rc = { 0, 0, 100, 100 };
+    BOOL ret = LWnd::Create(REBARCLASSNAME, _T(""),
+        dwStyle | WS_CHILD | WS_VISIBLE, &rc,
+        hWndParent, nID, lpParam);
+    if (!ret)
+        return FALSE;
+
+    REBARINFO ri = { 0 };
+    ri.cbSize = sizeof(REBARINFO);
+    ri.fMask = 0;
+    return SetBarInfo(&ri);
 }
 
 BOOL LReBar::CreateEx(
@@ -1080,9 +1087,17 @@ BOOL LReBar::CreateEx(
     __in UINT nID,
     __in PVOID lpParam)
 {
-    RECT rc = { 0 };
-    return LWnd::CreateEx(dwExStyle, REBARCLASSNAME, _T(""),
-        dwStyle | WS_CHILD | WS_VISIBLE, &rc, hWndParent, nID, lpParam);
+    RECT rc = { 0, 0, 100, 100 };
+    BOOL ret = LWnd::CreateEx(dwExStyle, REBARCLASSNAME, _T(""),
+        dwStyle | WS_CHILD | WS_VISIBLE, &rc, hWndParent,
+        nID, lpParam);
+    if (!ret)
+        return FALSE;
+
+    REBARINFO ri = { 0 };
+    ri.cbSize = sizeof(REBARINFO);
+    ri.fMask = 0;
+    return SetBarInfo(&ri);
 }
 
 BOOL LReBar::InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOA lpRbbi)
