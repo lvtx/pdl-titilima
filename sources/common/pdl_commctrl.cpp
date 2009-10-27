@@ -608,6 +608,16 @@ void LListView::GetItemText(
     SendMessage(LVM_GETITEMW, iItem, (LPARAM)&item);
 }
 
+int LListView::GetNextItem(__in int iStart, __in UINT flags)
+{
+    return ListView_GetNextItem(m_hWnd, iStart, flags);
+}
+
+UINT LListView::GetSelectedCount(void)
+{
+    return ListView_GetSelectedCount(m_hWnd);
+}
+
 int LListView::GetSelectionMark(void)
 {
     return ListView_GetSelectionMark(m_hWnd);

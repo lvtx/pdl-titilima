@@ -217,6 +217,8 @@ public:
         __in int cchTextMax);
     void GetItemText(__in int iItem, __in int iSubItem, __out PWSTR pszText,
         __in int cchTextMax);
+    int GetNextItem(__in int iStart, __in UINT flags);
+    UINT GetSelectedCount(void);
     int GetSelectionMark(void);
     int InsertColumn(__in int iCol, __in PCSTR pszText, __in int cx,
         __in int fmt = LVCFMT_LEFT);
