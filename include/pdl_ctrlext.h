@@ -156,6 +156,12 @@ public:
         __in int y, __in int cx, __in int cy);
 
     /**
+     * 获得分隔条的分隔位置。
+     * @return 分隔条的分隔位置。
+     */
+    int GetSplitPos(void);
+
+    /**
      * 设置全部拖动属性。
      * @param [in] bFullDrag 新的全部拖动属性。
      * @return 原有的全部拖动属性。
@@ -176,6 +182,13 @@ public:
      */
     BOOL SetPane(__in int i, __in HWND hWnd, __in int nSize = -1,
         __in int nMinSize = 5);
+
+    /**
+     * 设置分隔条的分隔位置。
+     * @param [in] nPos 分隔条的分隔位置。
+     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL SetSplitPos(__in int nPos);
 
     /**
      * 设置分隔条大小。

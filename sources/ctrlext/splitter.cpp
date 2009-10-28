@@ -91,6 +91,11 @@ void LSplitter::DrawSplitter(__in LDC *pDC, __in const RECT &rcSplitter)
     pDC->SelectBrush(hBrushOld);
 }
 
+int LSplitter::GetSplitPos(void)
+{
+    return m_nSplitPos;
+}
+
 BOOL LSplitter::SetFullDrag(__in BOOL bFullDrag)
 {
     BOOL ret = m_bFullDrag;
@@ -130,6 +135,19 @@ BOOL LSplitter::SetPane(
         GetClientRect(&rcSplitter);
         UpdateLayout(rcSplitter);
     }
+    return TRUE;
+}
+
+BOOL LSplitter::SetSplitPos(__in int nPos)
+{
+    RECT rcSplitter;
+    GetClientRect(&rcSplitter);
+    int nMax = m_bVertical ? rcSplitter.right : rcSplitter.bottom;
+    if (nPos < m_nMinSize1 || nPos > nMax - m_nMinSize2)
+        return FALSE;
+
+    m_nSplitPos = nPos;
+    UpdateLayout(rcSplitter);
     return TRUE;
 }
 
