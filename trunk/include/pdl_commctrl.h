@@ -529,6 +529,7 @@ public:
     BOOL GetItem(__inout LPTVITEMW pitem);
     BOOL GetItemRect(__in HTREEITEM hitem, __out LPRECT prc,
         __in BOOL fItemRect);
+    UINT GetItemState(__in HTREEITEM hItem, __in UINT stateMask);
     HTREEITEM GetNextItem(__in HTREEITEM hItem, __in UINT uFlag);
     HTREEITEM GetSelection(void);
     HTREEITEM HitTest(__inout LPTVHITTESTINFO lpht);

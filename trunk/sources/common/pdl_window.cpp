@@ -577,18 +577,16 @@ BOOL LWnd::GetScrollInfo(__in int nBar, __inout LPSCROLLINFO lpsi)
     return ::GetScrollInfo(m_hWnd, nBar, lpsi);
 }
 
-BOOL LWnd::GetSizeRect(__out LPRECT lpRect)
+BOOL LWnd::GetSize(__out LPSIZE size)
 {
-    PDLASSERT(NULL != lpRect);
+    PDLASSERT(NULL != size);
 
     RECT rc;
     if (!GetWindowRect(&rc))
         return FALSE;
 
-    lpRect->left = 0;
-    lpRect->top = 0;
-    lpRect->right = rc.right - rc.left;
-    lpRect->bottom = rc.bottom - rc.top;
+    size->cx = rc.right - rc.left + 1;
+    size->cy = rc.bottom - rc.top + 1;
     return TRUE;
 }
 

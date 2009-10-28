@@ -1689,6 +1689,12 @@ BOOL LTreeView::GetItemRect(
     return TreeView_GetItemRect(m_hWnd, hitem, prc, fItemRect);
 }
 
+UINT LTreeView::GetItemState(__in HTREEITEM hItem, __in UINT stateMask)
+{
+    // stateMask 不可靠，不得已而为之
+    return stateMask & TreeView_GetItemState(m_hWnd, hItem, stateMask);
+}
+
 HTREEITEM LTreeView::GetNextItem(
     __in HTREEITEM hItem,
     __in UINT uFlag)
