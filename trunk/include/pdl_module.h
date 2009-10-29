@@ -6,6 +6,7 @@
 #pragma once
 
 #include "pdl_base.h"
+#include <Shlwapi.h>
 
 /**
  * \class LAppModule
@@ -97,10 +98,20 @@ public:
 
     /**
      * 获取模块所在路径。
+     * @param [in] hMod 一个有效的模块句柄。
      * @param [out] path 用于接收模块路径的 LStringA 对象指针。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     static BOOL PDLAPI GetModulePath(__in HMODULE hMod, __out LStringA* path);
+
+    /**
+     * 获取指定模块的版本信息。
+     * @param [in] hMod 一个有效的模块句柄。
+     * @param [out] path 用于接收版本信息的结构体指针。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    static BOOL PDLAPI GetModuleVersion(__in HMODULE hMod,
+        __out DLLVERSIONINFO* dvi);
 
     /**
      * 获取 LAppModule 对象的文件名。

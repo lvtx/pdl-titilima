@@ -3,9 +3,42 @@
 #include "..\..\include\pdl_module.h"
 
 ///////////////////////////////////////////////////////////////////////////////
+// LComCtl
+
+LComCtl::LComCtl(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+{
+}
+
+LComCtl& LComCtl::operator=(__in HWND hWnd)
+{
+    m_hWnd = hWnd;
+    return *this;
+}
+
+BOOL LComCtl::GetUnicodeFormat(void)
+{
+    return (BOOL)SendMessage(CCM_GETUNICODEFORMAT);
+}
+
+DWORD LComCtl::GetVersion(void)
+{
+    return SendMessage(CCM_GETVERSION);
+}
+
+BOOL LComCtl::SetUnicodeFormat(__in BOOL bUnicode)
+{
+    return (BOOL)SendMessage(CCM_SETUNICODEFORMAT, (WPARAM)bUnicode);
+}
+
+DWORD LComCtl::SetVersion(__in DWORD dwVersion)
+{
+    return SendMessage(CCM_SETVERSION, dwVersion);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // LDateTime
 
-LDateTime::LDateTime(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LDateTime::LDateTime(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
 }
 
@@ -88,7 +121,7 @@ BOOL LHeader::Layout(__in LPRECT prc, __out LPWINDOWPOS pwpos)
 ///////////////////////////////////////////////////////////////////////////////
 // LHotKey
 
-LHotKey::LHotKey(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LHotKey::LHotKey(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
 }
 
@@ -784,7 +817,7 @@ BOOL LListView::SortItems(__in PFNLVCOMPARE pfnCompare, __in LPARAM lParamSort)
 ///////////////////////////////////////////////////////////////////////////////
 // LMonthCal
 
-LMonthCal::LMonthCal(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LMonthCal::LMonthCal(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
 }
 
@@ -1095,7 +1128,13 @@ BOOL LReBar::Create(
     REBARINFO ri = { 0 };
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
-    return SetBarInfo(&ri);
+    if (!SetBarInfo(&ri))
+        return FALSE;
+
+    DLLVERSIONINFO dvi = { 0 };
+    LAppModule::GetModuleVersion(::GetModuleHandle(_T("comctl32.dll")), &dvi);
+    LComCtl::SetVersion(dvi.dwMajorVersion);
+    return TRUE;
 }
 
 BOOL LReBar::CreateEx(
@@ -1115,7 +1154,13 @@ BOOL LReBar::CreateEx(
     REBARINFO ri = { 0 };
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
-    return SetBarInfo(&ri);
+    if (!SetBarInfo(&ri))
+        return FALSE;
+
+    DLLVERSIONINFO dvi = { 0 };
+    LAppModule::GetModuleVersion(::GetModuleHandle(_T("comctl32.dll")), &dvi);
+    LComCtl::SetVersion(dvi.dwMajorVersion);
+    return TRUE;
 }
 
 int LReBar::SizeOfREBARBANDINFO(void)
@@ -1197,7 +1242,7 @@ BOOL LStatusBar::SetText(__in int nPart, __in PCWSTR lpszText)
 //////////////////////////////////////////////////////////////////////////
 // LTabCtrl
 
-LTabCtrl::LTabCtrl(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LTabCtrl::LTabCtrl(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
     // Dummy
 }
@@ -1376,7 +1421,7 @@ HIMAGELIST LTabCtrl::SetImageList(__in HIMAGELIST himl)
 ///////////////////////////////////////////////////////////////////////////////
 // LToolBar
 
-LToolBar::LToolBar(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LToolBar::LToolBar(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
 }
 
@@ -1430,7 +1475,7 @@ HIMAGELIST LToolBar::SetImageList(__in HIMAGELIST himl)
 ///////////////////////////////////////////////////////////////////////////////
 // LToolTip
 
-LToolTip::LToolTip(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LToolTip::LToolTip(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
     // Dummy
 }
@@ -1504,7 +1549,7 @@ void LTrackBar::SetRange(
 //////////////////////////////////////////////////////////////////////////
 // LTreeView
 
-LTreeView::LTreeView(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LTreeView::LTreeView(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
     // Dummy
 }
@@ -1815,7 +1860,7 @@ BOOL LTreeView::SortChildrenCB(__in LPTVSORTCB psort, BOOL fRecurse)
 ///////////////////////////////////////////////////////////////////////////////
 // LUpDown
 
-LUpDown::LUpDown(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+LUpDown::LUpDown(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
 {
 }
 
