@@ -3,6 +3,7 @@
  * \brief PDL 公共控件封装
  * \details 对公共控件的功能封装：
  *   \li \c LComCtlInit 公共控件初始化类
+ *   \li \c LComCtl 公共控件基类
  *   \li \c LDateTime 日期/时间控件类
  *   \li \c LHeader Header 控件类
  *   \li \c LHotKey 热键控件类
@@ -45,11 +46,28 @@ public:
 };
 
 /**
+ * \class LComCtl
+ * \brief 公共控件基类
+ */
+
+class LComCtl : public LWnd
+{
+public:
+    LComCtl(__in HWND hWnd = NULL);
+    LComCtl& operator=(__in HWND hWnd);
+public:
+    BOOL GetUnicodeFormat(void);
+    DWORD GetVersion(void);
+    BOOL SetUnicodeFormat(__in BOOL bUnicode);
+    DWORD SetVersion(__in DWORD dwVersion);
+};
+
+/**
  * \class LDateTime
  * \brief 日期/时间控件类
  */
 
-class LDateTime : public LWnd
+class LDateTime : public LComCtl
 {
 public:
     LDateTime(__in HWND hWnd = NULL);
@@ -64,7 +82,7 @@ public:
  * \brief Header 控件类
  */
 
-class LHeader : public LWnd
+class LHeader : public LComCtl
 {
 public:
     BOOL Create(__in HWND hParent, __in UINT uId, __in DWORD dwStyle);
@@ -82,7 +100,7 @@ public:
  * \brief 热键控件类
  */
 
-class LHotKey : public LWnd
+class LHotKey : public LComCtl
 {
 public:
     LHotKey(__in HWND hWnd = NULL);
@@ -167,7 +185,7 @@ protected:
  * \brief 列表视图类
  */
 
-class LListView : public LWnd
+class LListView : public LComCtl
 {
 public:
     LListView& operator=(__in HWND hWnd);
@@ -250,7 +268,7 @@ public:
  * \brief 日历控件类
  */
 
-class LMonthCal : public LWnd
+class LMonthCal : public LComCtl
 {
 public:
     LMonthCal(__in HWND hWnd = NULL);
@@ -264,7 +282,7 @@ public:
  * \brief 进度条控件类
  */
 
-class LProgressBar : public LWnd
+class LProgressBar : public LComCtl
 {
 public:
     LProgressBar& operator=(__in HWND hWnd);
@@ -309,7 +327,7 @@ typedef struct ThunkPS *PTHUNKPS;
 
 #define PROPSHEET_CENTERWINDOW  0x00000001
 
-class LPropSheet : public LWnd
+class LPropSheet : public LComCtl
 {
 public:
     LPropSheet(__in int nMaxCnt = 1);
@@ -341,7 +359,7 @@ private:
  * \brief ReBar 控件类
  */
 
-class LReBar : public LWnd
+class LReBar : public LComCtl
 {
 public:
     BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID,
@@ -359,7 +377,7 @@ public:
  * \brief 状态栏控件类
  */
 
-class LStatusBar : public LWnd
+class LStatusBar : public LComCtl
 {
 public:
     BOOL Create(__in HWND hParent, __in PCSTR lpszWindowName,
@@ -377,7 +395,7 @@ public:
  * \brief 标签控件类
  */
 
-class LTabCtrl : public LWnd
+class LTabCtrl : public LComCtl
 {
 public:
     LTabCtrl(__in HWND hWnd = NULL);
@@ -432,7 +450,7 @@ public:
 #define TbUnicode   FALSE
 #endif // UNICODE
 
-class LToolBar : public LWnd
+class LToolBar : public LComCtl
 {
 public:
     LToolBar(__in HWND hWnd = NULL);
@@ -453,7 +471,7 @@ public:
  * \brief 工具提示控件类
  */
 
-class LToolTip : public LWnd
+class LToolTip : public LComCtl
 {
 public:
     LToolTip(__in HWND hWnd = NULL);
@@ -471,7 +489,7 @@ public:
  * \brief 滑动条控件类
  */
 
-class LTrackBar : public LWnd
+class LTrackBar : public LComCtl
 {
 public:
     LTrackBar& operator=(__in HWND hWnd);
@@ -485,7 +503,7 @@ public:
  * \brief 树形视图类
  */
 
-class LTreeView : public LWnd
+class LTreeView : public LComCtl
 {
 public:
     LTreeView(__in HWND hWnd = NULL);
@@ -555,7 +573,7 @@ protected:
  * \brief 微调控件类
  */
 
-class LUpDown : public LWnd
+class LUpDown : public LComCtl
 {
 public:
     LUpDown(__in HWND hWnd = NULL);

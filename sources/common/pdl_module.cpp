@@ -221,6 +221,21 @@ BOOL PDLAPI LAppModule::GetModulePath(__in HMODULE hMod, __out LStringW* path)
     return TRUE;
 }
 
+BOOL PDLAPI LAppModule::GetModuleVersion(
+    __in HMODULE hMod,
+    __out DLLVERSIONINFO* dvi)
+{
+    if (NULL == hMod)
+        return FALSE;
+
+    DLLGETVERSIONPROC pfnGetVer = (DLLGETVERSIONPROC)GetProcAddress(hMod,
+        "DllGetVersion");
+    if (NULL == pfnGetVer)
+        return FALSE;
+
+    return SUCCEEDED(pfnGetVer(dvi));
+}
+
 BOOL LAppModule::GetName(__out LStringA* name, __in BOOL bFullPath)
 {
     return GetModuleName(m_hInstance, name, bFullPath);
