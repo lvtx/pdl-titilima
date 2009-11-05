@@ -744,6 +744,11 @@ int LListView::InsertItem(__in const LPLVITEMW pitem)
     return (int)SendMessage(LVM_INSERTITEMW, 0, (LPARAM)pitem);
 }
 
+BOOL LListView::SetCallbackMask(__in UINT mask)
+{
+    return ListView_SetCallbackMask(m_hWnd, mask);
+}
+
 void LListView::SetCheckState(__in UINT iIndex, __in BOOL fCheck)
 {
     SetItemState(iIndex, INDEXTOSTATEIMAGEMASK(fCheck ? 2 : 1),

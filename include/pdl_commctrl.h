@@ -250,6 +250,7 @@ public:
         __in LPARAM lParam);
     int InsertItem(__in const LPLVITEMA pitem);
     int InsertItem(__in const LPLVITEMW pitem);
+    BOOL SetCallbackMask(__in UINT mask);
     void SetCheckState(__in UINT iIndex, __in BOOL fCheck);
     BOOL SetColumnWidth(__in int iCol, __in int cx);
     void SetExtendedListViewStyle(__in DWORD dwExMask, __in DWORD dwExStyle);
