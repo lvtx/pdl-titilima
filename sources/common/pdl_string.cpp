@@ -96,7 +96,7 @@ const LStringA& LStringA::operator+=(__in char ch)
 
 char LStringA::operator[](__in int idx)
 {
-    PDLASSERT(idx < (int)m_dwMaxLen);
+    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
     return m_lpszData[idx];
 }
 
@@ -361,7 +361,7 @@ const LStringW& LStringW::operator+=(__in WCHAR ch)
 
 WCHAR LStringW::operator[](__in int idx)
 {
-    PDLASSERT(idx < (int)m_dwMaxLen);
+    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
     return m_lpszData[idx];
 }
 

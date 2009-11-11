@@ -1517,22 +1517,32 @@ BOOL LToolTip::AddTool(__in LPTOOLINFOW pti)
     return (BOOL)SendMessage(TTM_ADDTOOLW, 0, (LPARAM)pti);
 }
 
-BOOL LToolTip::AddTool(__in HWND hWnd, PCSTR lpszText)
+void LToolTip::DelTool(__in HWND hwnd, __in UINT uId)
 {
-    TOOLINFOA ti = { 0 };
-    ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-    ti.lpszText = (PSTR)lpszText;
-    ti.uId = (UINT_PTR)hWnd;
-    return AddTool(&ti);
+    TOOLINFO ti = { 0 };
+    ti.hwnd = hwnd;
+    ti.uId = uId;
+    SendMessage(TTM_DELTOOL, 0, (LPARAM)&ti);
 }
 
-BOOL LToolTip::AddTool(__in HWND hWnd, PCWSTR lpszText)
+void LToolTip::Pop(void)
 {
-    TOOLINFOW ti = { 0 };
-    ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-    ti.lpszText = (PWSTR)lpszText;
-    ti.uId = (UINT_PTR)hWnd;
-    return AddTool(&ti);
+    SendMessage(TTM_POP);
+}
+
+void LToolTip::Popup(void)
+{
+    SendMessage(TTM_POPUP);
+}
+
+void LToolTip::SetToolInfo(__in LPTOOLINFOA pti)
+{
+    SendMessage(TTM_SETTOOLINFOA, 0, (LPARAM)pti);
+}
+
+void LToolTip::SetToolInfo(__in LPTOOLINFOW pti)
+{
+    SendMessage(TTM_SETTOOLINFOW, 0, (LPARAM)pti);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
