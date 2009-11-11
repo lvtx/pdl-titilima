@@ -1352,6 +1352,11 @@ LRESULT LMsgWnd::HandleWndMessage(
                 bHandled);
         }
         break;
+    case WM_SETFOCUS:
+        {
+            OnSetFocus((HWND)wParam, bHandled);
+        }
+        break;
     case WM_SHOWWINDOW:
         {
             OnShowWindow((BOOL)wParam, (UINT)lParam, bHandled);
@@ -1547,6 +1552,11 @@ BOOL LMsgWnd::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message, BOOL& bHandled
 {
     bHandled = FALSE;
     return FALSE;
+}
+
+void LMsgWnd::OnSetFocus(HWND hOldFocus, BOOL& bHandled)
+{
+    bHandled = FALSE;
 }
 
 void LMsgWnd::OnShowWindow(BOOL bShow, UINT nStatus, BOOL& bHandled)

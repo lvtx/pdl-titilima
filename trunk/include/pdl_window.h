@@ -634,6 +634,7 @@ protected:
     virtual void OnRButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual BOOL OnSetCursor(HWND hWnd, UINT nHitTest, UINT message,
         BOOL& bHandled);
+    virtual void OnSetFocus(HWND hOldFocus, BOOL& bHandled);
     virtual void OnShowWindow(BOOL bShow, UINT nStatus, BOOL& bHandled);
     virtual void OnSize(UINT nType, int cx, int cy, BOOL& bHandled);
     virtual void OnSizing(UINT nSize, LPRECT lpRect, BOOL& bHandled);

@@ -481,8 +481,11 @@ public:
     void Activate(__in BOOL fActivate = TRUE);
     BOOL AddTool(__in LPTOOLINFOA pti);
     BOOL AddTool(__in LPTOOLINFOW pti);
-    BOOL AddTool(__in HWND hWnd, __in PCSTR lpszText);
-    BOOL AddTool(__in HWND hWnd, __in PCWSTR lpszText);
+    void DelTool(__in HWND hwnd, __in UINT uId);
+    void Pop(void);
+    void Popup(void);
+    void SetToolInfo(__in LPTOOLINFOA pti);
+    void SetToolInfo(__in LPTOOLINFOW pti);
 };
 
 /**
