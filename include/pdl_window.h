@@ -528,6 +528,7 @@ public:
     BOOL SizeToContent(__in BOOL bRedraw = TRUE);
 
     BOOL ShowWindow(__in int nCmdShow);
+    BOOL TrackMouseEvent(__in DWORD dwFlags);
     BOOL UpdateWindow(void);
 protected:
     /**

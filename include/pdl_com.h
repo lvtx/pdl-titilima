@@ -188,7 +188,9 @@ protected:
     STDMETHOD(DiscardUndoState)(void);
     STDMETHOD(DeactivateAndUndo)(void);
     STDMETHOD(OnPosRectChange)(__in LPCRECT lprcPosRect);
-    void OnSize(UINT nType, int cx, int cy, BOOL& bHandled);
+
+    PDL_DECLARE_MSGMAP();
+    DECLARE_SIZE_HANDLER(OnSize);
 protected:
     /**
      * ActiveX 控件的对象接口

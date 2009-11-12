@@ -499,6 +499,10 @@ STDMETHODIMP LAxCtrl::OnPosRectChange(__in LPCRECT lprcPosRect)
     return S_OK;
 }
 
+PDL_BEGIN_MSGMAP(LAxCtrl)
+    PROCESS_SIZE(OnSize)
+PDL_END_MSGMAP(LWindow)
+
 void LAxCtrl::OnSize(UINT nType, int cx, int cy, BOOL& bHandled)
 {
     RECT rc = { 0, 0, cx, cy };
