@@ -16,6 +16,10 @@ CAboutDlg::CAboutDlg(void) : LDialog(IDD_DLG_ABOUT)
     // Nothing
 }
 
+PDL_BEGIN_MSGMAP(CAboutDlg)
+    PROCESS_COMMAND(OnCommand)
+PDL_END_MSGMAP(LDialog)
+
 void CAboutDlg::OnCommand(
     WORD wNotifyCode,
     WORD wID,

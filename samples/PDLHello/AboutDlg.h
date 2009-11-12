@@ -10,11 +10,13 @@
 #pragma once
 
 #include <pdl_window.h>
+#include <pdl_message.h>
 
 class CAboutDlg : public LDialog
 {
 public:
     CAboutDlg(void);
 private:
-    void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl, BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_COMMAND_HANDLER(OnCommand);
 };

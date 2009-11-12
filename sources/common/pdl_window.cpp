@@ -1201,195 +1201,6 @@ LRESULT LMsgWnd::HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-LRESULT LMsgWnd::HandleWndMessage(
-    UINT uMsg,
-    WPARAM wParam,
-    LPARAM lParam,
-    BOOL& bHandled)
-{
-    LRESULT ret = 0;
-    bHandled = TRUE;
-    switch (uMsg)
-    {
-    case WM_ACTIVATE:
-        {
-            OnActivate(LOWORD(wParam), (HWND)lParam, HIWORD(wParam), bHandled);
-        }
-        break;
-    case WM_CLOSE:
-        {
-            OnClose(bHandled);
-        }
-        break;
-    case WM_COMMAND:
-        {
-            OnCommand(HIWORD(wParam), LOWORD(wParam), (HWND)lParam, bHandled);
-        }
-        break;
-    case WM_CONTEXTMENU:
-        {
-            OnContextMenu((HWND)wParam, LOWORD(lParam), HIWORD(lParam),
-                bHandled);
-        }
-        break;
-    case WM_CREATE:
-        {
-            if (::IsWindowUnicode(GetHandle()))
-                ret = (LRESULT)OnCreate((LPCREATESTRUCTW)lParam, bHandled);
-            else
-                ret = (LRESULT)OnCreate((LPCREATESTRUCTA)lParam, bHandled);
-        }
-        break;
-    case WM_DESTROY:
-        {
-            OnDestroy(bHandled);
-        }
-        break;
-#ifndef _WIN32_WCE
-    case WM_DROPFILES:
-        {
-            OnDropFiles((HDROP)wParam, bHandled);
-        }
-        break;
-#endif // _WIN32_WCE
-    case WM_ERASEBKGND:
-        {
-            ret = (LRESULT)OnEraseBkgnd((HDC)wParam, bHandled);
-        }
-        break;
-    case WM_HSCROLL:
-        {
-            OnHScroll(LOWORD(wParam), HIWORD(wParam), (HWND)lParam, bHandled);
-        }
-        break;
-    case WM_INITDIALOG:
-        {
-            ret = (LRESULT)OnInitDialog((HWND)wParam, lParam, bHandled);
-        }
-        break;
-    case WM_KEYDOWN:
-        {
-            OnKeyDown((UINT)wParam, LOWORD(lParam), HIWORD(lParam), bHandled);
-        }
-        break;
-    case WM_KEYUP:
-        {
-            OnKeyUp((UINT)wParam, LOWORD(lParam), HIWORD(lParam), bHandled);
-        }
-        break;
-    case WM_LBUTTONDBLCLK:
-        {
-            OnLButtonDblClk((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_LBUTTONDOWN:
-        {
-            OnLButtonDown((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_LBUTTONUP:
-        {
-            OnLButtonUp((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-#ifndef _WIN32_WCE
-    case WM_MOUSELEAVE:
-        {
-            OnMouseLeave(bHandled);
-        }
-        break;
-#endif // _WIN32_WCE
-    case WM_MOUSEMOVE:
-        {
-            OnMouseMove((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_NCCALCSIZE:
-        {
-            OnNcCalcSize((BOOL)wParam, (LPNCCALCSIZE_PARAMS)lParam, bHandled);
-        }
-        break;
-    case WM_NCHITTEST:
-        {
-            OnNcHitTest(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_NOTIFY:
-        {
-            OnNotify(wParam, (LPNMHDR)lParam, bHandled);
-        }
-        break;
-    case WM_PAINT:
-        {
-            OnPaint(bHandled);
-        }
-        break;
-    case WM_RBUTTONDBLCLK:
-        {
-            OnRButtonDblClk((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_RBUTTONDOWN:
-        {
-            OnRButtonDown((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_RBUTTONUP:
-        {
-            OnRButtonUp((UINT)wParam, GET_X_LPARAM(lParam),
-                GET_Y_LPARAM(lParam), bHandled);
-        }
-        break;
-    case WM_SETCURSOR:
-        {
-            ret = OnSetCursor((HWND)wParam, LOWORD(lParam), HIWORD(lParam),
-                bHandled);
-        }
-        break;
-    case WM_SETFOCUS:
-        {
-            OnSetFocus((HWND)wParam, bHandled);
-        }
-        break;
-    case WM_SHOWWINDOW:
-        {
-            OnShowWindow((BOOL)wParam, (UINT)lParam, bHandled);
-        }
-        break;
-    case WM_SIZE:
-        {
-            OnSize((UINT)wParam, LOWORD(lParam), HIWORD(lParam), bHandled);
-        }
-        break;
-    case WM_SIZING:
-        {
-            OnSizing((UINT)wParam, (LPRECT)lParam, bHandled);
-            if (bHandled)
-                ret = TRUE;
-        }
-        break;
-    case WM_TIMER:
-        {
-            OnTimer(wParam, bHandled);
-        }
-        break;
-    case WM_VSCROLL:
-        {
-            OnVScroll(LOWORD(wParam), HIWORD(wParam), (HWND)lParam, bHandled);
-        }
-        break;
-    default:
-        bHandled = FALSE;
-    }
-    return ret;
-}
-
 void LMsgWnd::OnMsgProcceded(
     UINT uMsg,
     WPARAM wParam,
@@ -1397,60 +1208,6 @@ void LMsgWnd::OnMsgProcceded(
     LRESULT lRet)
 {
     // Dummy
-}
-
-void LMsgWnd::OnActivate(UINT nState, HWND hWndOther, BOOL bMinimized, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnClose(BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnCommand(
-    WORD wNotifyCode,
-    WORD wID,
-    HWND hWndCtrl,
-    BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnContextMenu(HWND hWnd, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-int LMsgWnd::OnCreate(LPCREATESTRUCTA lpCs, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return 0;
-}
-
-int LMsgWnd::OnCreate(LPCREATESTRUCTW lpCs, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return 0;
-}
-
-void LMsgWnd::OnDestroy(BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-#ifndef _WIN32_WCE
-void LMsgWnd::OnDropFiles(HDROP hDropInfo, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-#endif // _WIN32_WCE
-
-BOOL LMsgWnd::OnEraseBkgnd(HDC hdc, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return FALSE;
 }
 
 LRESULT LMsgWnd::OnGetPDLNotify(UINT nType)
@@ -1468,133 +1225,11 @@ PVOID LMsgWnd::OnGetPDLObject(PWSTR lpClassName, DWORD dwSize)
     return NULL;
 }
 
-void LMsgWnd::OnHScroll(UINT nCode, UINT nPos, HWND hScrollBar, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-BOOL LMsgWnd::OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return FALSE;
-}
-
-void LMsgWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnLButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnLButtonDown(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnLButtonUp(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnMouseLeave(BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnNcCalcSize(
-    BOOL bCalcValidRects,
-    LPNCCALCSIZE_PARAMS lpncsp,
-    BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-LRESULT LMsgWnd::OnNcHitTest(int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return 0;
-}
-
-void LMsgWnd::OnPaint(BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnRButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnRButtonDown(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnRButtonUp(UINT uFlags, int x, int y, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-BOOL LMsgWnd::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return FALSE;
-}
-
-void LMsgWnd::OnSetFocus(HWND hOldFocus, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnShowWindow(BOOL bShow, UINT nStatus, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnSize(UINT nType, int cx, int cy, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnSizing(UINT nSize, LPRECT lpRect, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnTimer(UINT_PTR nIDEvent, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-void LMsgWnd::OnVScroll(UINT nCode, UINT nPos, HWND hScrollBar, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
 LRESULT LMsgWnd::OnMessage(
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam,
     BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return 0;
-}
-
-LRESULT LMsgWnd::OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     bHandled = FALSE;
     return 0;
@@ -1606,6 +1241,11 @@ LRESULT LMsgWnd::OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 LSubclassWnd::LSubclassWnd(void)
 {
     /* Dummy */
+}
+
+LRESULT LSubclassWnd::DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    return ::CallWindowProc(m_pfnWndProc, GetHandle(), uMsg, wParam, lParam);
 }
 
 BOOL LSubclassWnd::SubclassWindow(__in HWND hWnd)
@@ -1637,16 +1277,11 @@ LRESULT CALLBACK LSubclassWnd::WindowProc(
         if (bHandled)
             break;
 
-        ret = This->HandleWndMessage(uMsg, wParam, lParam, bHandled);
-        if (bHandled)
-            break;
-
         ret = This->OnMessage(uMsg, wParam, lParam, bHandled);
         if (bHandled)
             break;
 
-        ret = ::CallWindowProc(This->m_pfnWndProc, This->GetHandle(), uMsg,
-            wParam, lParam);
+        ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
     This->OnMsgProcceded(uMsg, wParam, lParam, ret);
@@ -1885,6 +1520,16 @@ BOOL LWindow::CreateEx(
         dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, lpParam);
 }
 
+LRESULT LWindow::DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    LRESULT ret = 0;
+    if (IsWindowUnicode())
+        ret = ::CallWindowProcW(m_pfnWndProc, m_hWnd, uMsg, wParam, lParam);
+    else
+        ret = ::CallWindowProcA(m_pfnWndProc, m_hWnd, uMsg, wParam, lParam);
+    return ret;
+}
+
 BOOL LWindow::Register(__in LPWNDCLASSA wc)
 {
     if (NULL != m_atom)
@@ -1951,24 +1596,11 @@ LRESULT CALLBACK LWindow::WindowProc(
         if (bHandled)
             break;
 
-        ret = This->HandleWndMessage(uMsg, wParam, lParam, bHandled);
-        if (bHandled)
-            break;
-
         ret = This->OnMessage(uMsg, wParam, lParam, bHandled);
         if (bHandled)
             break;
 
-        if (This->IsWindowUnicode())
-        {
-            ret = ::CallWindowProcW(This->m_pfnWndProc, This->m_hWnd, uMsg,
-                wParam, lParam);
-        }
-        else
-        {
-            ret = ::CallWindowProcA(This->m_pfnWndProc, This->m_hWnd, uMsg,
-                wParam, lParam);
-        }
+        ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
     This->OnMsgProcceded(uMsg, wParam, lParam, ret);
@@ -1997,6 +1629,10 @@ BOOL LDialog::Create(
         MAKEINTRESOURCE(m_uId), hParent, StartDlgProc, lParam);
 }
 
+LRESULT LDialog::DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    return 0;
+}
 
 int LDialog::DoModal(
     __in HWND hParent /* = ::GetActiveWindow() */,
@@ -2097,10 +1733,6 @@ INT_PTR CALLBACK LDialog::DialogProc(
     do
     {
         ret = This->HandleNotify(uMsg, wParam, lParam, bHandled);
-        if (bHandled)
-            break;
-
-        ret = This->HandleWndMessage(uMsg, wParam, lParam, bHandled);
         if (bHandled)
             break;
 

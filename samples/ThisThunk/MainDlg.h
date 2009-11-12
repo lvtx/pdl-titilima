@@ -9,9 +9,10 @@ public:
     CMainDlg(void);
     ~CMainDlg(void);
 private:
-    BOOL OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled);
-    void OnClose(BOOL& bHandled);
-    void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl, BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_CLOSE_HANDLER(OnClose);
+    DECLARE_COMMAND_HANDLER(OnCommand);
+    DECLARE_INITDIALOG_HANDLER(OnInitDialog);
     DWORD WINAPI ThreadProc(PVOID param);
 private:
     LProgressBar m_pb;

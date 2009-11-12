@@ -10,6 +10,7 @@
 
 #include "pdl_base.h"
 #include "pdl_window.h"
+#include "pdl_message.h"
 #include "pdl_ctrl.h"
 #include "pdl_commctrl.h"
 #include "pdl_gdi.h"
@@ -63,12 +64,12 @@ public:
     COLORREF SetNormalColor(__in COLORREF clrNormal, __in BOOL bRedraw = TRUE);
 
 protected:
-    BOOL OnEraseBkgnd(HDC hdc, BOOL& bHandled);
-    void OnMouseLeave(BOOL& bHandled);
-    void OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled);
-    void OnPaint(BOOL& bHandled);
-    BOOL OnSetCursor(HWND hWnd, UINT nHitTest, UINT message,
-        BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_ERASEBKGND_HANDLER(OnEraseBkgnd);
+    DECLARE_MOUSELEAVE_HANDLER(OnMouseLeave);
+    DECLARE_MOUSEMOVE_HANDLER(OnMouseMove);
+    DECLARE_PAINT_HANDLER(OnPaint);
+    DECLARE_SETCURSOR_HANDLER(OnSetCursor);
 private:
     /**
      *  Û±Í «∑Ò–¸Õ£
@@ -209,13 +210,13 @@ protected:
      */
     virtual void DrawSplitter(__in LDC *pDC, __in const RECT &rcSplitter);
 protected:
-    void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl, BOOL& bHandled);
-    void OnLButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
-    void OnLButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
-    void OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled);
-    BOOL OnSetCursor(HWND hWnd, UINT nHitTest, UINT message,
-        BOOL& bHandled);
-    void OnSize(UINT nType, int cx, int cy, BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_COMMAND_HANDLER(OnCommand);
+    DECLARE_LBUTTONDOWN_HANDLER(OnLButtonDown);
+    DECLARE_LBUTTONUP_HANDLER(OnLButtonUp);
+    DECLARE_MOUSEMOVE_HANDLER(OnMouseMove);
+    DECLARE_SETCURSOR_HANDLER(OnSetCursor);
+    DECLARE_SIZE_HANDLER(OnSize);
 protected:
     /**
      * √Ê∞Â

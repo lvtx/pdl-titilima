@@ -54,6 +54,11 @@ void CPageFinish::FillConfig(void)
         AddText("* XP Manifest\r\n");
 }
 
+PDL_BEGIN_MSGMAP(CPageFinish)
+    PROCESS_INITDIALOG(OnInitDialog)
+    PROCESS_NOTIFY(OnNotify)
+PDL_END_MSGMAP(LPropSheetPage)
+
 BOOL CPageFinish::OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled)
 {
     m_edtInfo = GetDlgItem(IDC_EDIT_CONFIG);

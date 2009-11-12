@@ -134,6 +134,16 @@ COLORREF LHyperLink::SetNormalColor(
     return ret;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+PDL_BEGIN_MSGMAP(LHyperLink)
+    PROCESS_ERASEBKGND(OnEraseBkgnd)
+    PROCESS_MOUSELEAVE(OnMouseLeave)
+    PROCESS_MOUSEMOVE(OnMouseMove)
+    PROCESS_PAINT(OnPaint)
+    PROCESS_SETCURSOR(OnSetCursor)
+PDL_END_MSGMAP(LSubclassWnd)
+
 BOOL LHyperLink::OnEraseBkgnd(HDC hdc, BOOL& bHandled)
 {
     return TRUE;

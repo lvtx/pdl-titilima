@@ -15,6 +15,7 @@
 #pragma once
 
 #include "pdl_base.h"
+#include "pdl_message.h"
 #include "pdl_string.h"
 #include <ShellAPI.h>
 
@@ -574,23 +575,6 @@ protected:
     virtual HWND GetHandle(void) = 0;
 
 protected:
-    virtual void OnActivate(UINT nState, HWND hWndOther, BOOL bMinimized,
-        BOOL& bHandled);
-    virtual void OnClose(BOOL& bHandled);
-    virtual void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
-        BOOL& bHandled);
-    virtual void OnContextMenu(HWND hWnd, int x, int y, BOOL& bHandled);
-    virtual int OnCreate(LPCREATESTRUCT lpCs, BOOL& bHandled);
-#ifdef UNICODE
-    virtual int OnCreate(LPCREATESTRUCTA lpCs, BOOL& bHandled);
-#else
-    virtual int OnCreate(LPCREATESTRUCTW lpCs, BOOL& bHandled);
-#endif // UNICODE
-    virtual void OnDestroy(BOOL& bHandled);
-#ifndef _WIN32_WCE
-    virtual void OnDropFiles(HDROP hDropInfo, BOOL& bHandled);
-#endif // _WIN32_WCE
-    virtual BOOL OnEraseBkgnd(HDC hdc, BOOL& bHandled);
 
     /**
      * 用于响应 WM_PDL_GETNOTIFY
@@ -610,43 +594,18 @@ protected:
      */
     virtual PVOID OnGetPDLObject(PWSTR lpClassName, DWORD dwSize);
 
-    virtual void OnHScroll(UINT nCode, UINT nPos, HWND hScrollBar,
-        BOOL& bHandled);
-    virtual BOOL OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled);
-    virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags,
-        BOOL& bHandled);
-    virtual void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags,
-        BOOL& bHandled);
-    virtual void OnLButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled);
-    virtual void OnLButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
-    virtual void OnLButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
     virtual LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
         BOOL& bHandled);
-    virtual void OnMouseLeave(BOOL& bHandled);
-    virtual void OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled);
-    virtual void OnNcCalcSize(BOOL bCalcValidRects,
-        LPNCCALCSIZE_PARAMS lpncsp, BOOL& bHandled);
-    virtual LRESULT OnNcHitTest(int x, int y, BOOL& bHandled);
-    virtual LRESULT OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-    virtual void OnPaint(BOOL& bHandled);
-    virtual void OnRButtonDblClk(UINT uFlags, int x, int y, BOOL& bHandled);
-    virtual void OnRButtonDown(UINT uFlags, int x, int y, BOOL& bHandled);
-    virtual void OnRButtonUp(UINT uFlags, int x, int y, BOOL& bHandled);
-    virtual BOOL OnSetCursor(HWND hWnd, UINT nHitTest, UINT message,
-        BOOL& bHandled);
-    virtual void OnSetFocus(HWND hOldFocus, BOOL& bHandled);
-    virtual void OnShowWindow(BOOL bShow, UINT nStatus, BOOL& bHandled);
-    virtual void OnSize(UINT nType, int cx, int cy, BOOL& bHandled);
-    virtual void OnSizing(UINT nSize, LPRECT lpRect, BOOL& bHandled);
-    virtual void OnTimer(UINT_PTR nIDEvent, BOOL& bHandled);
-    virtual void OnVScroll(UINT nCode, UINT nPos, HWND hScrollBar,
-        BOOL& bHandled);
+
 protected:
     LRESULT HandleNotify(UINT uMsg, WPARAM wParam, LPARAM lParam,
         BOOL& bHandled);
     LRESULT HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT HandleWndMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
-        BOOL& bHandled);
+
+    /**
+     * 默认的消息处理函数。
+     */
+    virtual LRESULT DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
     /**
      * 消息处理完毕后的通知函数。
@@ -687,6 +646,7 @@ public:
     BOOL SubclassWindow(__in HWND hWnd);
 
 protected:
+    LRESULT DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     /**
      * 内部回调函数。
@@ -898,6 +858,8 @@ public:
     BOOL Register(__in LPWNDCLASSW wc);
 
 protected:
+    LRESULT DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
     /**
      * 初始的窗口过程。
      */
@@ -975,6 +937,7 @@ public:
         __in BOOL bRedraw = TRUE);
 
 protected:
+    LRESULT DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam);
     /**
      * 初始的窗口过程。
      */

@@ -20,8 +20,9 @@ private:
     void AddText(__in PCSTR lpText);
     void FillConfig(void);
 private:
-    BOOL OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_INITDIALOG_HANDLER(OnInitDialog);
+    DECLARE_NOTIFY_HANDLER(OnNotify);
 private:
     LEdit m_edtInfo;
 };

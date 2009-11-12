@@ -16,7 +16,9 @@ class CHelloWnd : public LWindow
 public:
     CHelloWnd(LPWNDCLASS wc);
 private:
-    void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl, BOOL& bHandled);
-    void OnDestroy(BOOL& bHandled);
-    void OnPaint(BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_COMMAND_HANDLER(OnCommand);
+    DECLARE_DESTROY_HANDLER(OnDestroy);
+    DECLARE_PAINT_HANDLER(OnPaint);
+    void OnMsgProcceded(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT lRet);
 };
