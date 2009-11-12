@@ -32,6 +32,12 @@ CPageStart::CPageStart(void) : LPropSheetPage(IDD_PAGE_START)
     m_nSel = IDX_APP;
 }
 
+PDL_BEGIN_MSGMAP(CPageStart)
+    PROCESS_COMMAND(OnCommand)
+    PROCESS_INITDIALOG(OnInitDialog)
+    PROCESS_NOTIFY(OnNotify)
+PDL_END_MSGMAP(LPropSheetPage)
+
 BOOL CPageStart::OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled)
 {
     LPropSheet* prop = GetParentSheet();

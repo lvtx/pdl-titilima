@@ -12,6 +12,12 @@ CMainDlg::~CMainDlg(void)
     m_thunk.DestroyThunk();
 }
 
+PDL_BEGIN_MSGMAP(CMainDlg)
+    PROCESS_CLOSE(OnClose)
+    PROCESS_COMMAND(OnCommand)
+    PROCESS_INITDIALOG(OnInitDialog)
+PDL_END_MSGMAP(LDialog)
+
 void CMainDlg::OnClose(BOOL& bHandled)
 {
     EndDialog(0);

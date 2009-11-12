@@ -18,6 +18,12 @@ CPageApp::CPageApp(void) : LPropSheetPage(IDD_PAGE_APP)
     //
 }
 
+PDL_BEGIN_MSGMAP(CPageApp)
+    PROCESS_COMMAND(OnCommand)
+    PROCESS_INITDIALOG(OnInitDialog)
+    PROCESS_NOTIFY(OnNotify)
+PDL_END_MSGMAP(LPropSheetPage)
+
 BOOL CPageApp::OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled)
 {
     CheckDlgButton(IDC_CHK_UNICODE, BST_CHECKED);

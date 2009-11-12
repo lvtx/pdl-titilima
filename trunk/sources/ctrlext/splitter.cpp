@@ -200,6 +200,17 @@ void LSplitter::UpdateLayout(__in const RECT& rcSplitter)
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+PDL_BEGIN_MSGMAP(LSplitter)
+    PROCESS_COMMAND(OnCommand)
+    PROCESS_LBUTTONDOWN(OnLButtonDown)
+    PROCESS_LBUTTONUP(OnLButtonUp)
+    PROCESS_MOUSEMOVE(OnMouseMove)
+    PROCESS_SETCURSOR(OnSetCursor)
+    PROCESS_SIZE(OnSize)
+PDL_END_MSGMAP(LWindow)
+
 void LSplitter::OnCommand(
     WORD wNotifyCode,
     WORD wID,

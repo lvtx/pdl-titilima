@@ -16,11 +16,10 @@ class CPageStart : public LPropSheetPage
 public:
     CPageStart(void);
 private:
-    BOOL OnInitDialog(HWND hCtrlFocus, LPARAM lParam, BOOL& bHandled);
-    void OnCommand(WORD wNotifyCode, WORD wID, HWND hWndCtrl,
-        BOOL& bHandled);
-    LRESULT OnNotify(int idCtrl, LPNMHDR pnmh,
-        BOOL& bHandled);
+    PDL_DECLARE_MSGMAP();
+    DECLARE_COMMAND_HANDLER(OnCommand);
+    DECLARE_INITDIALOG_HANDLER(OnInitDialog);
+    DECLARE_NOTIFY_HANDLER(OnNotify);
 private:
     int m_nSel;
     LListView m_lstType;

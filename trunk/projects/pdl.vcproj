@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\pdl_message.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\pdl_module.h"
 				>
 			</File>

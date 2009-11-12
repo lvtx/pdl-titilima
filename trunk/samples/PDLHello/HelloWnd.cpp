@@ -19,6 +19,12 @@ CHelloWnd::CHelloWnd(LPWNDCLASS wc) : LWindow(wc)
     // Nothing
 }
 
+PDL_BEGIN_MSGMAP(CHelloWnd)
+    PROCESS_COMMAND(OnCommand)
+    PROCESS_DESTROY(OnDestroy)
+    PROCESS_PAINT(OnPaint)
+PDL_END_MSGMAP(LWindow)
+
 void CHelloWnd::OnCommand(
     WORD wNotifyCode,
     WORD wID,
@@ -56,4 +62,10 @@ void CHelloWnd::OnPaint(BOOL& bHandled)
     GetClientRect(&rc);
     dc.DrawText(_T("Hello, PDL!"), -1, &rc,
         DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+}
+
+void CHelloWnd::OnMsgProcceded(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT lRet)
+{
+    if (WM_NCHITTEST == uMsg && HTCAPTION == lRet)
+        PDLTRACE(_T("[%08x] wp = %08x, lp = %08x, ret = %08x\n"), uMsg, wParam, lParam, lRet);
 }
