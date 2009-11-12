@@ -981,6 +981,18 @@ BOOL LWnd::ShowWindow(__in int nCmdShow)
     return ::ShowWindow(m_hWnd, nCmdShow);
 }
 
+BOOL LWnd::TrackMouseEvent(__in DWORD dwFlags)
+{
+    PDLASSERT(IsWindow());
+
+    TRACKMOUSEEVENT tme = { 0 };
+    tme.cbSize = sizeof(TRACKMOUSEEVENT);
+    tme.dwFlags = dwFlags;
+    tme.hwndTrack = m_hWnd;
+    tme.dwHoverTime = HOVER_DEFAULT;
+    return ::TrackMouseEvent(&tme);
+}
+
 BOOL LWnd::UpdateWindow(void)
 {
     PDLASSERT(IsWindow());

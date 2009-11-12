@@ -39,7 +39,8 @@
 
 #define DECLARE_MESSAGE_HANDLER(fn)     \
     LRESULT fn(UINT uMsg,               \
-        WPARAM wParam, LPARAM lParam,   \
+        WPARAM wParam,                  \
+        LPARAM lParam,                  \
         BOOL& bHandled);
 #define PROCESS_MESSAGE(msg, fn)        \
     else if (msg == uMsg) {             \
@@ -101,6 +102,16 @@
 #define PROCESS_DESTROY(fn)             \
     else if (WM_DESTROY == uMsg) {      \
         fn(bHandled);                   \
+    }
+
+// WM_DROPFILES
+
+#define DECLARE_DROPFILES_HANDLER(fn)   \
+    void fn(HDROP hDropInfo,            \
+        BOOL& bHandled);
+#define PROCESS_DROPFILES(fn)           \
+    else if (WM_DROPFILES == uMsg) {    \
+        fn((HDROP)wParam, bHandled);    \
     }
 
 // WM_ERASEBKGND

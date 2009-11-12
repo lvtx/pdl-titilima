@@ -162,16 +162,12 @@ void LHyperLink::OnMouseMove(UINT uFlags, int x, int y, BOOL& bHandled)
 #ifdef _WIN32_WCE
     bHandled = FALSE;
 #else
-    m_bHover = TRUE;
-
-    TRACKMOUSEEVENT tme;
-    tme.cbSize = sizeof(TRACKMOUSEEVENT);
-    tme.dwFlags = TME_LEAVE;
-    tme.dwHoverTime = 0;
-    tme.hwndTrack = m_hWnd;
-    TrackMouseEvent(&tme);
-
-    Invalidate(FALSE);
+    if (!m_bHover)
+    {
+        m_bHover = TRUE;
+        TrackMouseEvent(TME_LEAVE);
+        Invalidate(FALSE);
+    }
 #endif // _WIN32_WCE
 }
 
