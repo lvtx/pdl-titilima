@@ -332,6 +332,11 @@ BOOL LWnd::CreateEx(
     return NULL != m_hWnd;
 }
 
+void LWnd::Cut(void)
+{
+    SendMessage(WM_CUT);
+}
+
 BOOL LWnd::DestroyWindow(void)
 {
     return ::DestroyWindow(m_hWnd);
@@ -695,6 +700,12 @@ UINT LWnd::IsDlgButtonChecked(__in int nIDButton)
     return ::IsDlgButtonChecked(m_hWnd, nIDButton);
 }
 
+BOOL LWnd::IsIconic(void)
+{
+    PDLASSERT(IsWindow());
+    return ::IsIconic(m_hWnd);
+}
+
 BOOL LWnd::IsWindow(void) const
 {
     return ::IsWindow(m_hWnd);
@@ -708,6 +719,12 @@ BOOL LWnd::IsWindowUnicode(void)
 BOOL LWnd::IsWindowVisible(void)
 {
     return ::IsWindowVisible(m_hWnd);
+}
+
+BOOL LWnd::IsZoomed(void)
+{
+    PDLASSERT(IsWindow());
+    return ::IsZoomed(m_hWnd);
 }
 
 int LWnd::MessageBoxA(
@@ -753,6 +770,11 @@ BOOL LWnd::OpenClipboard(void)
 {
     PDLASSERT(IsWindow());
     return ::OpenClipboard(m_hWnd);
+}
+
+void LWnd::Paste(void)
+{
+    SendMessage(WM_PASTE);
 }
 
 BOOL LWnd::PostMessageA(

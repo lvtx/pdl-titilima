@@ -292,6 +292,7 @@ public:
         __in int X, __in int Y, __in int nWidth, __in int nHeight,
         __in HWND hWndParent, __in HMENU hMenu, __in PVOID lpParam);
 
+    void Cut(void);
     BOOL DestroyWindow(void);
 
     /**
@@ -437,9 +438,11 @@ public:
 
     BOOL InvalidateRect(__in LPCRECT lpRect, __in BOOL bErase = TRUE);
     UINT IsDlgButtonChecked(__in int nIDButton);
+    BOOL IsIconic(void);
     BOOL IsWindow(void) const;
     BOOL IsWindowUnicode(void);
     BOOL IsWindowVisible(void);
+    BOOL IsZoomed(void);
     int MessageBox(__in PCTSTR lpszText, __in PCTSTR lpszCaption = NULL,
         __in UINT nType = MB_OK);
 #ifdef UNICODE
@@ -453,6 +456,7 @@ public:
     BOOL MoveWindow(__in int X, __in int Y, __in int nWidth,
         __in int nHeight, __in BOOL bRepaint = TRUE);
     BOOL OpenClipboard(void);
+    void Paste(void);
     BOOL PostMessage(__in UINT uMsg, __in WPARAM wParam = 0,
         __in LPARAM lParam = 0);
 #ifdef UNICODE
