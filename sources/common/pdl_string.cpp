@@ -234,6 +234,12 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
     return str.Replace(pszOld, pszNew);
 }
 
+void LStringA::ReplaceBackslashChars(void)
+{
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    str.ReplaceBackslashChars();
+}
+
 int LStringA::ReverseFind(__in char ch)
 {
     LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
@@ -496,6 +502,12 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
 {
     LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
     return str.Replace(pszOld, pszNew);
+}
+
+void LStringW::ReplaceBackslashChars(void)
+{
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    str.ReplaceBackslashChars();
 }
 
 int LStringW::ReverseFind(__in WCHAR ch)

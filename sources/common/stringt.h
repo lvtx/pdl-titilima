@@ -137,6 +137,7 @@ public:
     PSTRT Left(int nChars);
     PSTRT Mid(int iStart, int nChars);
     int Replace(PCSTRT pszOld, PCSTRT pszNew);
+    void ReplaceBackslashChars(void);
     int ReverseFind(CharT ch);
     int SetAt(int pos, CharT ch);
     static int Trim(PSTRT string, PCSTRT trimchars);
@@ -341,6 +342,42 @@ int LStringT<CharT, CharTraits>::Replace(PCSTRT pszOld, PCSTRT pszNew)
     m_str = pNewBuf;
     m_len = nStrLen;
     return cnt;
+}
+
+template <typename CharT, class CharTraits>
+void LStringT<CharT, CharTraits>::ReplaceBackslashChars(void)
+{
+    for (PSTRT p = m_str; CharT('\0') != *p; ++p)
+    {
+        if (CharT('\\') != *p)
+            continue;
+
+        CharT ch = *(p + 1);
+        switch (ch)
+        {
+        case CharT('n'):
+            {
+                *p = CharT('\r');
+                *(p + 1) = CharT('\n');
+            }
+            break;
+        case CharT('t'):
+            {
+                *p = CharT('\t');
+                CharTraits::Copy(p + 1, p + 2);
+            }
+            break;
+        case CharT('\\'):
+            {
+                CharTraits::Copy(p + 1, p + 2);
+            }
+            break;
+        default:
+            continue;
+        }
+
+        ++p;
+    }
 }
 
 template <typename CharT, class CharTraits>
