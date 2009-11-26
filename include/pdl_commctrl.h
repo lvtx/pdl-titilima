@@ -238,6 +238,7 @@ public:
     int GetNextItem(__in int iStart, __in UINT flags);
     UINT GetSelectedCount(void);
     int GetSelectionMark(void);
+    int HitTest(__inout LPLVHITTESTINFO hi);
     int InsertColumn(__in int iCol, __in PCSTR pszText, __in int cx,
         __in int fmt = LVCFMT_LEFT);
     int InsertColumn(__in int iCol, __in PCWSTR pszText, __in int cx,

@@ -656,6 +656,11 @@ int LListView::GetSelectionMark(void)
     return ListView_GetSelectionMark(m_hWnd);
 }
 
+int LListView::HitTest(__inout LPLVHITTESTINFO hi)
+{
+    return ListView_HitTest(m_hWnd, hi);
+}
+
 int LListView::InsertColumn(
     __in int iCol,
     __in PCSTR pszText,
