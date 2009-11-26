@@ -262,6 +262,7 @@ public:
     void SetItemText(__in int i, __in int iSubItem, __in PCWSTR pszText);
     int SetSelectionMark(__in int iIndex);
     BOOL SortItems(__in PFNLVCOMPARE pfnCompare, __in LPARAM lParamSort);
+    BOOL Update(__in int iItem);
 };
 
 /**

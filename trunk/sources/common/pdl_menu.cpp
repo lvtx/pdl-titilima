@@ -1,5 +1,7 @@
 #include "..\..\include\pdl_menu.h"
 #include "..\..\include\pdl_module.h"
+#include "..\..\include\pdl_string.h"
+#include "..\..\include\pdl_parser.h"
 #ifdef _WIN32_WCE
 #include <aygshell.h>
 #endif // _WIN32_WCE
@@ -75,6 +77,64 @@ BOOL LMenu::GetItemInfo(
 HMENU LMenu::GetSub(__in int nPos)
 {
     return ::GetSubMenu(m_hMenu, nPos);
+}
+
+BOOL LMenu::LoadLanguageRes(__in LIniParser* lan, __in PCSTR name)
+{
+    if (NULL == lan || NULL == name || '\0' == *name)
+        return FALSE;
+
+    int idxPopup = 0;
+    LoadLanguageRes(lan, name, m_hMenu, idxPopup);
+    return TRUE;
+}
+
+void LMenu::LoadLanguageRes(
+    LIniParser* lan,
+    PCSTR name,
+    HMENU hSubMenu,
+    int& idxPopup)
+{
+    MENUITEMINFO mii = { 0 };
+    mii.cbSize = sizeof(MENUITEMINFO);
+    mii.fMask = MIIM_ID | MIIM_TYPE | MIIM_SUBMENU;
+
+    char key[16];
+    LString str;
+    int cnt = ::GetMenuItemCount(hSubMenu);
+    for (int i = 0; i < cnt; ++i)
+    {
+        ::GetMenuItemInfo(hSubMenu, i, TRUE, &mii);
+        if (NULL != mii.hSubMenu)
+        {
+            wsprintfA(key, "popup%d", idxPopup++);
+            lan->GetString(name, key, _T(""), &str);
+            if (!str.IsEmpty())
+            {
+                str.ReplaceBackslashChars();
+                ::ModifyMenu(hSubMenu, i, MF_BYPOSITION | MF_STRING,
+                    (UINT_PTR)mii.hSubMenu, str);
+            }
+
+            LoadLanguageRes(lan, name, mii.hSubMenu, idxPopup);
+        }
+        else if (MFT_SEPARATOR != mii.fType)
+        {
+            wsprintfA(key, "%d", mii.wID);
+            lan->GetString(name, key, _T(""), &str);
+            if (!str.IsEmpty())
+            {
+                str.ReplaceBackslashChars();
+                ::ModifyMenu(hSubMenu, mii.wID, MF_BYCOMMAND | MF_STRING,
+                    mii.wID, str);
+            }
+        }
+    }
+}
+
+BOOL LMenu::SetDefaultItem(__in UINT uItem, __in UINT fByPos)
+{
+    return ::SetMenuDefaultItem(m_hMenu, uItem, fByPos);
 }
 
 BOOL LMenu::SetItemInfo(

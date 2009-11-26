@@ -1701,8 +1701,10 @@ BOOL LDialog::LoadLanguageRes(void)
         if (id > 0)
         {
             wsprintfA(key, "%d", id);
-            if (m_lang->GetString(section, key, _T(""), &text) > 0)
+            m_lang->GetString(section, key, _T(""), &text);
+            if (!text.IsEmpty())
             {
+                text.ReplaceBackslashChars();
                 ctrl.SetWindowText(text);
                 ctrl.SizeToContent(FALSE);
             }

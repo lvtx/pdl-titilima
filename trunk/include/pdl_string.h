@@ -49,6 +49,7 @@ public:
     LStringA Left(__in int nChars);
     LStringA Mid(__in int iStart, __in int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
+    void ReplaceBackslashChars(void);
     int ReverseFind(__in char ch);
     int SetAt(__in int pos, __in char ch);
     void ToLower(void);
@@ -101,6 +102,7 @@ public:
     LStringW Left(__in int nChars);
     LStringW Mid(__in int iStart, __in int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
+    void ReplaceBackslashChars(void);
     int ReverseFind(__in WCHAR ch);
     int SetAt(__in int pos, __in WCHAR ch);
     void ToLower(void);

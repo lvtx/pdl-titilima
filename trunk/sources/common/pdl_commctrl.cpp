@@ -819,6 +819,11 @@ BOOL LListView::SortItems(__in PFNLVCOMPARE pfnCompare, __in LPARAM lParamSort)
     return ListView_SortItems(m_hWnd, pfnCompare, lParamSort);
 }
 
+BOOL LListView::Update(__in int iItem)
+{
+    return ListView_Update(m_hWnd, iItem);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LMonthCal
 

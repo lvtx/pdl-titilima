@@ -16,6 +16,7 @@
 #undef TrackPopupMenu
 #endif // _WIN32_WCE
 
+class LIniParser;
 class LMenu
 {
 public:
@@ -33,12 +34,17 @@ public:
     BOOL GetItemInfo(__in UINT uItem, __in BOOL fByPosition,
         __inout LPMENUITEMINFOW lpmii);
     HMENU GetSub(__in int nPos);
+    BOOL LoadLanguageRes(__in LIniParser* lan, __in PCSTR name);
+    BOOL SetDefaultItem(__in UINT uItem, __in UINT fByPos);
     BOOL SetItemInfo(__in UINT uItem, __in BOOL fByPosition,
         __in LPMENUITEMINFOA lpmii);
     BOOL SetItemInfo(__in UINT uItem, __in BOOL fByPosition,
         __in LPMENUITEMINFOW lpmii);
     BOOL TrackPopup(__in UINT uFlags, __in int x, __in int y,
         __in HWND hWnd);
+protected:
+    static void LoadLanguageRes(LIniParser* lan, PCSTR name, HMENU hSubMenu,
+        int& idxPopup);
 protected:
     HMENU m_hMenu;
 };
