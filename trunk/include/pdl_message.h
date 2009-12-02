@@ -48,6 +48,34 @@
             bHandled);                  \
     }
 
+// WM_CAPTURECHANGED
+
+#define DECLARE_CAPTURECHANGED_HANDLER(fn)  \
+    void fn(HWND hWnd, BOOL& bHandled);
+#define PROCESS_CAPTURECHANGED(fn)          \
+    else if (WM_CAPTURECHANGED == uMsg) {   \
+        fn((HWND)lParam, bHandled);         \
+    }
+#define DEFAULT_CAPTURECHANGED_HANDLER(h)   \
+    DoDefault(WM_CAPTURECHANGED, 0,         \
+        (LPARAM)h)
+
+// WM_CHAR
+
+#define DECLARE_CHAR_HANDLER(fn)            \
+    void fn(UINT nChar, UINT nRepCnt,       \
+        UINT nFlags, BOOL& bHandled);
+#define PROCESS_CHAR(fn)                    \
+    else if (WM_CHAR == uMsg) {             \
+        fn((UINT)wParam,                    \
+            LOWORD(lParam),                 \
+            HIWORD(lParam),                 \
+            bHandled);                      \
+    }
+#define DEFAULT_CHAR_HANDLER(ch, r, flags)  \
+    DoDefault(WM_CHAR, (WPARAM)ch,          \
+        MAKELPARAM(r, flags))
+
 // WM_CLOSE
 
 #define DECLARE_CLOSE_HANDLER(fn)       \
@@ -263,6 +291,21 @@
     }
 #define DEFAULT_MOUSEMOVE_HANDLER(f, x, y)  \
     DoDefault(WM_MOUSEMOVE, f,              \
+        MAKELPARAM(x, y))
+
+// WM_MOUSEWHEEL
+
+#define DECLARE_MOUSEWHEEL_HANDLER(fn)          \
+    void fn(UINT nFlags, short zDelta,          \
+        int x, int y, BOOL& bHandled);
+#define PROCESS_MOUSEWHEEL(fn)                  \
+    else if (WM_MOUSEWHEEL == uMsg) {           \
+        fn(LOWORD(wParam), HIWORD(wParam),      \
+            LOWORD(lParam), HIWORD(lParam),     \
+            bHandled);                          \
+    }
+#define DEFAULT_MOUSEWHEEL_HANDLER(f, d, x, y)  \
+    DoDefault(WM_MOUSEWHEEL, MAKEWPARAM(f, d),  \
         MAKELPARAM(x, y))
 
 // WM_NOTIFY

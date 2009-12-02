@@ -170,6 +170,12 @@ void LStringA::Empty(void)
     str.Empty();
 }
 
+BOOL LStringA::ExpandEnvironment(void)
+{
+    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
+    return str.ExpandEnvironment();
+}
+
 int LStringA::Find(__in char ch, __in int iStart /* = 0 */)
 {
     LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
@@ -438,6 +444,12 @@ void LStringW::Empty(void)
 {
     LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
     str.Empty();
+}
+
+BOOL LStringW::ExpandEnvironment(void)
+{
+    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
+    return str.ExpandEnvironment();
 }
 
 int LStringW::Find(__in WCHAR ch, int iStart /* = 0 */)

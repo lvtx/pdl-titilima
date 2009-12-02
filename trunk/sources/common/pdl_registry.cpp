@@ -208,7 +208,8 @@ LONG LRegKey::QueryInfoW(
 
 LONG LRegKey::QueryStringValue(
     __in PCSTR lpValueName,
-    __out LStringA *strRet)
+    __out LStringA *strRet,
+    __in BOOL bExpand /* = TRUE */)
 {
     CHAR strTemp[1] = { '\0' };
     DWORD dwType;
@@ -221,10 +222,16 @@ LONG LRegKey::QueryStringValue(
         return ERROR_INVALID_DATA;
 
     PSTR buf = strRet->AllocBuffer(dwNeeded / sizeof(CHAR) - 1, FALSE);
-    return QueryValue(lpValueName, NULL, (PBYTE)buf, &dwNeeded);
+    QueryValue(lpValueName, NULL, (LPBYTE)buf, &dwNeeded);
+    if (REG_EXPAND_SZ == dwType && bExpand)
+        strRet->ExpandEnvironment();
+    return ERROR_SUCCESS;
 }
 
-LONG LRegKey::QueryStringValue(__in PCWSTR lpValueName, __out LStringW *strRet)
+LONG LRegKey::QueryStringValue(
+    __in PCWSTR lpValueName,
+    __out LStringW *strRet,
+    __in BOOL bExpand /* = TRUE */)
 {
     WCHAR strTemp[1] = { L'\0' };
     DWORD dwType;
@@ -237,7 +244,10 @@ LONG LRegKey::QueryStringValue(__in PCWSTR lpValueName, __out LStringW *strRet)
         return ERROR_INVALID_DATA;
 
     PWSTR buf = strRet->AllocBuffer(dwNeeded / sizeof(WCHAR) - 1, FALSE);
-    return QueryValue(lpValueName, NULL, (LPBYTE)buf, &dwNeeded);
+    QueryValue(lpValueName, NULL, (LPBYTE)buf, &dwNeeded);
+    if (REG_EXPAND_SZ == dwType && bExpand)
+        strRet->ExpandEnvironment();
+    return ERROR_SUCCESS;
 }
 
 LONG LRegKey::QueryValue(

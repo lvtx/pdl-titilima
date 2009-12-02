@@ -41,6 +41,10 @@ public:
     {
         return ::lstrcpynA(dst, src, n);
     }
+    static DWORD Expand(PSTR dst, PCSTR src, DWORD dwSize)
+    {
+        return ::ExpandEnvironmentStringsA(src, dst, dwSize);
+    }
     static void Free(PSTR str)
     {
         delete [] str;
@@ -95,6 +99,10 @@ public:
         else
             return ::lstrcmpiW(str1, str2);
     }
+    static DWORD Expand(PWSTR dst, PCWSTR src, DWORD dwSize)
+    {
+        return ::ExpandEnvironmentStringsW(src, dst, dwSize);
+    }
     static void Free(PWSTR str)
     {
         delete [] str;
@@ -132,6 +140,7 @@ public:
     void Copy(PCSTRT lpszString);
     PSTRT Detach(void);
     void Empty(void);
+    BOOL ExpandEnvironment(void);
     int Find(CharT ch, int iStart);
     int Find(PCSTRT pszSub, int iStart);
     PSTRT Left(int nChars);
@@ -235,6 +244,22 @@ void LStringT<CharT, CharTraits>::Empty(void)
     if (NULL == m_str)
         m_str = CharTraits::Alloc(1);
     m_str[0] = CharT('\0');
+}
+
+template <typename CharT, class CharTraits>
+BOOL LStringT<CharT, CharTraits>::ExpandEnvironment(void)
+{
+    DWORD dwSize = CharTraits::Expand(NULL, m_str, 0);
+    if (0 == dwSize)
+        return FALSE;
+
+    PSTRT p = CharTraits::Alloc(dwSize);
+    CharTraits::Expand(p, m_str, dwSize);
+
+    CharTraits::Free(m_str);
+    m_str = p;
+    m_len = dwSize;
+    return TRUE;
 }
 
 template <typename CharT, class CharTraits>
