@@ -382,13 +382,6 @@ public:
     BOOL GetScrollInfo(__in int nBar, __inout LPSCROLLINFO lpsi);
 
     /**
-     * 获取窗口的尺寸，包括非客户区的面积。
-     * @param [out] size 用于接收窗口的尺寸信息。
-     * @return 如果成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL GetSize(__out LPSIZE size);
-
-    /**
      * 获取窗口的样式。
      * @return 窗口的样式。
      */

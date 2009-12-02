@@ -35,17 +35,15 @@ public:
     BOOL Attach(__in HWND hWnd);
 
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
 
     /**
      * 设置鼠标悬停的文本色。

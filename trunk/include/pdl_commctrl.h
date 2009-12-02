@@ -192,30 +192,30 @@ public:
 public:
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL DeleteAllItems(void);
     BOOL DeleteColumn(__in int iCol);
     BOOL DeleteItem(__in int nItem);
@@ -365,10 +365,9 @@ private:
 class LReBar : public LComCtl
 {
 public:
-    BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+    BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in DWORD dwStyle,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     static int SizeOfREBARBANDINFO(void);
     BOOL InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOA lpRbbi);
     BOOL InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOW lpRbbi);
@@ -408,30 +407,30 @@ public:
     void AdjustRect(__in BOOL fLarger, __inout LPRECT prc);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     int GetCurSel(void);
     int InsertItem(__in int iItem, __in const LPTCITEMA pitem);
     int InsertItem(__in int iItem, __in const LPTCITEMW pitem);
@@ -518,30 +517,30 @@ public:
 public:
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT id, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT id);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT id, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT id);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT id, __in PVOID lpParam);
+        __in UINT id);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT id, __in PVOID lpParam);
+        __in UINT id);
     BOOL DeleteAllItems(void);
     BOOL DeleteItem(__in HTREEITEM hItem);
     HWND EditLabel(__in HTREEITEM hItem);

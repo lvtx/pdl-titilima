@@ -31,11 +31,9 @@ public:
     LComboBox& operator=(__in HWND hWnd);
     operator HWND(void);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in_opt PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in_opt PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
 public:
     int AddString(__in PCSTR lpszString);
     int AddString(__in PCWSTR lpszString);
@@ -96,17 +94,15 @@ public:
     operator HWND(void);
 public:
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     DWORD GetSel(__out PDWORD lpdwStart, __out PDWORD lpdwEnd);
 #ifdef UNICODE
     DWORD GetSelA(__out PDWORD lpdwStart, __out PDWORD lpdwEnd);
@@ -139,10 +135,33 @@ public:
 class LListBox : public LWnd
 {
 public:
+    LListBox(__in HWND hWnd = NULL);
     LListBox& operator=(__in HWND hWnd);
 public:
     int AddString(__in PCSTR lpszString);
     int AddString(__in PCWSTR lpszString);
+    BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
+    BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
+    BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
+        __in int x, __in int y, __in int nWidth, __in int nHeight,
+        __in HWND hWndParent, __in UINT nID);
+    BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
+        __in int x, __in int y, __in int nWidth, __in int nHeight,
+        __in HWND hWndParent, __in UINT nID);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
+        __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
+        __in UINT nID);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
+        __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
+        __in UINT nID);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
+        __in DWORD dwStyle, __in int X, __in int Y, __in int nWidth,
+        __in int nHeight, __in HWND hWndParent, __in UINT nID);
+    BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
+        __in DWORD dwStyle, __in int X, __in int Y, __in int nWidth,
+        __in int nHeight, __in HWND hWndParent, __in UINT nID);
     int DeleteString(__in int nIndex);
     int FindString(__in int nStartAfter, __in PCSTR lpszItem);
     int FindString(__in int nStartAfter, __in PCWSTR lpszItem);
@@ -168,30 +187,26 @@ public:
     LStatic& operator=(__in HWND hWnd);
 public:
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID,
-        __in PVOID lpParam);
+        __in LPCRECT lpRect, __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in HMENU hMenu, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in HMENU hMenu, __in PVOID lpParam);
+        __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID, __in PVOID lpParam);
+        __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y, __in int nWidth,
-        __in int nHeight, __in HWND hWndParent, __in HMENU hMenu,
-        __in PVOID lpParam);
+        __in int nHeight, __in HWND hWndParent, __in UINT nID);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y, __in int nWidth,
-        __in int nHeight, __in HWND hWndParent, __in HMENU hMenu,
-        __in PVOID lpParam);
+        __in int nHeight, __in HWND hWndParent, __in UINT nID);
     HICON SetIcon(__in HICON hIcon);
 };

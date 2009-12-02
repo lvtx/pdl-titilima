@@ -24,11 +24,10 @@ BOOL LComboBox::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
-    return LWnd::Create(WC_COMBOBOXA, lpWindowName, dwStyle | WS_CHILD,
-        lpRect, hWndParent, nID, lpParam);
+    return LWnd::Create(WC_COMBOBOXA, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LComboBox::Create(
@@ -36,11 +35,10 @@ BOOL LComboBox::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
-    return LWnd::Create(WC_COMBOBOXW, lpWindowName, dwStyle | WS_CHILD,
-        lpRect, hWndParent, nID, lpParam);
+    return LWnd::Create(WC_COMBOBOXW, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
 }
 
 int LComboBox::AddString(__in PCSTR lpszString)
@@ -176,11 +174,10 @@ BOOL LEdit::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
-    return LWnd::Create(WC_EDITA, lpWindowName, dwStyle | WS_CHILD, lpRect,
-        hWndParent, nID, lpParam);
+    return LWnd::Create(WC_EDITA, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, NULL);
 }
 
 BOOL LEdit::Create(
@@ -188,11 +185,10 @@ BOOL LEdit::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
-    return LWnd::Create(WC_EDITW, lpWindowName, dwStyle | WS_CHILD, lpRect,
-        hWndParent, nID, lpParam);
+    return LWnd::Create(WC_EDITW, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, NULL);
 }
 
 BOOL LEdit::CreateEx(
@@ -201,11 +197,10 @@ BOOL LEdit::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_EDITA, lpWindowName,
-        dwStyle | WS_CHILD, lpRect, hWndParent, nID, lpParam);
+        dwStyle, lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LEdit::CreateEx(
@@ -214,11 +209,10 @@ BOOL LEdit::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_EDITW, lpWindowName,
-        dwStyle | WS_CHILD, lpRect, hWndParent, nID, lpParam);
+        dwStyle, lpRect, hWndParent, nID, NULL);
 }
 
 DWORD LEdit::GetSelA(__out PDWORD lpdwStart, __out PDWORD lpdwEnd)
@@ -268,10 +262,111 @@ void LEdit::SetSelW(__in int nStartChar, __in int nEndChar)
 //////////////////////////////////////////////////////////////////////////
 // LListBox
 
+LListBox::LListBox(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+{
+    // Nothing
+}
+
 LListBox& LListBox::operator=(__in HWND hWnd)
 {
     m_hWnd = hWnd;
     return *this;
+}
+
+BOOL LListBox::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::Create(WC_LISTBOXA, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, NULL);
+}
+
+BOOL LListBox::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::Create(WC_LISTBOXW, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, NULL);
+}
+
+BOOL LListBox::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::Create(WC_LISTBOXA, lpWindowName, dwStyle, x, y,
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+}
+
+BOOL LListBox::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::Create(WC_LISTBOXW, lpWindowName, dwStyle, x, y,
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+}
+
+BOOL LListBox::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::CreateEx(dwExStyle, WC_LISTBOXA, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
+}
+
+BOOL LListBox::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::CreateEx(dwExStyle, WC_LISTBOXW, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
+}
+
+BOOL LListBox::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X, __in int Y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::CreateEx(dwExStyle, WC_LISTBOXA, lpWindowName, dwStyle,
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+}
+
+BOOL LListBox::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X, __in int Y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::CreateEx(dwExStyle, WC_LISTBOXW, lpWindowName, dwStyle,
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 int LListBox::AddString(__in PCSTR lpszString)
@@ -359,74 +454,100 @@ LStatic& LStatic::operator=(__in HWND hWnd)
     return *this;
 }
 
-BOOL LStatic::Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-                     __in LPCRECT lpRect, __in HWND hWndParent,
-                     __in UINT nID, __in PVOID lpParam)
+BOOL LStatic::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::Create("Static", lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+    return LWnd::Create(WC_STATICA, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, NULL);
 }
 
-BOOL LStatic::Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-                     __in LPCRECT lpRect, __in HWND hWndParent,
-                     __in UINT nID, __in PVOID lpParam)
+BOOL LStatic::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::Create(L"Static", lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+    return LWnd::Create(WC_STATICW, lpWindowName, dwStyle, lpRect,
+        hWndParent, nID, NULL);
 }
 
-BOOL LStatic::Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
-                     __in int x, __in int y, __in int nWidth,
-                     __in int nHeight, __in HWND hWndParent,
-                     __in HMENU hMenu, __in PVOID lpParam)
+BOOL LStatic::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::Create("Static", lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, hMenu, lpParam);
+    return LWnd::Create(WC_STATICA, lpWindowName, dwStyle, x, y,
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
-BOOL LStatic::Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
-                     __in int x, __in int y, __in int nWidth,
-                     __in int nHeight, __in HWND hWndParent,
-                     __in HMENU hMenu, __in PVOID lpParam)
+BOOL LStatic::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int x, __in int y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::Create(L"Static", lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, hMenu, lpParam);
+    return LWnd::Create(WC_STATICW, lpWindowName, dwStyle, x, y,
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
-BOOL LStatic::CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
-                       __in DWORD dwStyle, __in LPCRECT lpRect,
-                       __in HWND hWndParent, __in UINT nID,
-                       __in PVOID lpParam)
+BOOL LStatic::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::CreateEx(dwExStyle, "Static", lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+    return LWnd::CreateEx(dwExStyle, WC_STATICA, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
 }
 
-BOOL LStatic::CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
-                       __in DWORD dwStyle, __in LPCRECT lpRect,
-                       __in HWND hWndParent, __in UINT nID,
-                       __in PVOID lpParam)
+BOOL LStatic::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::CreateEx(dwExStyle, L"Static", lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+    return LWnd::CreateEx(dwExStyle, WC_STATICW, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
 }
 
-BOOL LStatic::CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
-                       __in DWORD dwStyle, __in int X, __in int Y,
-                       __in int nWidth, __in int nHeight, __in HWND hWndParent,
-                       __in HMENU hMenu, __in PVOID lpParam)
+BOOL LStatic::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X, __in int Y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::CreateEx(dwExStyle, "Static", lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, hMenu, lpParam);
+    return LWnd::CreateEx(dwExStyle, WC_STATICA, lpWindowName, dwStyle,
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
-BOOL LStatic::CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
-                       __in DWORD dwStyle, __in int X, __in int Y,
-                       __in int nWidth, __in int nHeight, __in HWND hWndParent,
-                       __in HMENU hMenu, __in PVOID lpParam)
+BOOL LStatic::CreateEx(
+    __in DWORD dwExStyle,
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in int X, __in int Y,
+    __in int nWidth, __in int nHeight,
+    __in HWND hWndParent,
+    __in UINT nID)
 {
-    return LWnd::CreateEx(dwExStyle, L"Static", lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, hMenu, lpParam);
+    return LWnd::CreateEx(dwExStyle, WC_STATICW, lpWindowName, dwStyle,
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 HICON LStatic::SetIcon(__in HICON hIcon)

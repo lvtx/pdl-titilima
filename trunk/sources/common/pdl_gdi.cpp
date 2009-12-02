@@ -606,5 +606,5 @@ void LBufferDC::PrepareDraw(__in LDC *pDC, __in int cx, __in int cy)
 
 void LBufferDC::PrepareDraw(__in LDC* dc, __in const RECT& rc)
 {
-    PrepareDraw(dc, rc.right + 1, rc.bottom + 1);
+    PrepareDraw(dc, rc.right - rc.left, rc.bottom - rc.top);
 }
