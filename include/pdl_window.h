@@ -499,6 +499,7 @@ public:
      */
     HICON SetIcon(__in HICON hIcon, __in BOOL bBigIcon);
 
+    HWND SetParent(__in_opt HWND hWndNewParent);
     int SetScrollInfo(__in int nBar, __in LPCSCROLLINFO lpsi,
         __in BOOL redraw);
     UINT_PTR SetTimer(__in UINT_PTR nIDEvent, __in UINT uElapse,

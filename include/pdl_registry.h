@@ -60,8 +60,10 @@ public:
     LONG QueryInfoW(__out LPDWORD lpcSubKeys, __out LPDWORD lpcMaxSubKeyLen,
         __out LPDWORD lpcValues, __out LPDWORD lpcMaxValueNameLen,
         __out LPDWORD lpcMaxValueLen, __out PFILETIME lpftLastWriteTime);
-    LONG QueryStringValue(__in PCSTR lpValueName, __out LStringA *strRet);
-    LONG QueryStringValue(__in PCWSTR lpValueName, __out LStringW *strRet);
+    LONG QueryStringValue(__in PCSTR lpValueName, __out LStringA *strRet,
+        BOOL bExpand = TRUE);
+    LONG QueryStringValue(__in PCWSTR lpValueName, __out LStringW *strRet,
+        BOOL bExpand = TRUE);
     LONG QueryValue(__in PCSTR lpValueName, __out_opt PDWORD lpType,
         __out PBYTE lpData, __inout PDWORD lpcbData);
     LONG QueryValue(__in PCWSTR lpValueName, __out_opt PDWORD lpType,

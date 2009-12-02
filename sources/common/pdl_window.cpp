@@ -880,6 +880,12 @@ HICON LWnd::SetIcon(__in HICON hIcon, __in BOOL bBigIcon)
     return (HICON)SendMessage(WM_SETICON, bBigIcon, (LPARAM)hIcon);
 }
 
+HWND LWnd::SetParent(__in_opt HWND hWndNewParent)
+{
+    PDLASSERT(IsWindow());
+    return ::SetParent(m_hWnd, hWndNewParent);
+}
+
 int LWnd::SetScrollInfo(
     __in int nBar,
     __in LPCSCROLLINFO lpsi,

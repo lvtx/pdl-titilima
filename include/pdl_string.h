@@ -40,6 +40,7 @@ public:
     void Copy(__in PCWSTR lpszString);
     PSTR Detach(void);
     void Empty(void);
+    BOOL ExpandEnvironment(void);
     int Find(__in char ch, int iStart = 0);
     int Find(__in PCSTR pszSub, int iStart = 0);
     int Format(__in PCSTR lpszFormat, ...);
@@ -93,6 +94,7 @@ public:
     BSTR ConvertToBSTR(void);
     PWSTR Detach(void);
     void Empty(void);
+    BOOL ExpandEnvironment(void);
     int Find(__in WCHAR ch, int iStart = 0);
     int Find(__in PCWSTR pszSub, int iStart = 0);
     int Format(__in PCWSTR lpszFormat, ...);
