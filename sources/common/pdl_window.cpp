@@ -582,19 +582,6 @@ BOOL LWnd::GetScrollInfo(__in int nBar, __inout LPSCROLLINFO lpsi)
     return ::GetScrollInfo(m_hWnd, nBar, lpsi);
 }
 
-BOOL LWnd::GetSize(__out LPSIZE size)
-{
-    PDLASSERT(NULL != size);
-
-    RECT rc;
-    if (!GetWindowRect(&rc))
-        return FALSE;
-
-    size->cx = rc.right - rc.left + 1;
-    size->cy = rc.bottom - rc.top + 1;
-    return TRUE;
-}
-
 DWORD LWnd::GetStyle(void)
 {
     return GetWindowLong(GWL_STYLE);

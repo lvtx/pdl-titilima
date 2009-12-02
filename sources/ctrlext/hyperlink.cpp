@@ -57,11 +57,10 @@ BOOL LHyperLink::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     BOOL bRet = LStatic::Create(lpWindowName, dwStyle | SS_NOTIFY,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -71,11 +70,10 @@ BOOL LHyperLink::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     BOOL bRet = LStatic::Create(lpWindowName, dwStyle | SS_NOTIFY,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -86,11 +84,10 @@ BOOL LHyperLink::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     BOOL bRet = LStatic::CreateEx(dwExStyle, lpWindowName,
-        dwStyle, lpRect, hWndParent, nID, lpParam);
+        dwStyle, lpRect, hWndParent, nID);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -101,11 +98,10 @@ BOOL LHyperLink::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     BOOL bRet = LStatic::CreateEx(dwExStyle, lpWindowName,
-        dwStyle, lpRect, hWndParent, nID, lpParam);
+        dwStyle, lpRect, hWndParent, nID);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }

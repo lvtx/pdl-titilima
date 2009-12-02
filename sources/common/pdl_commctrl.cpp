@@ -436,11 +436,10 @@ BOOL LListView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_LISTVIEWA, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
 }
 
 BOOL LListView::Create(
@@ -448,11 +447,10 @@ BOOL LListView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_LISTVIEWW, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
 }
 
 BOOL LListView::Create(
@@ -461,11 +459,10 @@ BOOL LListView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_LISTVIEWA, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LListView::Create(
@@ -474,11 +471,10 @@ BOOL LListView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_LISTVIEWW, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LListView::CreateEx(
@@ -487,11 +483,10 @@ BOOL LListView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWA, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LListView::CreateEx(
@@ -500,11 +495,10 @@ BOOL LListView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWW, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LListView::CreateEx(
@@ -514,10 +508,10 @@ BOOL LListView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID, __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWA, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LListView::CreateEx(
@@ -527,11 +521,10 @@ BOOL LListView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWW, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LListView::DeleteAllItems(void)
@@ -1130,52 +1123,38 @@ int CALLBACK LPropSheet::StartProc(LPropSheet* pThis, UINT uMsg, LPARAM lParam)
 BOOL LReBar::Create(
     __in DWORD dwStyle,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     RECT rc = { 0, 0, 100, 100 };
     BOOL ret = LWnd::Create(REBARCLASSNAME, _T(""),
         dwStyle | WS_CHILD | WS_VISIBLE, &rc,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
     if (!ret)
         return FALSE;
 
     REBARINFO ri = { 0 };
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
-    if (!SetBarInfo(&ri))
-        return FALSE;
-
-    DLLVERSIONINFO dvi = { 0 };
-    LAppModule::GetModuleVersion(::GetModuleHandle(_T("comctl32.dll")), &dvi);
-    LComCtl::SetVersion(dvi.dwMajorVersion);
-    return TRUE;
+    return SetBarInfo(&ri);
 }
 
 BOOL LReBar::CreateEx(
     __in DWORD dwExStyle,
     __in DWORD dwStyle,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     RECT rc = { 0, 0, 100, 100 };
     BOOL ret = LWnd::CreateEx(dwExStyle, REBARCLASSNAME, _T(""),
         dwStyle | WS_CHILD | WS_VISIBLE, &rc, hWndParent,
-        nID, lpParam);
+        nID, NULL);
     if (!ret)
         return FALSE;
 
     REBARINFO ri = { 0 };
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
-    if (!SetBarInfo(&ri))
-        return FALSE;
-
-    DLLVERSIONINFO dvi = { 0 };
-    LAppModule::GetModuleVersion(::GetModuleHandle(_T("comctl32.dll")), &dvi);
-    LComCtl::SetVersion(dvi.dwMajorVersion);
-    return TRUE;
+    return SetBarInfo(&ri);
 }
 
 int LReBar::SizeOfREBARBANDINFO(void)
@@ -1284,11 +1263,10 @@ BOOL LTabCtrl::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_TABCONTROLA, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
 }
 
 BOOL LTabCtrl::Create(
@@ -1296,11 +1274,10 @@ BOOL LTabCtrl::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_TABCONTROLW, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
 }
 
 BOOL LTabCtrl::Create(
@@ -1309,11 +1286,10 @@ BOOL LTabCtrl::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_TABCONTROLA, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LTabCtrl::Create(
@@ -1322,11 +1298,10 @@ BOOL LTabCtrl::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_TABCONTROLW, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1335,11 +1310,10 @@ BOOL LTabCtrl::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLA, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1348,11 +1322,10 @@ BOOL LTabCtrl::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLW, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1362,11 +1335,10 @@ BOOL LTabCtrl::CreateEx(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLA, lpWindowName, dwStyle,
-        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1376,11 +1348,10 @@ BOOL LTabCtrl::CreateEx(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLW, lpWindowName, dwStyle,
-        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
+        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
 int LTabCtrl::GetCurSel(void)
@@ -1595,11 +1566,10 @@ BOOL LTreeView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_TREEVIEWA, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
 }
 
 BOOL LTreeView::Create(
@@ -1607,11 +1577,10 @@ BOOL LTreeView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::Create(WC_TREEVIEWW, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, lpParam);
+        hWndParent, nID, NULL);
 }
 
 BOOL LTreeView::Create(
@@ -1620,11 +1589,10 @@ BOOL LTreeView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id,
-    __in PVOID lpParam)
+    __in UINT id)
 {
     return LWnd::Create(WC_TREEVIEWA, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
+        nWidth, nHeight, hWndParent, (HMENU)id, NULL);
 }
 
 BOOL LTreeView::Create(
@@ -1633,11 +1601,10 @@ BOOL LTreeView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id,
-    __in PVOID lpParam)
+    __in UINT id)
 {
     return LWnd::Create(WC_TREEVIEWW, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
+        nWidth, nHeight, hWndParent, (HMENU)id, NULL);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1646,11 +1613,10 @@ BOOL LTreeView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWA, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1659,11 +1625,10 @@ BOOL LTreeView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID,
-    __in PVOID lpParam)
+    __in UINT nID)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWW, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, lpParam);
+        lpRect, hWndParent, nID, NULL);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1673,11 +1638,10 @@ BOOL LTreeView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id,
-    __in PVOID lpParam)
+    __in UINT id)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWA, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, NULL);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1687,11 +1651,10 @@ BOOL LTreeView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id,
-    __in PVOID lpParam)
+    __in UINT id)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWW, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, NULL);
 }
 
 BOOL LTreeView::DeleteAllItems(void)
