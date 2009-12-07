@@ -895,6 +895,15 @@ int LWnd::SetScrollInfo(
     return ::SetScrollInfo(m_hWnd, nBar, lpsi, redraw);
 }
 
+DWORD LWnd::SetStyle(__in DWORD dwStyle, __in DWORD dwMask)
+{
+    DWORD dwOldStyle = GetStyle();
+    DWORD dwAdd = dwStyle & dwMask;
+    DWORD dwRemove = (dwStyle ^ dwMask) & dwMask;
+    DWORD dwNewStyle = (dwOldStyle & ~dwRemove) | dwAdd;
+    return SetWindowLong(GWL_STYLE, dwNewStyle);
+}
+
 UINT_PTR LWnd::SetTimer(
      __in UINT_PTR nIDEvent,
      __in UINT uElapse,

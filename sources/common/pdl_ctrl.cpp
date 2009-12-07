@@ -2,6 +2,46 @@
 #include "..\..\include\pdl_gdi.h"
 
 ///////////////////////////////////////////////////////////////////////////////
+// LButton
+
+LButton::LButton(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
+{
+}
+
+LButton& LButton::operator=(__in HWND hWnd)
+{
+    m_hWnd = hWnd;
+    return *this;
+}
+
+LButton::operator HWND(void)
+{
+    return m_hWnd;
+}
+
+BOOL LButton::Create(
+    __in PCSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::Create(WC_BUTTONA, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
+}
+
+BOOL LButton::Create(
+    __in PCWSTR lpWindowName,
+    __in DWORD dwStyle,
+    __in LPCRECT lpRect,
+    __in HWND hWndParent,
+    __in UINT nID)
+{
+    return LWnd::Create(WC_BUTTONW, lpWindowName, dwStyle,
+        lpRect, hWndParent, nID, NULL);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // LComboBox
 
 LComboBox::LComboBox(__in HWND hWnd /* = NULL */) : LWnd(hWnd)
@@ -17,6 +57,16 @@ LComboBox& LComboBox::operator=(__in HWND hWnd)
 LComboBox::operator HWND(void)
 {
     return m_hWnd;
+}
+
+int LComboBox::AddString(__in PCSTR lpszString)
+{
+    return (int)SendMessageA(CB_ADDSTRING, 0, (LPARAM)lpszString);
+}
+
+int LComboBox::AddString(__in PCWSTR lpszString)
+{
+    return (int)SendMessageW(CB_ADDSTRING, 0, (LPARAM)lpszString);
 }
 
 BOOL LComboBox::Create(
@@ -39,16 +89,6 @@ BOOL LComboBox::Create(
 {
     return LWnd::Create(WC_COMBOBOXW, lpWindowName, dwStyle,
         lpRect, hWndParent, nID, NULL);
-}
-
-int LComboBox::AddString(__in PCSTR lpszString)
-{
-    return (int)SendMessageA(CB_ADDSTRING, 0, (LPARAM)lpszString);
-}
-
-int LComboBox::AddString(__in PCWSTR lpszString)
-{
-    return (int)SendMessageW(CB_ADDSTRING, 0, (LPARAM)lpszString);
 }
 
 int LComboBox::FindString(__in int nStartAfter, __in PCSTR lpszString)
@@ -413,16 +453,71 @@ DWORD_PTR LListBox::GetItemData(__in int nIndex)
     return (DWORD_PTR)SendMessage(LB_GETITEMDATA, (WPARAM)nIndex);
 }
 
-int LListBox::GetText(__in int nIndex, __in PSTR lpszBuffer)
+int LListBox::GetItemHeight(int nIndex)
 {
-    PDLASSERT(IsWindow());
+    return (int)SendMessage(LB_GETITEMHEIGHT, nIndex);
+}
+
+int LListBox::GetText(__in int nIndex, __out PSTR lpszBuffer)
+{
     return (int)SendMessageA(LB_GETTEXT, (WPARAM)nIndex, (LPARAM)lpszBuffer);
 }
 
-int LListBox::GetText(__in int nIndex, __in PWSTR lpszBuffer)
+int LListBox::GetText(__in int nIndex, __out PWSTR lpszBuffer)
 {
-    PDLASSERT(IsWindow());
     return (int)SendMessageW(LB_GETTEXT, (WPARAM)nIndex, (LPARAM)lpszBuffer);
+}
+
+int LListBox::GetText(__in int nIndex, __out LStringA* str)
+{
+    int len = GetTextLenA(nIndex);
+    if (LB_ERR == len)
+        return LB_ERR;
+
+    PSTR buf = str->AllocBuffer(len, FALSE);
+    return GetText(nIndex, buf);
+}
+
+int LListBox::GetText(__in int nIndex, __out LStringW* str)
+{
+    int len = GetTextLenW(nIndex);
+    if (LB_ERR == len)
+        return LB_ERR;
+
+    PWSTR buf = str->AllocBuffer(len, FALSE);
+    return GetText(nIndex, buf);
+}
+
+int LListBox::GetTextLenA(__in int nIndex)
+{
+    return (int)SendMessageA(LB_GETTEXTLEN, nIndex);
+}
+
+int LListBox::GetTextLenW(__in int nIndex)
+{
+    return (int)SendMessageW(LB_GETTEXTLEN, nIndex);
+}
+
+int LListBox::GetTopIndex(void)
+{
+    return (int)SendMessage(LB_GETTOPINDEX);
+}
+
+int LListBox::InsertString(__in int nIndex, __in PCSTR lpszString)
+{
+    return (int)SendMessageA(LB_INSERTSTRING, (WPARAM)nIndex,
+        (LPARAM)lpszString);
+}
+
+int LListBox::InsertString(__in int nIndex, __in PCWSTR lpszString)
+{
+    return (int)SendMessageW(LB_INSERTSTRING, (WPARAM)nIndex,
+        (LPARAM)lpszString);
+}
+
+int LListBox::ItemFromPoint(__in int x, __in int y)
+{
+    return (int)SendMessage(LB_ITEMFROMPOINT, 0, MAKELPARAM(x, y));
 }
 
 void LListBox::ResetContent(void)
@@ -439,6 +534,11 @@ int LListBox::SetItemData(__in int nIndex, __in DWORD_PTR dwItemData)
 {
     return (int)SendMessage(LB_SETITEMDATA, (WPARAM)nIndex,
         (LPARAM)dwItemData);
+}
+
+int LListBox::SetTopIndex(__in int nIndex)
+{
+    return (int)SendMessage(LB_SETTOPINDEX, (WPARAM)nIndex);
 }
 
 //////////////////////////////////////////////////////////////////////////

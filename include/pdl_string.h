@@ -45,6 +45,7 @@ public:
     int Find(__in PCSTR pszSub, int iStart = 0);
     int Format(__in PCSTR lpszFormat, ...);
     static void FreeString(__in PSTR lpString);
+    char GetAt(__in int idx);
     int GetLength(void) const;
     BOOL IsEmpty(void) const;
     LStringA Left(__in int nChars);
@@ -99,6 +100,7 @@ public:
     int Find(__in PCWSTR pszSub, int iStart = 0);
     int Format(__in PCWSTR lpszFormat, ...);
     static void FreeString(__in PWSTR lpString);
+    WCHAR GetAt(__in int idx);
     int GetLength(void) const;
     BOOL IsEmpty(void) const;
     LStringW Left(__in int nChars);
@@ -121,3 +123,11 @@ typedef LStringW LString;
 #else // !UNICODE
 typedef LStringA LString;
 #endif // UNICODE
+
+template <class T>
+PDLINLINE void LPathAddBackslash(__inout T* str)
+{
+    int len = str->GetLength();
+    if ('\\' != str->GetAt(len - 1))
+        str->Append('\\');
+}
