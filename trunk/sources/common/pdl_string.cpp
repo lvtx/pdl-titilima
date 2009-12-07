@@ -96,8 +96,7 @@ const LStringA& LStringA::operator+=(__in char ch)
 
 char LStringA::operator[](__in int idx)
 {
-    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
-    return m_lpszData[idx];
+    return GetAt(idx);
 }
 
 PSTR LStringA::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
@@ -204,6 +203,12 @@ int LStringA::Format(__in PCSTR lpszFormat, ...)
 void LStringA::FreeString(__in PSTR lpString)
 {
     CharTraitsA::Free(lpString);
+}
+
+char LStringA::GetAt(__in int idx)
+{
+    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
+    return m_lpszData[idx];
 }
 
 int LStringA::GetLength(void) const
@@ -373,8 +378,7 @@ const LStringW& LStringW::operator+=(__in WCHAR ch)
 
 WCHAR LStringW::operator[](__in int idx)
 {
-    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
-    return m_lpszData[idx];
+    return GetAt(idx);
 }
 
 PWSTR LStringW::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
@@ -480,6 +484,12 @@ BOOL LStringW::Format(__in PCWSTR lpszFormat, ...)
 void LStringW::FreeString(__in PWSTR lpString)
 {
     CharTraitsW::Free(lpString);
+}
+
+WCHAR LStringW::GetAt(__in int idx)
+{
+    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
+    return m_lpszData[idx];
 }
 
 int LStringW::GetLength(void) const

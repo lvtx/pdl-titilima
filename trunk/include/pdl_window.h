@@ -502,6 +502,7 @@ public:
     HWND SetParent(__in_opt HWND hWndNewParent);
     int SetScrollInfo(__in int nBar, __in LPCSCROLLINFO lpsi,
         __in BOOL redraw);
+    DWORD SetStyle(__in DWORD dwStyle, __in DWORD dwMask);
     UINT_PTR SetTimer(__in UINT_PTR nIDEvent, __in UINT uElapse,
         __in TIMERPROC lpTimerFunc = NULL);
     LONG SetWindowLongA(__in int nIndex, __in LONG dwNewLong);
