@@ -53,6 +53,24 @@
             bHandled);                  \
     }
 
+// WM_ACTIVATE
+
+#define DECLARE_ACTIVATE_HANDLER(fn)        \
+    void fn(UINT nState, HWND hWndOther,    \
+        BOOL bMinimized, BOOL& bHandled);
+#define DECLAREV_ACTIVATE_HANDLER(fn)       \
+    virtual void fn(UINT nState,            \
+        HWND hWndOther, BOOL bMinimized,    \
+        BOOL& bHandled);
+#define PROCESS_ACTIVATE(fn)                \
+    else if (WM_ACTIVATE == uMsg) {         \
+        fn(LOWORD(wParam), (HWND)lParam,    \
+            HIWORD(wParam), bHandled);      \
+    }
+#define DEFAULT_ACTIVATE_HANDLER(s, h, m)   \
+    DoDefault(WM_ACTIVATE,                  \
+        MAKEWPARAM(s, m), (LPARAM)h)
+
 // WM_CAPTURECHANGED
 
 #define DECLARE_CAPTURECHANGED_HANDLER(fn)  \
