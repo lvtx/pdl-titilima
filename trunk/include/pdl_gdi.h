@@ -29,7 +29,7 @@ class LGdiObj
 public:
     LGdiObj(__in HGDIOBJ hGdiObj = NULL);
     virtual ~LGdiObj(void);
-    operator HGDIOBJ(void);
+    operator HGDIOBJ(void) { return m_hGdiObj; }
     LGdiObj& operator=(__in HGDIOBJ hGdiObj);
 public:
 
@@ -64,7 +64,7 @@ class LBitmap : public LGdiObj
 {
 public:
     LBitmap(__in HBITMAP hBitmap = NULL);
-    operator HBITMAP(void);
+    operator HBITMAP(void) { return (HBITMAP)m_hGdiObj; }
     LBitmap& operator=(__in HBITMAP hBitmap);
 public:
 
@@ -105,7 +105,7 @@ class LBrush : public LGdiObj
 {
 public:
     LBrush(__in HBRUSH hBrush = NULL);
-    operator HBRUSH(void);
+    operator HBRUSH(void) { return (HBRUSH)m_hGdiObj; }
     LBrush& operator=(__in HBRUSH hBrush);
 public:
 
@@ -126,7 +126,7 @@ class LFont : public LGdiObj
 {
 public:
     LFont(__in HFONT hFont = NULL);
-    operator HFONT(void);
+    operator HFONT(void) { return (HFONT)m_hGdiObj; }
     LFont& operator=(__in HFONT hFont);
 };
 
@@ -139,7 +139,7 @@ class LPen : public LGdiObj
 {
 public:
     LPen(__in HPEN hPen = NULL);
-    operator HPEN(void);
+    operator HPEN(void) { return (HPEN)m_hGdiObj; }
     LPen& operator=(__in HPEN hPen);
 };
 
@@ -152,7 +152,7 @@ class LRgn : public LGdiObj
 {
 public:
     LRgn(__in HRGN hRgn = NULL);
-    operator HRGN(void);
+    operator HRGN(void) { return (HRGN)m_hGdiObj; }
     LRgn& operator=(__in HRGN hPen);
 };
 
@@ -166,7 +166,7 @@ class LDC
 public:
     LDC(__in HDC hDC = NULL);
     virtual ~LDC(void);
-    operator HDC(void) const;
+    operator HDC(void) { return m_hDC; }
 public:
 
     /**
@@ -213,6 +213,7 @@ public:
 
     BOOL DrawEdge(__in LPRECT qrc, __in UINT edge, __in UINT grfFlags);
     BOOL DrawFocusRect(__in LPCRECT lprc);
+    BOOL DrawIcon(__in int X, __in int Y, __in HICON hIcon);
     int DrawText(__in PCTSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
 #ifdef UNICODE
@@ -322,7 +323,7 @@ public:
      */
     ~LPaintDC(void);
 
-    operator HDC(void) const;
+    operator HDC(void) { return m_hDC; }
 public:
     /**
      * WM_PAINT 绘制结构
@@ -357,7 +358,7 @@ public:
      */
     ~LClientDC(void);
 
-    operator HDC(void) const;
+    operator HDC(void) { return m_hDC; }
 protected:
     /**
      * 要进行绘制的窗口句柄
@@ -387,7 +388,7 @@ public:
      */
     ~LWindowDC(void);
 
-    operator HDC(void) const;
+    operator HDC(void) { return m_hDC; }
 protected:
     /**
      * 要进行绘制的窗口句柄
@@ -404,7 +405,7 @@ class LBufferDC : public LDC
 {
 public:
     ~LBufferDC(void);
-    operator HDC(void) const;
+    operator HDC(void) { return m_hDC; }
 public:
 
     /**
