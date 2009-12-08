@@ -150,6 +150,7 @@ public:
     void EndDrag();
     HICON ExtractIcon(int i);
     COLORREF GetBkColor() const;
+    HIMAGELIST GetHandle(void) { return m_hImageList; }
     HICON GetIcon(int i, UINT flags);
     BOOL GetIconSize(int *cx, int *cy);
     int GetImageCount(void) const;
