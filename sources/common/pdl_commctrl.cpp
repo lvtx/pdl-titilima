@@ -273,6 +273,11 @@ BOOL LImageList::Draw(
     return ImageList_Draw(m_hImageList, i, hdcDst, x, y, fStyle);
 }
 
+HICON LImageList::GetIcon(int i, UINT flags)
+{
+    return ::ImageList_GetIcon(m_hImageList, i, flags);
+}
+
 int LImageList::GetImageCount(void) const
 {
     return ImageList_GetImageCount(m_hImageList);

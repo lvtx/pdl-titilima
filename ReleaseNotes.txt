@@ -1,5 +1,6 @@
 xxxx.xx.xx - 0.05.xxx
 * 为菜单加入多语言支持。
+* 为 LIniParser 加入 LIniSection 辅助类。
 * 增加及调整部分接口。
 * 修正若干 bug。
 
