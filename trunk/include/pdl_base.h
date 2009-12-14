@@ -47,12 +47,14 @@
 #define _PDL_WSTR(s)    L ## s
 #define PDL_WSTR(s)     _PDL_WSTR(s)
 #define PDLASSERT(expr) (void)((!!(expr)) || (LAssertBox(L###expr, PDL_WSTR(__FILE__), __LINE__)))
+#define PDLVERIFY       PDLASSERT
 #define PDLTRACE        LTrace
 #define PDLLOG          LTrace
 
 #else
 
-#define PDLASSERT(expr) (expr)
+#define PDLASSERT(expr) ((void)0)
+#define PDLVERIFY(expr) ((void)(f))
 #define PDLTRACE        (void)
 #define PDLLOG          LAppModule::DebugPrint
 

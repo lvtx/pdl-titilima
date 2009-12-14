@@ -242,14 +242,14 @@ protected:
     ILock* m_lock;
 };
 
-#define LT_FIRST    1
-#define LT_LAST     2
-#define LT_ROOT     ((LIterator)NULL)
-
 /**
  * \class LPtrTree
  * \brief PDL Ê÷Àà
  */
+
+#define LT_FIRST    1
+#define LT_LAST     2
+#define LT_ROOT     ((LIterator)NULL)
 
 class LPtrTree
 {
@@ -667,7 +667,7 @@ private:
 
 class LStringA;
 class LStringW;
-class LStrList : protected LPtrList
+class LStrList : public LPtrList
 {
 public:
 
@@ -684,10 +684,6 @@ public:
     LIterator AddTail(__in PCWSTR lpString);
     BOOL GetAt(__in LIterator it, __out LStringA* str);
     BOOL GetAt(__in LIterator it, __out LStringW* str);
-    LIterator GetHeadIterator(void);
-    LIterator GetNextIterator(__in LIterator it);
-    LIterator GetPrevIterator(__in LIterator it);
-    LIterator GetTailIterator(void);
     LIterator InsertAfter(__in LIterator it, __in PCSTR lpString);
     LIterator InsertAfter(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCWSTR lpString);

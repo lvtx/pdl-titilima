@@ -973,7 +973,9 @@ BOOL LWnd::SetWindowTextW(__in PCWSTR lpszString)
     return ::SetWindowTextW(m_hWnd, lpszString);
 }
 
-BOOL LWnd::SizeToContent(__in BOOL bRedraw /* = TRUE */)
+BOOL LWnd::SizeToContent(
+    __in BOOL bRedraw /* = TRUE */,
+    __in BOOL bForce /* = FALSE */)
 {
     // 如果不是子窗口，则返回FALSE
     if (!(WS_CHILD & GetWindowLong(GWL_STYLE)))
@@ -988,8 +990,16 @@ BOOL LWnd::SizeToContent(__in BOOL bRedraw /* = TRUE */)
     GetWindowText(&strText);
 
     RECT rc = { 0 };
+    GetClientRect(&rc);
+
+    RECT rcTxt = { 0 };
     LClientDC dc(m_hWnd);
-    dc.DrawText(strText, -1, &rc, DT_CALCRECT);
+    dc.DrawText(strText, -1, &rcTxt, DT_CALCRECT);
+
+    if (rc.right < rcTxt.right || bForce)
+        rc.right = rcTxt.right;
+    if (rc.bottom < rcTxt.bottom || bForce)
+        rc.bottom = rcTxt.bottom;
 
     UINT uFlags = SWP_NOZORDER | SWP_NOMOVE;
 #ifndef _WIN32_WCE
@@ -1690,10 +1700,13 @@ BOOL LDialog::LoadLanguageRes(void)
     if (NULL == m_lang)
         return FALSE;
 
+    LString text;
     char section[16];
     wsprintfA(section, "%d", m_uId);
+    m_lang->GetString(section, "Caption", _T(""), &text);
+    if (!text.IsEmpty())
+        SetWindowText(text);
 
-    LString text;
     char key[16];
     LWnd ctrl = GetWindow(GW_CHILD);
     UINT id;
@@ -1708,7 +1721,7 @@ BOOL LDialog::LoadLanguageRes(void)
             {
                 text.ReplaceBackslashChars();
                 ctrl.SetWindowText(text);
-                ctrl.SizeToContent(FALSE);
+                ctrl.SizeToContent(FALSE, FALSE);
             }
         }
         ctrl = ctrl.GetWindow(GW_HWNDNEXT);

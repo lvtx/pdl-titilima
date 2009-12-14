@@ -522,9 +522,10 @@ public:
     /**
      * 按照窗口的文本内容改变窗口的大小。
      * @param [in] bRedraw 是否重绘窗口。
+     * @param [in] bForce 是否强制改变大小(在原有大小可以容纳文本的情况下)。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL SizeToContent(__in BOOL bRedraw = TRUE);
+    BOOL SizeToContent(__in BOOL bRedraw = TRUE, __in BOOL bForce = FALSE);
 
     BOOL ShowWindow(__in int nCmdShow);
     BOOL TrackMouseEvent(__in DWORD dwFlags);

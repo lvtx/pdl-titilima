@@ -80,26 +80,6 @@ BOOL LStrList::GetAt(__in LIterator it, __out LStringW* str)
     return TRUE;
 }
 
-LIterator LStrList::GetHeadIterator(void)
-{
-    return LPtrList::GetHeadIterator();
-}
-
-LIterator LStrList::GetNextIterator(__in LIterator it)
-{
-    return LPtrList::GetNextIterator(it);
-}
-
-LIterator LStrList::GetPrevIterator(__in LIterator it)
-{
-    return LPtrList::GetPrevIterator(it);
-}
-
-LIterator LStrList::GetTailIterator(void)
-{
-    return LPtrList::GetTailIterator();
-}
-
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCSTR lpString)
 {
     return LPtrList::InsertAfter(it, &lpString);

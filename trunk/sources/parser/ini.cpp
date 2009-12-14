@@ -14,7 +14,10 @@
 #include "..\adaptor\wince_adaptor.h"
 #endif // _WIN32_WCE
 
-LIniParser::LIniParser(__in ILock* lock) : LStrList(lock)
+///////////////////////////////////////////////////////////////////////////////
+// LIniParser
+
+LIniParser::LIniParser(__in ILock* lock) : m_data(lock)
 {
     m_bDirty = FALSE;
     m_secList.Create(sizeof(LIterator));
@@ -27,7 +30,7 @@ LIniParser::~LIniParser(void)
 
 void LIniParser::Close(void)
 {
-    LStrList::Clear();
+    m_data.Clear();
     m_secList.Clear();
 }
 
@@ -47,7 +50,7 @@ LIterator LIniParser::FindKey(__in PCSTR lpszSection, __in PCSTR lpszKey)
     while (itSec != itNext)
     {
         LStringA str;
-        LStrList::GetAt(itSec, &str);
+        m_data.GetAt(itSec, &str);
         int nEqual = str.Find('=');
         if (-1 != nEqual)
         {
@@ -57,7 +60,7 @@ LIterator LIniParser::FindKey(__in PCSTR lpszSection, __in PCSTR lpszKey)
                 return itSec;
         }
 
-        itSec = m_secList.GetNextIterator(itSec);
+        itSec = m_data.GetNextIterator(itSec);
     }
     return NULL;
 }
@@ -92,7 +95,8 @@ LIterator LIniParser::FindSection(__in PCSTR lpszSection)
     {
         m_secList.GetAt(it, &itSec);
 
-        LStringA str = LStrList::GetAt(itSec);
+        LStringA str;
+        m_data.GetAt(itSec, &str);
         str.Trim(" \t");
         str.Trim("[]");
         if (0 == lstrcmpiA(lpszSection, str))
@@ -150,7 +154,7 @@ DWORD LIniParser::GetString(
     if (NULL != pszRet)
     {
         strResult->Copy(pszRet);
-        delete [] pszRet;
+        LStringA::FreeString(pszRet);
     }
     else
     {
@@ -170,7 +174,7 @@ DWORD LIniParser::GetString(
     if (NULL != pszRet)
     {
         lstrcpynA(lpszBuffer, pszRet, nSize);
-        delete [] pszRet;
+        LStringA::FreeString(pszRet);
     }
     else
     {
@@ -190,13 +194,25 @@ DWORD LIniParser::GetString(
     if (NULL != pszRet)
     {
         MultiByteToWideChar(CP_ACP, 0, pszRet, -1, lpszBuffer, nSize);
-        delete [] pszRet;
+        LStringA::FreeString(pszRet);
     }
     else
     {
         lstrcpynW(lpszBuffer, lpszDefault, nSize);
     }
     return lstrlenW(lpszBuffer);
+}
+
+BOOL LIniParser::GetSection(__in PCSTR lpszSection, __out LIniSection* sec)
+{
+    LIterator it = FindSection(lpszSection);
+    if (NULL == it)
+        return FALSE;
+
+    sec->m_ini = &m_data;
+    sec->m_head = it;
+    sec->m_tail = FindNextSection(it);
+    return TRUE;
 }
 
 DWORD LIniParser::GetSectionCount(void)
@@ -217,15 +233,16 @@ PSTR LIniParser::GetStringA(__in PCSTR lpszSection, __in PCSTR lpszKey)
     if (NULL == it)
         return NULL;
 
-    PCSTR lpLine = LStrList::GetAt(it);
-    LStringA str = strchr(lpLine, '=') + 1;
+    LStringA strLine;
+    m_data.GetAt(it, &strLine);
+    LStringA str = strchr((PCSTR)strLine, '=') + 1;
     str.Trim(" \t");
     return str.Detach();
 }
 
 BOOL LIniParser::Open(__in PCSTR lpszFileName)
 {
-    LStrList::Clear();
+    m_data.Clear();
     m_secList.Clear();
     if (NULL == lpszFileName)
         return FALSE;
@@ -253,7 +270,7 @@ BOOL LIniParser::Open(__in PCSTR lpszFileName)
 
 BOOL LIniParser::Open(__in PCWSTR lpszFileName)
 {
-    LStrList::Clear();
+    m_data.Clear();
     m_secList.Clear();
     if (NULL == lpszFileName)
         return FALSE;
@@ -289,12 +306,13 @@ void LIniParser::Open(__in LTxtFile* pFile)
     while (!pFile->Eof())
     {
         pFile->ReadLn(&str);
-        if ('\0' != str[0])
-            LStrList::AddTail(str);
-
         int len = str.Trim(" \t");
-        if (len > 0 && '[' == str[0] && ']' == str[len - 1])
-            m_secList.AddTail(&m_itTail);
+        if (str.IsEmpty())
+            continue;
+
+        LIterator it = m_data.AddTail(str);
+        if ('[' == str[0] && ']' == str[len - 1])
+            m_secList.AddTail(&it);
     }
     m_bDirty = FALSE;
 }
@@ -306,8 +324,8 @@ void LIniParser::RemoveSection(__in PCSTR lpszSection)
     while (itNext != itSec)
     {
         LIterator itDel = itSec;
-        itSec = GetNextIterator(itSec);
-        Remove(itDel);
+        itSec = m_data.GetNextIterator(itSec);
+        m_data.Remove(itDel);
     }
 }
 
@@ -326,7 +344,7 @@ BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
         LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
-    return LStrList::SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
+    return m_data.SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
 }
 
 BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
@@ -344,7 +362,7 @@ BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
         LAppModule::GetModulePath(NULL, &path);
         path += lpszFileName;
     }
-    return LStrList::SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
+    return m_data.SaveToFile(path, SLFILE_CLEAR | SLFILE_INCLUDENULL);
 }
 
 BOOL LIniParser::WriteInt(
@@ -391,24 +409,139 @@ BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
     {
         // 不存在指定的 section
         str.Format("[%s]", lpszSection);
-        LStrList::AddTail(str);
-        m_secList.AddTail(&m_itTail);
-        itSec = m_itTail;
+        LIterator itTail = m_data.AddTail(str);
+        m_secList.AddTail(&itTail);
+        itSec = itTail;
     }
 
     str.Format("%s=%s", lpszKey, lpszValue);
     LIterator itKey = FindKey(lpszSection, lpszKey);
     if (NULL != itKey)
     {
-        LStrList::SetAt(itKey, str);
+        m_data.SetAt(itKey, str);
         return TRUE;
     }
 
     // 尾部插入新的值
     LIterator it = FindNextSection(itSec);
     if (NULL != it)
-        LStrList::InsertBefore(it, str);
+        m_data.InsertBefore(it, str);
     else
-        LStrList::AddTail(str);
+        m_data.AddTail(str);
+    return TRUE;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LIniSection
+
+LIterator LIniSection::GetHead(void)
+{
+    return m_head;
+}
+
+BOOL LIniSection::GetKeyName(__in LIterator it, __out LStringA* str)
+{
+    LStringA tmp;
+    if (!m_ini->GetAt(it, &tmp))
+        return FALSE;
+
+    int n = tmp.Find('=');
+    if (-1 == n)
+        return FALSE;
+
+    tmp.SetAt(n, '\0');
+    tmp.Trim(" \t");
+    str->Attach(tmp.Detach());
+    return TRUE;
+}
+
+BOOL LIniSection::GetKeyName(__in LIterator it, __out LStringW* str)
+{
+    LStringW tmp;
+    if (!m_ini->GetAt(it, &tmp))
+        return FALSE;
+
+    int n = tmp.Find(L'=');
+    if (-1 == n)
+        return FALSE;
+
+    tmp.SetAt(n, L'\0');
+    tmp.Trim(L" \t");
+    str->Attach(tmp.Detach());
+    return TRUE;
+}
+
+LIterator LIniSection::GetNext(__in LIterator it)
+{
+    LIterator ret = m_ini->GetNextIterator(it);
+    if (ret == m_tail)
+        ret = NULL;
+    return ret;
+}
+
+BOOL LIniSection::GetValue(__in LIterator it, __out LStringA* str)
+{
+    LStringA strLine;
+    if (!m_ini->GetAt(it, &strLine))
+        return FALSE;
+
+    int n = strLine.Find('=');
+    if (-1 == n)
+        return FALSE;
+
+    *str = strLine.Mid(n + 1);
+    return TRUE;
+}
+
+BOOL LIniSection::GetValue(__in LIterator it, __out LStringW* str)
+{
+    LStringW strLine;
+    if (!m_ini->GetAt(it, &strLine))
+        return FALSE;
+
+    int n = strLine.Find(L'=');
+    if (-1 == n)
+        return FALSE;
+
+    *str = strLine.Mid(n + 1);
+    return TRUE;
+}
+
+BOOL LIniSection::SetInt(__in LIterator it, __in int nValue)
+{
+    LString str;
+    str.Format(_T("%d"), nValue);
+    return SetValue(it, str);
+}
+
+BOOL LIniSection::SetValue(__in LIterator it, __in PCSTR lpValue)
+{
+    LStringA str;
+    if (!m_ini->GetAt(it, &str))
+        return FALSE;
+
+    int n = str.Find('=');
+    if (-1 == n)
+        return FALSE;
+
+    str.SetAt(n + 1, '\0');
+    str += lpValue;
+    m_ini->SetAt(it, str);
+    return TRUE;
+}
+
+BOOL LIniSection::SetValue(__in LIterator it, __in PCWSTR lpValue)
+{
+    LStringW str;
+    if (!m_ini->GetAt(it, &str))
+        return FALSE;
+
+    int n = str.Find(L'=');
+    if (-1 == n)
+        return FALSE;
+
+    str.SetAt(n + 1, L'\0');
+    str += lpValue;
+    m_ini->SetAt(it, str);
     return TRUE;
 }

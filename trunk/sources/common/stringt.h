@@ -146,6 +146,7 @@ public:
     PSTRT Left(int nChars);
     PSTRT Mid(int iStart, int nChars);
     int Replace(PCSTRT pszOld, PCSTRT pszNew);
+    PSTRT Right(int nChars);
     void ReplaceBackslashChars(void);
     int ReverseFind(CharT ch);
     int SetAt(int pos, CharT ch);
@@ -412,6 +413,16 @@ int LStringT<CharT, CharTraits>::ReverseFind(CharT ch)
     if (NULL == p)
         return -1;
     return p - m_str;
+}
+
+template <typename CharT, class CharTraits>
+CharT* LStringT<CharT, CharTraits>::Right(int nChars)
+{
+    PSTRT ret = CharTraits::Alloc(nChars);
+    int len = CharTraits::Len(nChars);
+    if (len < nChars)
+        nChars = len;
+    return CharTraits::CopyN(ret, m_str + len - nChars, nChars + 1);
 }
 
 template <typename CharT, class CharTraits>

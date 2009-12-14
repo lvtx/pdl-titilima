@@ -4,6 +4,7 @@
  * \details 这个文件中包括了 PDL 中常用的格式解析工具类及函数：
  *   \li \c LParseColorString 颜色字符串解析函数
  *   \li \c LIniParser ini 文件解析类
+ *   \li \c LIniSection ini 格式 Section 类
  *   \li \c LXmlParser xml 格式解析类
  */
 
@@ -45,7 +46,8 @@ COLORREF PDLAPI LParseColorString(
  */
 
 class LTxtFile;
-class LIniParser : protected LStrList
+class LIniSection;
+class LIniParser
 {
 public:
 
@@ -71,6 +73,14 @@ public:
      * @return 如果成功则返回 ini 中保存的数值，否则返回由 nDefault 指定的数值。
      */
     int GetInt(__in PCSTR lpszSection, __in PCSTR lpszKey, __in int nDefault);
+
+    /**
+     * 从指定的 Section 名称获得一个 Section 对象。
+     * @param [in] lpszSection 要获取的 Section 名称。
+     * @param [out] 用于接收返回的 Section 对象。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetSection(__in PCSTR lpszSection, __out LIniSection* sec);
 
     /**
      * 从指定的 Section 和 Key 处获取一个字符串。
@@ -214,6 +224,10 @@ private:
         __in PCSTR lpszValue);
 private:
     /**
+     * 数据
+     */
+    LStrList m_data;
+    /**
      * Section 表
      */
     LPtrList m_secList;
@@ -221,6 +235,97 @@ private:
      * Dirty 标志
      */
     BOOL m_bDirty;
+};
+
+/**
+ * \class LIniSection
+ * \brief ini 格式 Section 类
+ */
+
+class LIniSection
+{
+    friend class LIniParser;
+public:
+    /**
+     * 获得第一行数据的迭代器。
+     * @return 该 Section 的第一行数据。
+     */
+    LIterator GetHead(void);
+
+    /**
+     * 获得指定行的 Key 名称。
+     * @param [in] it 一行数据的迭代器。
+     * @param [out] str 用于接收 Key 名称的 LStringA 对象指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetKeyName(__in LIterator it, __out LStringA* str);
+
+    /**
+     * 获得指定行的 Key 名称。
+     * @param [in] it 一行数据的迭代器。
+     * @param [out] str 用于接收 Key 名称的 LStringW 对象指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetKeyName(__in LIterator it, __out LStringW* str);
+
+    /**
+     * 获得指定行下一行数据的迭代器。
+     * @return 如果成功则返回指定行的下一行数据，否则返回 NULL。
+     */
+    LIterator GetNext(__in LIterator it);
+
+    /**
+     * 获得指定行的值字串。
+     * @param [in] it 一行数据的迭代器。
+     * @param [out] str 用于接收数据的 LStringA 对象指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetValue(__in LIterator it, __out LStringA* str);
+
+    /**
+     * 获得指定行的值字串。
+     * @param [in] it 一行数据的迭代器。
+     * @param [out] str 用于接收数据的 LStringW 对象指针。
+     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetValue(__in LIterator it, __out LStringW* str);
+
+    /**
+     * 设置指定行的整数数据。
+     * @param [in] it 一行数据的迭代器。
+     * @param [in] nValue 要设置的整数数据。
+     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL SetInt(__in LIterator it, __in int nValue);
+
+    /**
+     * 设置指定行的字符串数据。
+     * @param [in] it 一行数据的迭代器。
+     * @param [in] lpValue 要设置的字符串数据。
+     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL SetValue(__in LIterator it, __in PCSTR lpValue);
+
+    /**
+     * 设置指定行的字符串数据。
+     * @param [in] it 一行数据的迭代器。
+     * @param [in] lpValue 要设置的字符串数据。
+     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL SetValue(__in LIterator it, __in PCWSTR lpValue);
+private:
+    /**
+     * ini 数据
+     */
+    LStrList* m_ini;
+    /**
+     * 第一行数据
+     */
+    LIterator m_head;
+    /**
+     * 下一个 Section
+     */
+    LIterator m_tail;
 };
 
 /**
