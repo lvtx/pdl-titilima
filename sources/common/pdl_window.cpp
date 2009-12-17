@@ -215,6 +215,12 @@ BOOL LWnd::Create(
     return NULL != m_hWnd;
 }
 
+BOOL LWnd::CreateCaret(__in HBITMAP hBitmap, __in int nWidth, __in int nHeight)
+{
+    PDLASSERT(IsWindow());
+    return ::CreateCaret(m_hWnd, hBitmap, nWidth, nHeight);
+}
+
 BOOL LWnd::CreateEx(
     __in DWORD dwExStyle,
     __in PCSTR lpClassName,
@@ -664,26 +670,31 @@ int LWnd::GetWindowTextLengthA(void)
 
 int LWnd::GetWindowTextLengthW(void)
 {
+    PDLASSERT(IsWindow());
     return ::GetWindowTextLengthW(m_hWnd);
 }
 
-BOOL LWnd::KillTimer(__in UINT_PTR uIDEvent)
+BOOL LWnd::HideCaret(void)
 {
-    return ::KillTimer(m_hWnd, uIDEvent);
+    PDLASSERT(IsWindow());
+    return ::HideCaret(m_hWnd);
 }
 
 BOOL LWnd::Invalidate(__in BOOL bErase /* = TRUE */)
 {
+    PDLASSERT(IsWindow());
     return InvalidateRect(NULL, bErase);
 }
 
 BOOL LWnd::InvalidateRect(__in LPCRECT lpRect, __in BOOL bErase /* = TRUE */)
 {
+    PDLASSERT(IsWindow());
     return ::InvalidateRect(m_hWnd, lpRect, bErase);
 }
 
 UINT LWnd::IsDlgButtonChecked(__in int nIDButton)
 {
+    PDLASSERT(IsWindow());
     return ::IsDlgButtonChecked(m_hWnd, nIDButton);
 }
 
@@ -700,11 +711,13 @@ BOOL LWnd::IsWindow(void) const
 
 BOOL LWnd::IsWindowUnicode(void)
 {
+    PDLASSERT(IsWindow());
     return ::IsWindowUnicode(m_hWnd);
 }
 
 BOOL LWnd::IsWindowVisible(void)
 {
+    PDLASSERT(IsWindow());
     return ::IsWindowVisible(m_hWnd);
 }
 
@@ -712,6 +725,12 @@ BOOL LWnd::IsZoomed(void)
 {
     PDLASSERT(IsWindow());
     return ::IsZoomed(m_hWnd);
+}
+
+BOOL LWnd::KillTimer(__in UINT_PTR uIDEvent)
+{
+    PDLASSERT(IsWindow());
+    return ::KillTimer(m_hWnd, uIDEvent);
 }
 
 int LWnd::MessageBoxA(
@@ -1007,6 +1026,12 @@ BOOL LWnd::SizeToContent(
         uFlags |= SWP_NOREDRAW;
 #endif // _WIN32_WCE
     return SetWindowPos(NULL, 0, 0, rc.right, rc.bottom, uFlags);
+}
+
+BOOL LWnd::ShowCaret(void)
+{
+    PDLASSERT(IsWindow());
+    return ::ShowCaret(m_hWnd);
 }
 
 BOOL LWnd::ShowWindow(__in int nCmdShow)
@@ -1792,86 +1817,4 @@ INT_PTR CALLBACK LDialog::DialogProc(
 
     This->OnMsgProcceded(uMsg, wParam, lParam, ret);
     return bHandled ? ret : 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// LDrawItem
-
-int LDrawItem::OnCompareItem(PCOMPAREITEMSTRUCT cis)
-{
-    return 0;
-}
-
-BOOL LDrawItem::OnDeleteItem(PDELETEITEMSTRUCT dis)
-{
-    return FALSE;
-}
-
-BOOL LDrawItem::OnDrawItem(PDRAWITEMSTRUCT dis)
-{
-    return FALSE;
-}
-
-BOOL LDrawItem::OnMeasureItem(PMEASUREITEMSTRUCT mis)
-{
-    return FALSE;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// LCustomDraw
-
-DWORD LCustomDraw::OnPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnPreErase(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnPostErase(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnItemPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnItemPreErase(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-DWORD LCustomDraw::OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
-{
-    return CDRF_DODEFAULT;
-}
-
-void LNotify::OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled)
-{
-    bHandled = FALSE;
-}
-
-LRESULT LNotify::OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled)
-{
-    bHandled = FALSE;
-    return 0;
 }

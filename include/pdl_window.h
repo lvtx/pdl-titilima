@@ -220,6 +220,8 @@ public:
         __in int nHeight, __in HWND hWndParent, __in HMENU hMenu,
         __in PVOID lpParam);
 
+    BOOL CreateCaret(__in HBITMAP hBitmap, __in int nWidth, __in int nHeight);
+
     /**
      * 创建一个窗口。
      * @param [in] dwExStyle 窗口的附加样式。
@@ -420,8 +422,8 @@ public:
 #else
     int GetWindowTextLengthW(void);
 #endif // UNICODE
-    BOOL KillTimer(__in UINT_PTR uIDEvent);
 
+    BOOL HideCaret(void);
     /**
      * 刷新窗口。
      * @param [in] bErase 是否擦除背景。
@@ -436,6 +438,7 @@ public:
     BOOL IsWindowUnicode(void);
     BOOL IsWindowVisible(void);
     BOOL IsZoomed(void);
+    BOOL KillTimer(__in UINT_PTR uIDEvent);
     int MessageBox(__in PCTSTR lpszText, __in PCTSTR lpszCaption = NULL,
         __in UINT nType = MB_OK);
 #ifdef UNICODE
@@ -527,6 +530,7 @@ public:
      */
     BOOL SizeToContent(__in BOOL bRedraw = TRUE, __in BOOL bForce = FALSE);
 
+    BOOL ShowCaret(void);
     BOOL ShowWindow(__in int nCmdShow);
     BOOL TrackMouseEvent(__in DWORD dwFlags);
     BOOL UpdateWindow(void);
@@ -977,10 +981,10 @@ class LDrawItem
 {
     friend class LMsgWnd;
 protected:
-    virtual int OnCompareItem(PCOMPAREITEMSTRUCT cis);
-    virtual BOOL OnDeleteItem(PDELETEITEMSTRUCT dis);
-    virtual BOOL OnDrawItem(PDRAWITEMSTRUCT dis);
-    virtual BOOL OnMeasureItem(PMEASUREITEMSTRUCT mis);
+    virtual int OnCompareItem(PCOMPAREITEMSTRUCT cis) { return 0; }
+    virtual BOOL OnDeleteItem(PDELETEITEMSTRUCT dis) { return FALSE; }
+    virtual BOOL OnDrawItem(PDRAWITEMSTRUCT dis) { return FALSE; }
+    virtual BOOL OnMeasureItem(PMEASUREITEMSTRUCT mis) { return FALSE; }
 };
 
 
@@ -995,17 +999,26 @@ class LCustomDraw
 {
     friend class LMsgWnd;
 protected:
-    virtual DWORD OnPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
-    virtual DWORD OnPostPaint(int idCtl, LPNMCUSTOMDRAW cd);
-    virtual DWORD OnPreErase(int idCtl, LPNMCUSTOMDRAW cd);
-    virtual DWORD OnPostErase(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
+    virtual DWORD OnPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
+    virtual DWORD OnPreErase(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
+    virtual DWORD OnPostErase(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
 
-    virtual DWORD OnItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
-    virtual DWORD OnItemPostPaint(int idCtl, LPNMCUSTOMDRAW cd);
-    virtual DWORD OnItemPreErase(int idCtl, LPNMCUSTOMDRAW cd);
-    virtual DWORD OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
+    virtual DWORD OnItemPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
+    virtual DWORD OnItemPreErase(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
+    virtual DWORD OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
 
-    virtual DWORD OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
+    { return CDRF_DODEFAULT; }
 };
 
 /**
@@ -1019,6 +1032,13 @@ class LNotify
 {
     friend class LMsgWnd;
 protected:
-    virtual void OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled);
-    virtual LRESULT OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled);
+    virtual void OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled)
+    {
+        bHandled = FALSE;
+    }
+    virtual LRESULT OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled)
+    {
+        bHandled = FALSE;
+        return 0;
+    }
 };
