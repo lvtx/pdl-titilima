@@ -41,11 +41,18 @@
  * \def PDLLOG
  * 输出日志信息。
  */
+#define _PDL_STR(s)     #s
+#define PDL_STR(s)      _PDL_STR(s)
+#define _PDL_WSTR(s)    L ## s
+#define PDL_WSTR(s)     _PDL_WSTR(s)
+#ifdef UNICODE
+#define PDL_TSTR(s)     _PDL_WSTR(s)
+#else
+#define PDL_TSTR(s)     _PDL_STR(s)
+#endif // UNICODE
 
 #ifdef _DEBUG
 
-#define _PDL_WSTR(s)    L ## s
-#define PDL_WSTR(s)     _PDL_WSTR(s)
 #define PDLASSERT(expr) (void)((!!(expr)) || (LAssertBox(L###expr, PDL_WSTR(__FILE__), __LINE__)))
 #define PDLVERIFY       PDLASSERT
 #define PDLTRACE        LTrace
@@ -54,7 +61,7 @@
 #else
 
 #define PDLASSERT(expr) ((void)0)
-#define PDLVERIFY(expr) ((void)(f))
+#define PDLVERIFY(expr) ((void)(expr))
 #define PDLTRACE        (void)
 #define PDLLOG          LAppModule::DebugPrint
 

@@ -241,6 +241,22 @@
     DoDefault(WM_ERASEBKGND,            \
         (WPARAM)h, 0)
 
+// WM_GETDLGCODE
+
+#define DECLARE_GETDLGCODE_HANDLER(fn)          \
+    UINT fn(UINT uKey, PMSG msg,                \
+        BOOL& bHandled);
+#define DECLAREV_GETDLGCODE_HANDLER(fn)         \
+    virtual UINT fn(UINT uKey, PMSG msg,        \
+        BOOL& bHandled);
+#define PROCESS_GETDLGCODE(fn)                  \
+    else if (WM_GETDLGCODE == uMsg) {           \
+        ret = fn(wParam, (PMSG)lParam,          \
+            bHandled);                          \
+    }
+#define DEFAULT_GETDLGCODE_HANDLER(vk, msg)     \
+    DoDefault(WM_GETDLGCODE, vk, (LPARAM)msg);
+
 // WM_INITDIALOG
 
 #define DECLARE_INITDIALOG_HANDLER(fn)      \
@@ -298,6 +314,20 @@
 #define DEFAULT_KEYUP_HANDLER(c, r, f)  \
     DoDefault(WM_KEYUP, (WPARAM)c,      \
         MAKELPARAM(r, f))
+
+// WM_KILLFOCUS
+
+#define DECLARE_KILLFOCUS_HANDLER(fn)           \
+    void fn(HWND hNewWnd, BOOL& bHandled);
+#define DECLAREV_KILLFOCUS_HANDLER(fn)          \
+    virtual void fn(HWND hNewWnd,               \
+        BOOL& bHandled);
+#define PROCESS_KILLFOCUS(fn)                   \
+    else if (WM_KILLFOCUS == uMsg) {            \
+        fn((HWND)wParam, bHandled);             \
+    }
+#define DEFAULT_KILLFOCUS_HANDLER(h)            \
+    DoDefault(WM_KILLFOCUS, (WPARAM)h, 0)
 
 // WM_LBUTTONDBLCLK
 
@@ -492,6 +522,19 @@
 #define DEFAULT_SETCURSOR_HANDLER(hwnd, hittest, m)     \
     DoDefault(WM_SETCURSOR, (WPARAM)hwnd,               \
         MAKELPARAM(hittest, m))
+
+// WM_SETFOCUS
+
+#define DECLARE_SETFOCUS_HANDLER(fn)                    \
+    void fn(HWND hOldWnd, BOOL& bHandled);
+#define DECLAREV_SETFOCUS_HANDLER(fn)                   \
+    virtual void fn(HWND hOldWnd, BOOL& bHandled);
+#define PROCESS_SETFOCUS(fn)                            \
+    else if (WM_SETFOCUS == uMsg) {                     \
+        fn((HWND)wParam, bHandled);                     \
+    }
+#define DEFAULT_SETFOCUS_HANDLER(hwnd)                  \
+    DoDefault(WM_SETFOCUS, (WPARAM)hwnd, 0);
 
 // WM_SIZE
 
