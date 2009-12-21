@@ -1359,9 +1359,43 @@ BOOL LTabCtrl::CreateEx(
         x, y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
 }
 
+BOOL LTabCtrl::DeleteAllItems(void)
+{
+    PDLASSERT(IsWindow());
+    return TabCtrl_DeleteAllItems(m_hWnd);
+}
+
+int LTabCtrl::DeleteItem(__in int iItem)
+{
+    PDLASSERT(IsWindow());
+    return TabCtrl_DeleteItem(m_hWnd, iItem);
+}
+
 int LTabCtrl::GetCurSel(void)
 {
     return (int)SendMessage(TCM_GETCURSEL);
+}
+
+BOOL LTabCtrl::GetItem(__in int iItem, __out LPTCITEMA pitem)
+{
+    return (BOOL)SendMessage(TCM_GETITEMA, (WPARAM)iItem, (LPARAM)pitem);
+}
+
+BOOL LTabCtrl::GetItem(__in int iItem, __out LPTCITEMW pitem)
+{
+    return (BOOL)SendMessage(TCM_GETITEMW, (WPARAM)iItem, (LPARAM)pitem);
+}
+
+int LTabCtrl::GetItemCount(void)
+{
+    PDLASSERT(IsWindow());
+    return TabCtrl_GetItemCount(m_hWnd);
+}
+
+int LTabCtrl::HitTest(__inout LPTCHITTESTINFO pinfo)
+{
+    PDLASSERT(IsWindow());
+    return TabCtrl_HitTest(m_hWnd, pinfo);
 }
 
 int LTabCtrl::InsertItem(__in int iItem, __in const LPTCITEMA pitem)
@@ -1404,9 +1438,25 @@ int LTabCtrl::InsertItem(__in int iItem, __in PCWSTR lpszItem,
     return InsertItem(iItem, &item);
 }
 
+int LTabCtrl::SetCurSel(__in int iItem)
+{
+    PDLASSERT(IsWindow());
+    return TabCtrl_SetCurSel(m_hWnd, iItem);
+}
+
 HIMAGELIST LTabCtrl::SetImageList(__in HIMAGELIST himl)
 {
     return (HIMAGELIST)SendMessage(TCM_SETIMAGELIST, 0, (LPARAM)himl);
+}
+
+BOOL LTabCtrl::SetItem(__in int iItem, __in LPTCITEMA pitem)
+{
+    return (BOOL)SendMessage(TCM_SETITEMA, (WPARAM)iItem, (LPARAM)pitem);
+}
+
+BOOL LTabCtrl::SetItem(__in int iItem, __in LPTCITEMW pitem)
+{
+    return (BOOL)SendMessage(TCM_SETITEMW, (WPARAM)iItem, (LPARAM)pitem);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
