@@ -432,14 +432,23 @@ public:
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
         __in UINT nID);
+    BOOL DeleteAllItems(void);
+    BOOL DeleteItem(__in int iItem);
     int GetCurSel(void);
+    BOOL GetItem(__in int iItem, __out LPTCITEMA pitem);
+    BOOL GetItem(__in int iItem, __out LPTCITEMW pitem);
+    int GetItemCount(void);
+    int HitTest(__inout LPTCHITTESTINFO pinfo);
     int InsertItem(__in int iItem, __in const LPTCITEMA pitem);
     int InsertItem(__in int iItem, __in const LPTCITEMW pitem);
     int InsertItem(__in int iItem, __in PCSTR lpszItem,
         __in int nImage = -1, __in LPARAM lParam = 0);
     int InsertItem(__in int iItem, __in PCWSTR lpszItem,
         __in int nImage = -1, __in LPARAM lParam = 0);
+    int SetCurSel(__in int iItem);
     HIMAGELIST SetImageList(__in HIMAGELIST himl);
+    BOOL SetItem(__in int iItem, __in LPTCITEMA pitem);
+    BOOL SetItem(__in int iItem, __in LPTCITEMW pitem);
 };
 
 /**
