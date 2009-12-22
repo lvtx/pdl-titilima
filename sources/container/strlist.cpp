@@ -82,7 +82,7 @@ BOOL LStrList::GetAt(__in LIterator it, __out LStringW* str)
 
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCSTR lpString)
 {
-    return LPtrList::InsertAfter(it, &lpString);
+    return LPtrList::InsertAfter(it, lpString);
 }
 
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCWSTR lpString)
@@ -93,7 +93,7 @@ LIterator LStrList::InsertAfter(__in LIterator it, __in PCWSTR lpString)
 
 LIterator LStrList::InsertBefore(__in LIterator it, __in PCSTR lpString)
 {
-    return LPtrList::InsertBefore(it, &lpString);
+    return LPtrList::InsertBefore(it, lpString);
 }
 
 LIterator LStrList::InsertBefore(__in LIterator it, __in PCWSTR lpString)
