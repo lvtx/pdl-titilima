@@ -78,9 +78,11 @@ public:
      * 从指定的 Section 名称获得一个 Section 对象。
      * @param [in] lpszSection 要获取的 Section 名称。
      * @param [out] 用于接收返回的 Section 对象。
+     * @param [in] 如果 Section 不存在是否创建。
      * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL GetSection(__in PCSTR lpszSection, __out LIniSection* sec);
+    BOOL GetSection(__in PCSTR lpszSection, __out LIniSection* sec,
+        __in BOOL bCreate);
 
     /**
      * 从指定的 Section 和 Key 处获取一个字符串。
@@ -246,6 +248,68 @@ class LIniSection
 {
     friend class LIniParser;
 public:
+    LIniSection(void);
+public:
+
+    /**
+     * 向头部添加一行数据。
+     * @param [in] lpKeyName 要设置的键名称。
+     * @param [in] lpValue 要设置的值。
+     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator AddHead(__in PCSTR lpKeyName, __in PCSTR lpValue);
+
+    /**
+     * 向头部添加一行数据。
+     * @param [in] lpKeyName 要设置的键名称。
+     * @param [in] lpValue 要设置的值。
+     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator AddHead(__in PCSTR lpKeyName, __in PCWSTR lpValue);
+
+    /**
+     * 向头部添加一行数据。
+     * @param [in] lpKeyName 要设置的键名称。
+     * @param [in] lpValue 要设置的值。
+     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator AddHead(__in PCSTR lpKeyName, __in int nValue);
+
+    /**
+     * 向尾部添加一行数据。
+     * @param [in] lpKeyName 要设置的键名称。
+     * @param [in] lpValue 要设置的值。
+     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator AddTail(__in PCSTR lpKeyName, __in PCSTR lpValue);
+
+    /**
+     * 向尾部添加一行数据。
+     * @param [in] lpKeyName 要设置的键名称。
+     * @param [in] lpValue 要设置的值。
+     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator AddTail(__in PCSTR lpKeyName, __in PCWSTR lpValue);
+
+    /**
+     * 向尾部添加一行数据。
+     * @param [in] lpKeyName 要设置的键名称。
+     * @param [in] lpValue 要设置的值。
+     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator AddTail(__in PCSTR lpKeyName, __in int nValue);
+
+    /**
+     * 清空 Section 数据。
+     */
+    void Clear(void);
+
     /**
      * 获得第一行数据的迭代器。
      * @return 该 Section 的第一行数据。
@@ -289,6 +353,78 @@ public:
      * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL GetValue(__in LIterator it, __out LStringW* str);
+
+    /**
+     * 在指定的位置之前插入一个字符串值。
+     * @param [in] it 要插入的位置。
+     * @param [in] lpKeyName 要插入的键名称。
+     * @param [in] lpValue 要插入的值。
+     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator InsertBefore(__in LIterator it, __in PCSTR lpKeyName,
+        __in PCSTR lpValue);
+
+    /**
+     * 在指定的位置之前插入一个字符串值。
+     * @param [in] it 要插入的位置。
+     * @param [in] lpKeyName 要插入的键名称。
+     * @param [in] lpValue 要插入的值。
+     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator InsertBefore(__in LIterator it, __in PCSTR lpKeyName,
+        __in PCWSTR lpValue);
+
+    /**
+     * 在指定的位置之前插入一个整数值。
+     * @param [in] it 要插入的位置。
+     * @param [in] lpKeyName 要插入的键名称。
+     * @param [in] nValue 要插入的整数值。
+     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator InsertBefore(__in LIterator it, __in PCSTR lpKeyName,
+        __in int nValue);
+
+    /**
+     * 在指定的位置之后插入一个字符串值。
+     * @param [in] it 要插入的位置。
+     * @param [in] lpKeyName 要插入的键名称。
+     * @param [in] lpValue 要插入的值。
+     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator InsertAfter(__in LIterator it, __in PCSTR lpKeyName,
+        __in PCSTR lpValue);
+
+    /**
+     * 在指定的位置之后插入一个字符串值。
+     * @param [in] it 要插入的位置。
+     * @param [in] lpKeyName 要插入的键名称。
+     * @param [in] lpValue 要插入的值。
+     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator InsertAfter(__in LIterator it, __in PCSTR lpKeyName,
+        __in PCWSTR lpValue);
+
+    /**
+     * 在指定的位置之后插入一个整数值。
+     * @param [in] it 要插入的位置。
+     * @param [in] lpKeyName 要插入的键名称。
+     * @param [in] nValue 要插入的整数值。
+     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
+     * \note 此函数并不检查数据是否重复。
+     */
+    LIterator InsertAfter(__in LIterator it, __in PCSTR lpKeyName,
+        __in int nValue);
+
+    /**
+     * 获得 Section 是否为空。
+     * @return 如果该 Section 为空则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL IsEmpty(void);
 
     /**
      * 设置指定行的整数数据。

@@ -203,15 +203,32 @@ DWORD LIniParser::GetString(
     return lstrlenW(lpszBuffer);
 }
 
-BOOL LIniParser::GetSection(__in PCSTR lpszSection, __out LIniSection* sec)
+BOOL LIniParser::GetSection(
+    __in PCSTR lpszSection,
+    __out LIniSection* sec,
+    __in BOOL bCreate)
 {
     LIterator it = FindSection(lpszSection);
     if (NULL == it)
-        return FALSE;
+    {
+        if (bCreate)
+        {
+            LStringA strSec;
+            strSec.Format("[%s]", lpszSection);
+            it = m_data.AddTail(strSec);
+            m_secList.AddTail(&it);
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
 
     sec->m_ini = &m_data;
     sec->m_head = it;
     sec->m_tail = FindNextSection(it);
+    if (NULL == sec->m_tail)
+        sec->m_tail = m_data.AddTail(""); // 插入一个空行作为分界线
     return TRUE;
 }
 
@@ -434,9 +451,69 @@ BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
 ///////////////////////////////////////////////////////////////////////////////
 // LIniSection
 
+LIniSection::LIniSection(void)
+{
+    m_ini = NULL;
+    m_head = NULL;
+    m_tail = NULL;
+}
+
+LIterator LIniSection::AddHead(__in PCSTR lpKeyName, __in PCSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%s", lpKeyName, lpValue);
+    return m_ini->InsertAfter(m_head, str);
+}
+
+LIterator LIniSection::AddHead(__in PCSTR lpKeyName, __in PCWSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%S", lpKeyName, lpValue);
+    return m_ini->InsertAfter(m_head, str);
+}
+
+LIterator LIniSection::AddHead(__in PCSTR lpKeyName, __in int nValue)
+{
+    LStringA str;
+    str.Format("%s=%d", lpKeyName, nValue);
+    return m_ini->InsertAfter(m_head, str);
+}
+
+LIterator LIniSection::AddTail(__in PCSTR lpKeyName, __in PCSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%s", lpKeyName, lpValue);
+    return m_ini->InsertBefore(m_tail, str);
+}
+
+LIterator LIniSection::AddTail(__in PCSTR lpKeyName, __in PCWSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%S", lpKeyName, lpValue);
+    return m_ini->InsertBefore(m_tail, str);
+}
+
+LIterator LIniSection::AddTail(__in PCSTR lpKeyName, __in int nValue)
+{
+    LStringA str;
+    str.Format("%s=%d", lpKeyName, nValue);
+    return m_ini->InsertBefore(m_tail, str);
+}
+
+void LIniSection::Clear(void)
+{
+    LIterator it = GetHead();
+    while (NULL != it)
+    {
+        LIterator itDel = it;
+        it = GetNext(it);
+        m_ini->Remove(itDel);
+    }
+}
+
 LIterator LIniSection::GetHead(void)
 {
-    return m_head;
+    return GetNext(m_head);
 }
 
 BOOL LIniSection::GetKeyName(__in LIterator it, __out LStringA* str)
@@ -505,6 +582,71 @@ BOOL LIniSection::GetValue(__in LIterator it, __out LStringW* str)
 
     *str = strLine.Mid(n + 1);
     return TRUE;
+}
+
+LIterator LIniSection::InsertBefore(
+    __in LIterator it,
+    __in PCSTR lpKeyName,
+    __in PCSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%s", lpKeyName, lpValue);
+    return m_ini->InsertBefore(it, str);
+}
+
+LIterator LIniSection::InsertBefore(
+    __in LIterator it,
+    __in PCSTR lpKeyName,
+    __in PCWSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%S", lpKeyName, lpValue);
+    return m_ini->InsertBefore(it, str);
+}
+
+LIterator LIniSection::InsertBefore(
+    __in LIterator it,
+    __in PCSTR lpKeyName,
+    __in int nValue)
+{
+    LStringA str;
+    str.Format("%s=%d", lpKeyName, nValue);
+    return m_ini->InsertBefore(it, str);
+}
+
+LIterator LIniSection::InsertAfter(
+    __in LIterator it,
+    __in PCSTR lpKeyName,
+    __in PCSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%s", lpKeyName, lpValue);
+    return m_ini->InsertAfter(it, str);
+}
+
+LIterator LIniSection::InsertAfter(
+    __in LIterator it,
+    __in PCSTR lpKeyName,
+    __in PCWSTR lpValue)
+{
+    LStringA str;
+    str.Format("%s=%S", lpKeyName, lpValue);
+    return m_ini->InsertAfter(it, str);
+}
+
+LIterator LIniSection::InsertAfter(
+    __in LIterator it,
+    __in PCSTR lpKeyName,
+    __in int nValue)
+{
+    LStringA str;
+    str.Format("%s=%d", lpKeyName, nValue);
+    return m_ini->InsertAfter(it, str);
+}
+
+BOOL LIniSection::IsEmpty(void)
+{
+    return m_head == m_tail;
 }
 
 BOOL LIniSection::SetInt(__in LIterator it, __in int nValue)
