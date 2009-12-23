@@ -682,7 +682,6 @@ BOOL LWnd::HideCaret(void)
 
 BOOL LWnd::Invalidate(__in BOOL bErase /* = TRUE */)
 {
-    PDLASSERT(IsWindow());
     return InvalidateRect(NULL, bErase);
 }
 
@@ -1309,7 +1308,7 @@ LRESULT LMsgWnd::OnMessage(
 //////////////////////////////////////////////////////////////////////////
 // LSubclassWnd
 
-LSubclassWnd::LSubclassWnd(void)
+LSubclassWnd::LSubclassWnd(void) : LMsgWnd()
 {
     /* Dummy */
 }

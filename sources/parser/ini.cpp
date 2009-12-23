@@ -14,12 +14,14 @@
 #include "..\adaptor\wince_adaptor.h"
 #endif // _WIN32_WCE
 
+#define INISTATE_DIRTY      0x00000001
+
 ///////////////////////////////////////////////////////////////////////////////
 // LIniParser
 
 LIniParser::LIniParser(__in ILock* lock) : m_data(lock)
 {
-    m_bDirty = FALSE;
+    m_dwState = 0;
     m_secList.Create(sizeof(LIterator));
 }
 
@@ -217,6 +219,7 @@ BOOL LIniParser::GetSection(
             strSec.Format("[%s]", lpszSection);
             it = m_data.AddTail(strSec);
             m_secList.AddTail(&it);
+            m_dwState |= INISTATE_DIRTY;
         }
         else
         {
@@ -224,6 +227,7 @@ BOOL LIniParser::GetSection(
         }
     }
 
+    sec->m_pState = &m_dwState;
     sec->m_ini = &m_data;
     sec->m_head = it;
     sec->m_tail = FindNextSection(it);
@@ -331,7 +335,7 @@ void LIniParser::Open(__in LTxtFile* pFile)
         if ('[' == str[0] && ']' == str[len - 1])
             m_secList.AddTail(&it);
     }
-    m_bDirty = FALSE;
+    m_dwState = 0;
 }
 
 void LIniParser::RemoveSection(__in PCSTR lpszSection)
@@ -348,7 +352,7 @@ void LIniParser::RemoveSection(__in PCSTR lpszSection)
 
 BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
 {
-    if (NULL == lpszFileName || !m_bDirty)
+    if (NULL == lpszFileName || 0 == (INISTATE_DIRTY & m_dwState))
         return FALSE;
 
     LStringA path;
@@ -366,7 +370,7 @@ BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
 
 BOOL LIniParser::Save(__in_opt PCWSTR lpszFileName)
 {
-    if (NULL == lpszFileName || !m_bDirty)
+    if (NULL == lpszFileName || 0 == (INISTATE_DIRTY & m_dwState))
         return FALSE;
 
     LStringW path;
@@ -418,7 +422,7 @@ BOOL LIniParser::WriteString(
 
 BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
 {
-    m_bDirty = TRUE;
+    m_dwState |= INISTATE_DIRTY;
 
     LStringA str;
     LIterator itSec = FindSection(lpszSection);
@@ -453,6 +457,7 @@ BOOL LIniParser::WriteStringA(PCSTR lpszSection, PCSTR lpszKey, PCSTR lpszValue)
 
 LIniSection::LIniSection(void)
 {
+    m_pState = NULL;
     m_ini = NULL;
     m_head = NULL;
     m_tail = NULL;
@@ -462,6 +467,7 @@ LIterator LIniSection::AddHead(__in PCSTR lpKeyName, __in PCSTR lpValue)
 {
     LStringA str;
     str.Format("%s=%s", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertAfter(m_head, str);
 }
 
@@ -469,6 +475,7 @@ LIterator LIniSection::AddHead(__in PCSTR lpKeyName, __in PCWSTR lpValue)
 {
     LStringA str;
     str.Format("%s=%S", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertAfter(m_head, str);
 }
 
@@ -476,6 +483,7 @@ LIterator LIniSection::AddHead(__in PCSTR lpKeyName, __in int nValue)
 {
     LStringA str;
     str.Format("%s=%d", lpKeyName, nValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertAfter(m_head, str);
 }
 
@@ -483,6 +491,7 @@ LIterator LIniSection::AddTail(__in PCSTR lpKeyName, __in PCSTR lpValue)
 {
     LStringA str;
     str.Format("%s=%s", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertBefore(m_tail, str);
 }
 
@@ -490,6 +499,7 @@ LIterator LIniSection::AddTail(__in PCSTR lpKeyName, __in PCWSTR lpValue)
 {
     LStringA str;
     str.Format("%s=%S", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertBefore(m_tail, str);
 }
 
@@ -497,6 +507,7 @@ LIterator LIniSection::AddTail(__in PCSTR lpKeyName, __in int nValue)
 {
     LStringA str;
     str.Format("%s=%d", lpKeyName, nValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertBefore(m_tail, str);
 }
 
@@ -509,6 +520,7 @@ void LIniSection::Clear(void)
         it = GetNext(it);
         m_ini->Remove(itDel);
     }
+    *m_pState |= INISTATE_DIRTY;
 }
 
 LIterator LIniSection::GetHead(void)
@@ -591,6 +603,7 @@ LIterator LIniSection::InsertBefore(
 {
     LStringA str;
     str.Format("%s=%s", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertBefore(it, str);
 }
 
@@ -601,6 +614,7 @@ LIterator LIniSection::InsertBefore(
 {
     LStringA str;
     str.Format("%s=%S", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertBefore(it, str);
 }
 
@@ -611,6 +625,7 @@ LIterator LIniSection::InsertBefore(
 {
     LStringA str;
     str.Format("%s=%d", lpKeyName, nValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertBefore(it, str);
 }
 
@@ -621,6 +636,7 @@ LIterator LIniSection::InsertAfter(
 {
     LStringA str;
     str.Format("%s=%s", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertAfter(it, str);
 }
 
@@ -631,6 +647,7 @@ LIterator LIniSection::InsertAfter(
 {
     LStringA str;
     str.Format("%s=%S", lpKeyName, lpValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertAfter(it, str);
 }
 
@@ -641,6 +658,7 @@ LIterator LIniSection::InsertAfter(
 {
     LStringA str;
     str.Format("%s=%d", lpKeyName, nValue);
+    *m_pState |= INISTATE_DIRTY;
     return m_ini->InsertAfter(it, str);
 }
 
@@ -651,8 +669,8 @@ BOOL LIniSection::IsEmpty(void)
 
 BOOL LIniSection::SetInt(__in LIterator it, __in int nValue)
 {
-    LString str;
-    str.Format(_T("%d"), nValue);
+    LStringA str;
+    str.Format("%d", nValue);
     return SetValue(it, str);
 }
 
@@ -669,6 +687,7 @@ BOOL LIniSection::SetValue(__in LIterator it, __in PCSTR lpValue)
     str.SetAt(n + 1, '\0');
     str += lpValue;
     m_ini->SetAt(it, str);
+    *m_pState |= INISTATE_DIRTY;
     return TRUE;
 }
 
@@ -685,5 +704,6 @@ BOOL LIniSection::SetValue(__in LIterator it, __in PCWSTR lpValue)
     str.SetAt(n + 1, L'\0');
     str += lpValue;
     m_ini->SetAt(it, str);
+    *m_pState |= INISTATE_DIRTY;
     return TRUE;
 }

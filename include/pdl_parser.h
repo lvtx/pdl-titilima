@@ -234,9 +234,9 @@ private:
      */
     LPtrList m_secList;
     /**
-     * Dirty 标志
+     * 状态标志
      */
-    BOOL m_bDirty;
+    DWORD m_dwState;
 };
 
 /**
@@ -450,6 +450,10 @@ public:
      */
     BOOL SetValue(__in LIterator it, __in PCWSTR lpValue);
 private:
+    /**
+     * ini 状态
+     */
+    PDWORD m_pState;
     /**
      * ini 数据
      */
