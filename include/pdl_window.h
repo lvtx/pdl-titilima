@@ -295,6 +295,11 @@ public:
         __in HWND hWndParent, __in HMENU hMenu, __in PVOID lpParam);
 
     void Cut(void);
+    HDWP DeferWindowPos(__in HDWP hWinPosInfo, __in_opt HWND hWndInsertAfter,
+        __in int x, __in int y, __in int cx, __in int cy,
+        __in UINT uFlags);
+    HDWP DeferWindowPos(__in HDWP hWinPosInfo, __in_opt HWND hWndInsertAfter,
+        __in LPCRECT rc, __in UINT uFlags);
     BOOL DestroyWindow(void);
 
     /**
@@ -532,6 +537,12 @@ public:
 
     BOOL ShowCaret(void);
     BOOL ShowWindow(__in int nCmdShow);
+    int TranslateAccelerator(__in HACCEL hAccTable, __in LPMSG lpMsg);
+#ifdef UNICODE
+    int TranslateAcceleratorA(__in HACCEL hAccTable, __in LPMSG lpMsg);
+#else
+    int TranslateAcceleratorW(__in HACCEL hAccTable, __in LPMSG lpMsg);
+#endif // UNICODE
     BOOL TrackMouseEvent(__in DWORD dwFlags);
     BOOL UpdateWindow(void);
 protected:

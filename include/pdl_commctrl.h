@@ -246,10 +246,10 @@ public:
         __in int fmt = LVCFMT_LEFT);
     int InsertColumn(__in int iCol, __in const LPLVCOLUMNA pcol);
     int InsertColumn(__in int iCol, __in const LPLVCOLUMNW pcol);
-    int InsertItem(__in int iItem, __in PCSTR pszText, __in int iImage,
-        __in LPARAM lParam);
-    int InsertItem(__in int iItem, __in PCWSTR pszText, __in int iImage,
-        __in LPARAM lParam);
+    int InsertItem(__in int iItem, __in PCSTR pszText,
+        __in int iImage = I_IMAGENONE, __in LPARAM lParam = 0);
+    int InsertItem(__in int iItem, __in PCWSTR pszText,
+        __in int iImage = I_IMAGENONE, __in LPARAM lParam = 0);
     int InsertItem(__in const LPLVITEMA pitem);
     int InsertItem(__in const LPLVITEMW pitem);
     BOOL SetCallbackMask(__in UINT mask);
@@ -403,7 +403,7 @@ class LTabCtrl : public LComCtl
 public:
     LTabCtrl(__in HWND hWnd = NULL);
     LTabCtrl& operator=(__in HWND hWnd);
-    operator HWND(void) const;
+    operator HWND(void) const { return m_hWnd; }
 public:
     void AdjustRect(__in BOOL fLarger, __inout LPRECT prc);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
@@ -438,13 +438,14 @@ public:
     BOOL GetItem(__in int iItem, __out LPTCITEMA pitem);
     BOOL GetItem(__in int iItem, __out LPTCITEMW pitem);
     int GetItemCount(void);
+    HWND GetToolTips(void);
     int HitTest(__inout LPTCHITTESTINFO pinfo);
     int InsertItem(__in int iItem, __in const LPTCITEMA pitem);
     int InsertItem(__in int iItem, __in const LPTCITEMW pitem);
     int InsertItem(__in int iItem, __in PCSTR lpszItem,
-        __in int nImage = -1, __in LPARAM lParam = 0);
+        __in int nImage = I_IMAGENONE, __in LPARAM lParam = 0);
     int InsertItem(__in int iItem, __in PCWSTR lpszItem,
-        __in int nImage = -1, __in LPARAM lParam = 0);
+        __in int nImage = I_IMAGENONE, __in LPARAM lParam = 0);
     int SetCurSel(__in int iItem);
     HIMAGELIST SetImageList(__in HIMAGELIST himl);
     BOOL SetItem(__in int iItem, __in LPTCITEMA pitem);
@@ -466,6 +467,7 @@ class LToolBar : public LComCtl
 {
 public:
     LToolBar(__in HWND hWnd = NULL);
+    operator HWND(void) const { return m_hWnd; }
 public:
     BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID);
     BOOL AddButtons(__in UINT uNumButtons, __in LPCTBBUTTON lpButtons,
@@ -487,6 +489,7 @@ class LToolTip : public LComCtl
 {
 public:
     LToolTip(__in HWND hWnd = NULL);
+    operator HWND(void) const { return m_hWnd; }
 public:
     BOOL Create(__in DWORD dwStyle, __in HWND hWndParent);
     void Activate(__in BOOL fActivate = TRUE);
@@ -567,11 +570,11 @@ public:
     HTREEITEM GetSelection(void);
     HTREEITEM HitTest(__inout LPTVHITTESTINFO lpht);
     HTREEITEM InsertItem(__in HTREEITEM hParent, __in HTREEITEM hInsertAfter,
-        __in PCSTR lpszItem, __in int nImage = -1, __in int nSelImage = -1,
-        __in LPARAM lParam = 0);
+        __in PCSTR lpszItem, __in int nImage = I_IMAGENONE,
+        __in int nSelImage = I_IMAGENONE, __in LPARAM lParam = 0);
     HTREEITEM InsertItem(__in HTREEITEM hParent, __in HTREEITEM hInsertAfter,
-        __in PCWSTR lpszItem, __in int nImage = -1, __in int nSelImage = -1,
-        __in LPARAM lParam = 0);
+        __in PCWSTR lpszItem, __in int nImage = I_IMAGENONE,
+        __in int nSelImage = I_IMAGENONE, __in LPARAM lParam = 0);
     HTREEITEM InsertItem(__in LPTVINSERTSTRUCTA lpis);
     HTREEITEM InsertItem(__in LPTVINSERTSTRUCTW lpis);
     BOOL SelectItem(__in HTREEITEM hItem);
