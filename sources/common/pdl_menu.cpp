@@ -13,9 +13,9 @@ LMenu::LMenu(__in HMENU hMenu /* = NULL */) : m_hMenu(hMenu)
 {
 }
 
-LMenu::operator HMENU(void)
+LMenu::operator HMENU(void) const
 {
-    return (HMENU)m_hMenu;
+    return m_hMenu;
 }
 
 LMenu& LMenu::operator=(__in HMENU hMenu)
@@ -26,6 +26,7 @@ LMenu& LMenu::operator=(__in HMENU hMenu)
 
 DWORD LMenu::CheckItem(__in UINT uIDCheckItem, __in UINT uCheck)
 {
+    PDLASSERT(IsMenu());
     return ::CheckMenuItem(m_hMenu, uIDCheckItem, uCheck);
 }
 
@@ -49,8 +50,15 @@ HWND PDLAPI LMenu::CreateBarCE(__in HWND hParent, __in UINT uId)
 
 #endif // _WIN32_WCE
 
+BOOL LMenu::Destroy(void)
+{
+    PDLASSERT(IsMenu());
+    return ::DestroyMenu(m_hMenu);
+}
+
 BOOL LMenu::EnableItem(__in UINT uIDEnableItem, __in UINT uEnable)
 {
+    PDLASSERT(IsMenu());
     return ::EnableMenuItem(m_hMenu, uIDEnableItem, uEnable);
 }
 
@@ -59,6 +67,7 @@ BOOL LMenu::GetItemInfo(
     __in BOOL fByPosition,
     __inout LPMENUITEMINFOA lpmii)
 {
+    PDLASSERT(IsMenu());
 #ifdef _WIN32_WCE
     return FALSE;
 #else
@@ -71,12 +80,19 @@ BOOL LMenu::GetItemInfo(
     __in BOOL fByPosition,
     __inout LPMENUITEMINFOW lpmii)
 {
+    PDLASSERT(IsMenu());
     return ::GetMenuItemInfoW(m_hMenu, uItem, fByPosition, lpmii);
 }
 
 HMENU LMenu::GetSub(__in int nPos)
 {
+    PDLASSERT(IsMenu());
     return ::GetSubMenu(m_hMenu, nPos);
+}
+
+BOOL LMenu::IsMenu(void)
+{
+    return ::IsMenu(m_hMenu);
 }
 
 BOOL LMenu::LoadLanguageRes(__in LIniParser* lan, __in PCSTR name)
@@ -132,8 +148,15 @@ void LMenu::LoadLanguageRes(
     }
 }
 
+BOOL LMenu::Remove(__in UINT uPosition, __in UINT uFlags)
+{
+    PDLASSERT(IsMenu());
+    return ::RemoveMenu(m_hMenu, uPosition, uFlags);
+}
+
 BOOL LMenu::SetDefaultItem(__in UINT uItem, __in UINT fByPos)
 {
+    PDLASSERT(IsMenu());
     return ::SetMenuDefaultItem(m_hMenu, uItem, fByPos);
 }
 
@@ -142,6 +165,7 @@ BOOL LMenu::SetItemInfo(
     __in BOOL fByPosition,
     __in LPMENUITEMINFOA lpmii)
 {
+    PDLASSERT(IsMenu());
 #ifdef _WIN32_WCE
     return FALSE;
 #else
@@ -154,14 +178,47 @@ BOOL LMenu::SetItemInfo(
     __in BOOL fByPosition,
     __in LPMENUITEMINFOW lpmii)
 {
+    PDLASSERT(IsMenu());
     return ::SetMenuItemInfoW(m_hMenu, uItem, fByPosition, lpmii);
 }
 
-BOOL LMenu::TrackPopup(
+///////////////////////////////////////////////////////////////////////////////
+// LPopupMenu
+
+LPopupMenu::LPopupMenu(__in HMENU hMenu /* = NULL */) : LMenu(hMenu)
+{
+}
+
+LPopupMenu::~LPopupMenu(void)
+{
+    if (NULL != m_hMenu)
+        Destroy();
+}
+
+LPopupMenu::operator HMENU(void) const
+{
+    return m_hMenu;
+}
+
+LPopupMenu& LPopupMenu::operator=(__in HMENU hMenu)
+{
+    m_hMenu = hMenu;
+    return *this;
+}
+
+BOOL LPopupMenu::Create(void)
+{
+    PDLASSERT(NULL == m_hMenu);
+    m_hMenu = ::CreatePopupMenu();
+    return NULL != m_hMenu;
+}
+
+BOOL LPopupMenu::Track(
     __in UINT uFlags,
     __in int x, __in int y,
     __in HWND hWnd)
 {
+    PDLASSERT(IsMenu());
 #ifdef _WIN32_WCE
     return ::TrackPopupMenuEx(m_hMenu, uFlags, x, y, hWnd, NULL);
 #else
