@@ -343,15 +343,41 @@ void LWnd::Cut(void)
     SendMessage(WM_CUT);
 }
 
+HDWP LWnd::DeferWindowPos(
+    __in HDWP hWinPosInfo,
+    __in_opt HWND hWndInsertAfter,
+    __in int x, __in int y,
+    __in int cx, __in int cy,
+    __in UINT uFlags)
+{
+    PDLASSERT(IsWindow());
+    return ::DeferWindowPos(hWinPosInfo, m_hWnd, hWndInsertAfter,
+        x, y, cx, cy, uFlags);
+}
+
+HDWP LWnd::DeferWindowPos(
+    __in HDWP hWinPosInfo,
+    __in_opt HWND hWndInsertAfter,
+    __in LPCRECT rc,
+    __in UINT uFlags)
+{
+    PDLASSERT(NULL != rc);
+    return DeferWindowPos(hWinPosInfo, hWndInsertAfter,
+        rc->left, rc->top,
+        rc->right - rc->left, rc->bottom - rc->top,
+        uFlags);
+}
+
 BOOL LWnd::DestroyWindow(void)
 {
+    PDLASSERT(IsWindow());
     return ::DestroyWindow(m_hWnd);
 }
 
 HWND LWnd::Detach(void)
 {
     HWND hRet = m_hWnd;
-    m_hWnd    = NULL;
+    m_hWnd = NULL;
     return hRet;
 }
 
@@ -359,9 +385,7 @@ BOOL LWnd::EnableDlgItem(__in int nIDDlgItem, __in BOOL bEnable /* = TRUE */)
 {
     HWND hCtrl = GetDlgItem(nIDDlgItem);
     if (NULL == hCtrl)
-    {
         return FALSE;
-    }
     return ::EnableWindow(hCtrl, bEnable);
 }
 
@@ -514,23 +538,23 @@ UINT LWnd::GetDlgItemInt(
 
 UINT LWnd::GetDlgItemTextA(
      __in int nIDDlgItem,
-     __in PSTR PSTRing,
+     __in PSTR lpString,
      __in int nMaxCount)
 {
 #ifdef _WIN32_WCE
     PDLASSERT(FALSE);
     return 0;
 #else
-    return ::GetDlgItemTextA(m_hWnd, nIDDlgItem, PSTRing, nMaxCount);
+    return ::GetDlgItemTextA(m_hWnd, nIDDlgItem, lpString, nMaxCount);
 #endif // _WIN32_WCE
 }
 
 UINT LWnd::GetDlgItemTextW(
      __in int nIDDlgItem,
-     __in PWSTR PSTRing,
+     __in PWSTR lpString,
      __in int nMaxCount)
 {
-    return ::GetDlgItemTextW(m_hWnd, nIDDlgItem, PSTRing, nMaxCount);
+    return ::GetDlgItemTextW(m_hWnd, nIDDlgItem, lpString, nMaxCount);
 }
 
 DWORD LWnd::GetExStyle(void)
@@ -759,7 +783,6 @@ int LWnd::MessageBoxW(
 BOOL LWnd::MoveWindow(__in LPCRECT lprc, __in BOOL bRepaint /* = TRUE */)
 {
     PDLASSERT(NULL != lprc);
-
     return MoveWindow(lprc->left, lprc->top, lprc->right - lprc->left,
         lprc->bottom - lprc->top, bRepaint);
 }
@@ -1037,6 +1060,18 @@ BOOL LWnd::ShowWindow(__in int nCmdShow)
 {
     PDLASSERT(IsWindow());
     return ::ShowWindow(m_hWnd, nCmdShow);
+}
+
+int LWnd::TranslateAcceleratorA(__in HACCEL hAccTable, __in LPMSG lpMsg)
+{
+    PDLASSERT(IsWindow());
+    return ::TranslateAcceleratorA(m_hWnd, hAccTable, lpMsg);
+}
+
+int LWnd::TranslateAcceleratorW(__in HACCEL hAccTable, __in LPMSG lpMsg)
+{
+    PDLASSERT(IsWindow());
+    return ::TranslateAcceleratorW(m_hWnd, hAccTable, lpMsg);
 }
 
 BOOL LWnd::TrackMouseEvent(__in DWORD dwFlags)

@@ -706,8 +706,8 @@ int LListView::InsertColumn(__in int iCol, __in const LPLVCOLUMNW pcol)
 int LListView::InsertItem(
     __in int iItem,
     __in PCSTR pszText,
-    __in int iImage,
-    __in LPARAM lParam)
+    __in int iImage /* = I_IMAGENONE */,
+    __in LPARAM lParam /* = 0 */)
 {
     LVITEMA item = { 0 };
 
@@ -723,8 +723,8 @@ int LListView::InsertItem(
 int LListView::InsertItem(
     __in int iItem,
     __in PCWSTR pszText,
-    __in int iImage,
-    __in LPARAM lParam)
+    __in int iImage /* = I_IMAGENONE */,
+    __in LPARAM lParam /* = 0 */)
 {
     LVITEMW item = { 0 };
 
@@ -1253,11 +1253,6 @@ LTabCtrl& LTabCtrl::operator=(__in HWND hWnd)
     return *this;
 }
 
-LTabCtrl::operator HWND(void) const
-{
-    return m_hWnd;
-}
-
 void LTabCtrl::AdjustRect(__in BOOL fLarger, __inout LPRECT prc)
 {
     SendMessage(TCM_ADJUSTRECT, (WPARAM)fLarger, (LPARAM)prc);
@@ -1392,6 +1387,12 @@ int LTabCtrl::GetItemCount(void)
     return TabCtrl_GetItemCount(m_hWnd);
 }
 
+HWND LTabCtrl::GetToolTips(void)
+{
+    PDLASSERT(IsWindow());
+    return TabCtrl_GetToolTips(m_hWnd);
+}
+
 int LTabCtrl::HitTest(__inout LPTCHITTESTINFO pinfo)
 {
     PDLASSERT(IsWindow());
@@ -1411,7 +1412,7 @@ int LTabCtrl::InsertItem(__in int iItem, __in const LPTCITEMW pitem)
 int LTabCtrl::InsertItem(
     __in int iItem,
     __in PCSTR lpszItem,
-    __in int nImage /* = -1 */,
+    __in int nImage /* = I_IMAGENONE */,
     __in LPARAM lParam /* = 0 */)
 {
     TCITEMA item = { 0 };
@@ -1424,9 +1425,11 @@ int LTabCtrl::InsertItem(
     return InsertItem(iItem, &item);
 }
 
-int LTabCtrl::InsertItem(__in int iItem, __in PCWSTR lpszItem,
-                         __in int nImage /* = -1 */,
-                         __in LPARAM lParam /* = 0 */)
+int LTabCtrl::InsertItem(
+    __in int iItem,
+    __in PCWSTR lpszItem,
+    __in int nImage /* = I_IMAGENONE */,
+    __in LPARAM lParam /* = 0 */)
 {
     TCITEMW item = { 0 };
 
@@ -1804,8 +1807,8 @@ HTREEITEM LTreeView::InsertItem(
     __in HTREEITEM hParent,
     __in HTREEITEM hInsertAfter,
     __in PCSTR lpszItem,
-    __in int nImage /* = -1 */,
-    __in int nSelImage /* = -1 */,
+    __in int nImage /* = I_IMAGENONE */,
+    __in int nSelImage /* = I_IMAGENONE */,
     __in LPARAM lParam /* = 0 */)
 {
     TVINSERTSTRUCTA tvis = { 0 };
@@ -1832,8 +1835,8 @@ HTREEITEM LTreeView::InsertItem(
     __in HTREEITEM hParent,
     __in HTREEITEM hInsertAfter,
     __in PCWSTR lpszItem,
-    __in int nImage /* = -1 */,
-    __in int nSelImage /* = -1 */,
+    __in int nImage /* = I_IMAGENONE */,
+    __in int nSelImage /* = I_IMAGENONE */,
     __in LPARAM lParam /* = 0 */)
 {
     TVINSERTSTRUCTW tvis = { 0 };
