@@ -952,6 +952,20 @@ public:
     void SetFont(__in HFONT hFont, __in BOOL bAllCtrls = TRUE,
         __in BOOL bRedraw = TRUE);
 
+    /**
+     * 设置对话框的图标。
+     * @param [in] hInstance 图标资源所在的模块句柄。
+     * @param [in] lpIcon 图标的名称。
+     */
+    void SetIcon(__in HINSTANCE hInstance, __in PCSTR lpIcon);
+
+    /**
+     * 设置对话框的图标。
+     * @param [in] hInstance 图标资源所在的模块句柄。
+     * @param [in] lpIcon 图标的名称。
+     */
+    void SetIcon(__in HINSTANCE hInstance, __in PCWSTR lpIcon);
+
 protected:
     LRESULT DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam);
     /**

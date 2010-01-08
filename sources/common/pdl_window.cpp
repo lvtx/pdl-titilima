@@ -1808,6 +1808,36 @@ void LDialog::SetFont(
     }
 }
 
+void LDialog::SetIcon(__in HINSTANCE hInstance, __in PCSTR lpIcon)
+{
+    // Big icon
+    HICON hIcon = ::LoadIconA(hInstance, lpIcon);
+    if (NULL != hIcon)
+        LWnd::SetIcon(hIcon, ICON_BIG);
+
+    // Small icon
+    hIcon = (HICON)::LoadImageA(hInstance, lpIcon, IMAGE_ICON,
+        ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON),
+        0);
+    if (NULL != hIcon)
+        LWnd::SetIcon(hIcon, ICON_SMALL);
+}
+
+void LDialog::SetIcon(__in HINSTANCE hInstance, __in PCWSTR lpIcon)
+{
+    // Big icon
+    HICON hIcon = ::LoadIconW(hInstance, lpIcon);
+    if (NULL != hIcon)
+        LWnd::SetIcon(hIcon, ICON_BIG);
+
+    // Small icon
+    hIcon = (HICON)::LoadImageW(hInstance, lpIcon, IMAGE_ICON,
+        ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON),
+        0);
+    if (NULL != hIcon)
+        LWnd::SetIcon(hIcon, ICON_SMALL);
+}
+
 INT_PTR CALLBACK LDialog::StartDlgProc(
     HWND hDlg,
     UINT uMsg,
