@@ -138,17 +138,23 @@ public:
 
     /**
      * 打开一个 ini 文件。
-     * @param lpszFileName: ini 文件的文件名。
+     * @param [in] lpszFileName: ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in PCSTR lpszFileName);
 
     /**
      * 打开一个 ini 文件。
-     * @param lpszFileName: ini 文件的文件名。
+     * @param [in] lpszFileName: ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in PCWSTR lpszFileName);
+
+    /**
+     * 借助一个 LTxtFile 对象来打开 ini 文件。
+     * @param [in] 一个有效的 LTxtFile 对象指针。
+     */
+    void Open(__in LTxtFile* pFile);
 
     /**
      * 移除一个 Section。
@@ -215,10 +221,6 @@ private:
      * 从指定的 Section 与指定的 Key 处读取字符串。
      */
     PSTR GetStringA(__in PCSTR lpszSection, __in PCSTR lpszKey);
-    /**
-     * 借助一个 LTxtFile 对象来打开 ini 文件。
-     */
-    void Open(__in LTxtFile* pFile);
     /**
      * 向指定的 Section 与 指定的 Key 处写入字符串。
      */

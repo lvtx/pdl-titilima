@@ -317,10 +317,6 @@ BOOL LIniParser::Open(__in PCWSTR lpszFileName)
     return TRUE;
 }
 
-// Open
-// 打开一个 ini 文件。
-// [in] pFile: ini 文件的对象指针。
-
 void LIniParser::Open(__in LTxtFile* pFile)
 {
     LStringA str;
