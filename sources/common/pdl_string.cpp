@@ -18,14 +18,7 @@ LStringA::LStringA(void)
 LStringA::LStringA(__in PCSTR lpszString)
 {
     m_dwMaxLen = 0;
-    m_lpszData = NULL;
-    Copy(lpszString);
-}
-
-LStringA::LStringA(__in PCWSTR lpszString)
-{
-    m_dwMaxLen = 0;
-    if (NULL == lpszString)
+    if (NULL == lpszString || '\0' == *lpszString)
     {
         m_lpszData = AllocString(nullstrA);
     }
@@ -33,6 +26,20 @@ LStringA::LStringA(__in PCWSTR lpszString)
     {
         m_lpszData = NULL;
         Copy(lpszString);
+    }
+}
+
+LStringA::LStringA(__in PCWSTR lpszString, __in UINT CodePage /* = CP_ACP */)
+{
+    m_dwMaxLen = 0;
+    if (NULL == lpszString || L'\0' == *lpszString)
+    {
+        m_lpszData = AllocString(nullstrA);
+    }
+    else
+    {
+        m_lpszData = NULL;
+        Copy(lpszString, CodePage);
     }
 }
 
@@ -142,9 +149,9 @@ void LStringA::Copy(__in PCSTR lpszString)
     str.Copy(lpszString);
 }
 
-void LStringA::Copy(__in PCWSTR lpszString)
+void LStringA::Copy(__in PCWSTR lpszString, __in UINT CodePage /* = CP_ACP */)
 {
-    int len = WideCharToMultiByte(CP_ACP, 0, lpszString, -1, NULL, 0,
+    int len = WideCharToMultiByte(CodePage, 0, lpszString, -1, NULL, 0,
         NULL, NULL);
     if (len > (int)m_dwMaxLen)
     {
@@ -152,7 +159,7 @@ void LStringA::Copy(__in PCWSTR lpszString)
         FreeString(m_lpszData);
         m_lpszData = CharTraitsA::Alloc(len);
     }
-    WideCharToMultiByte(CP_ACP, 0, lpszString, -1, m_lpszData, len, NULL,
+    WideCharToMultiByte(CodePage, 0, lpszString, -1, m_lpszData, len, NULL,
         NULL);
     m_lpszData[len] = '\0';
 }
@@ -298,17 +305,24 @@ LStringW::LStringW(void)
     m_lpszData = AllocString(nullstrW);
 }
 
-LStringW::LStringW(__in PCSTR lpszString)
+LStringW::LStringW(__in PCSTR lpszString, __in UINT CodePage /* = CP_ACP */)
 {
     m_dwMaxLen = 0;
-    m_lpszData = NULL;
-    Copy(lpszString);
+    if (NULL == lpszString || '\0' == *lpszString)
+    {
+        m_lpszData = AllocString(nullstrW);
+    }
+    else
+    {
+        m_lpszData = NULL;
+        Copy(lpszString, CodePage);
+    }
 }
 
 LStringW::LStringW(__in PCWSTR lpszString /* = NULL */)
 {
     m_dwMaxLen = 0;
-    if (NULL == lpszString)
+    if (NULL == lpszString || L'\0' == *lpszString)
     {
         m_lpszData = AllocString(nullstrW);
     }
@@ -419,16 +433,16 @@ BSTR LStringW::ConvertToBSTR(void)
     return ::SysAllocString(m_lpszData);
 }
 
-void LStringW::Copy(__in PCSTR lpszString)
+void LStringW::Copy(__in PCSTR lpszString, __in UINT CodePage /* = CP_ACP */)
 {
-    int len = MultiByteToWideChar(CP_ACP, 0, lpszString, -1, NULL, 0);
+    int len = MultiByteToWideChar(CodePage, 0, lpszString, -1, NULL, 0);
     if (len > (int)m_dwMaxLen)
     {
         m_dwMaxLen = len;
         FreeString(m_lpszData);
         m_lpszData = CharTraitsW::Alloc(len);
     }
-    MultiByteToWideChar(CP_ACP, 0, lpszString, -1, m_lpszData, len);
+    MultiByteToWideChar(CodePage, 0, lpszString, -1, m_lpszData, len);
     m_lpszData[len] = L'\0';
 }
 

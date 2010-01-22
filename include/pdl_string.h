@@ -8,17 +8,18 @@
 #include "pdl_base.h"
 #include <comdef.h>
 
+class LStringW;
+
 /**
  * \class LStringA
  * \brief PDL ANSI ×Ö·û´®Àà
  */
-
 class LStringA
 {
 public:
     LStringA(void);
     LStringA(__in PCSTR lpszString);
-    LStringA(__in PCWSTR lpszString);
+    LStringA(__in PCWSTR lpszString, __in UINT CodePage = CP_ACP);
     LStringA(__in const LStringA& obj);
     ~LStringA(void);
     operator PCSTR(void) const;
@@ -37,7 +38,7 @@ public:
     int Compare(__in PCSTR lpszString, __in BOOL bCase = TRUE);
     BSTR ConvertToBSTR(void);
     void Copy(__in PCSTR lpszString);
-    void Copy(__in PCWSTR lpszString);
+    void Copy(__in PCWSTR lpszString, __in UINT CodePage = CP_ACP);
     PSTR Detach(void);
     void Empty(void);
     BOOL ExpandEnvironment(void);
@@ -72,7 +73,7 @@ class LStringW
 {
 public:
     LStringW(void);
-    LStringW(__in PCSTR lpszString);
+    LStringW(__in PCSTR lpszString, __in UINT CodePage = CP_ACP);
     LStringW(__in PCWSTR lpszString);
     LStringW(__in const LStringW& obj);
     ~LStringW(void);
@@ -90,7 +91,7 @@ public:
     void Append(__in WCHAR ch);
     void Attach(__in PWSTR lpszString);
     int Compare(__in PCWSTR lpszString, __in BOOL bCase = TRUE);
-    void Copy(__in PCSTR lpszString);
+    void Copy(__in PCSTR lpszString, __in UINT CodePage = CP_ACP);
     void Copy(__in PCWSTR lpszString);
     BSTR ConvertToBSTR(void);
     PWSTR Detach(void);
