@@ -334,6 +334,8 @@ int LStringT<CharT, CharTraits>::Replace(PCSTRT pszOld, PCSTRT pszNew)
             ++cnt;
             lpStart = lpTarget + nOldLen;
         }
+        if (NULL == lpTarget)
+            break;
     }
 
     if (0 == cnt)
