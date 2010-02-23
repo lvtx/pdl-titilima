@@ -2,6 +2,7 @@ xxxx.xx.xx - 0.05.xxx
 * 为菜单加入多语言支持。
 * 为 LIniParser 加入 LIniSection 辅助类。
 * 增加及调整部分接口。
+* 加入 LBuffer 类。
 * 修正若干 bug。
 
 2009.11.23 - 0.04.176

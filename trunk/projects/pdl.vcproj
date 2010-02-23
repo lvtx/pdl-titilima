@@ -230,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\pdl_util.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\pdl_window.h"
 				>
 			</File>
