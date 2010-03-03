@@ -138,29 +138,38 @@ public:
 
     /**
      * 打开一个 ini 文件。
-     * @param [in] lpszFileName: ini 文件的文件名。
+     * @param [in] lpszFileName ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in PCSTR lpszFileName);
 
     /**
      * 打开一个 ini 文件。
-     * @param [in] lpszFileName: ini 文件的文件名。
+     * @param [in] lpszFileName ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in PCWSTR lpszFileName);
 
     /**
      * 借助一个 LTxtFile 对象来打开 ini 文件。
-     * @param [in] 一个有效的 LTxtFile 对象指针。
+     * @param [in] pFile 一个有效的 LTxtFile 对象指针。
      */
     void Open(__in LTxtFile* pFile);
 
     /**
-     * 移除一个 Section。
-     * @param [in] 要移除的 Section 名称。
+     * 移除一个 Key。
+     * @param [in] lpszSection 要移除的 Key 所在的 Section 名称。
+     * @param [in] lpszKey 要移除的 Key 名称。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
      */
-    void RemoveSection(__in PCSTR lpszSection);
+    BOOL RemoveKey(__in PCSTR lpszSection, __in PCSTR lpszKey);
+
+    /**
+     * 移除一个 Section。
+     * @param [in] lpszSection 要移除的 Section 名称。
+     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL RemoveSection(__in PCSTR lpszSection);
 
     /**
      * 将数据保存为一个 ini 文件。
