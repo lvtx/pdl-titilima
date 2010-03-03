@@ -334,9 +334,20 @@ void LIniParser::Open(__in LTxtFile* pFile)
     m_dwState = 0;
 }
 
-void LIniParser::RemoveSection(__in PCSTR lpszSection)
+BOOL LIniParser::RemoveKey(__in PCSTR lpszSection, __in PCSTR lpszKey)
+{
+    LIterator it = FindKey(lpszSection, lpszKey);
+    if (NULL == it)
+        return FALSE;
+    return m_data.Remove(it);
+}
+
+BOOL LIniParser::RemoveSection(__in PCSTR lpszSection)
 {
     LIterator itSec = FindSection(lpszSection);
+    if (NULL == itSec)
+        return FALSE;
+
     LIterator itNext = FindNextSection(itSec);
     while (itNext != itSec)
     {
@@ -344,6 +355,7 @@ void LIniParser::RemoveSection(__in PCSTR lpszSection)
         itSec = m_data.GetNextIterator(itSec);
         m_data.Remove(itDel);
     }
+    return TRUE;
 }
 
 BOOL LIniParser::Save(__in_opt PCSTR lpszFileName)
