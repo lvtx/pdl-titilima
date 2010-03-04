@@ -1306,7 +1306,7 @@ LRESULT LMsgWnd::HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void LMsgWnd::OnMsgProcceded(
+void LMsgWnd::OnMsgProceeded(
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam,
@@ -1389,7 +1389,7 @@ LRESULT CALLBACK LSubclassWnd::WindowProc(
         ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
-    This->OnMsgProcceded(uMsg, wParam, lParam, ret);
+    This->OnMsgProceeded(uMsg, wParam, lParam, ret);
     return ret;
 }
 
@@ -1708,7 +1708,7 @@ LRESULT CALLBACK LWindow::WindowProc(
         ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
-    This->OnMsgProcceded(uMsg, wParam, lParam, ret);
+    This->OnMsgProceeded(uMsg, wParam, lParam, ret);
     return ret;
 }
 
@@ -1879,6 +1879,6 @@ INT_PTR CALLBACK LDialog::DialogProc(
         ret = This->OnMessage(uMsg, wParam, lParam, bHandled);
     } while (FALSE);
 
-    This->OnMsgProcceded(uMsg, wParam, lParam, ret);
+    This->OnMsgProceeded(uMsg, wParam, lParam, ret);
     return bHandled ? ret : 0;
 }

@@ -848,6 +848,10 @@ BOOL LMonthCal::GetCurSel(__in LPSYSTEMTIME lpSysTime)
 //////////////////////////////////////////////////////////////////////////
 // LProgressBar
 
+#ifndef PBM_GETSTEP
+#define PBM_GETSTEP             (WM_USER+13)
+#endif // PBM_GETSTEP
+
 LProgressBar& LProgressBar::operator=(__in HWND hWnd)
 {
     m_hWnd = hWnd;
@@ -881,6 +885,12 @@ int LProgressBar::StepIt(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // LPropSheetPage & LPropSheet
+
+#ifndef PSM_SHOWWIZBUTTONS
+#define PSM_SHOWWIZBUTTONS              (WM_USER + 138)
+#define PropSheet_ShowWizButtons(hDlg, dwFlag, dwButton) \
+    PSTMSG(hDlg, PSM_SHOWWIZBUTTONS, (WPARAM)(dwFlag), (LPARAM)(dwButton))
+#endif // PSM_SHOWWIZBUTTONS
 
 LPropSheetPage::LPropSheetPage(__in UINT idPage) : LDialog(idPage)
 {
@@ -1124,6 +1134,10 @@ int CALLBACK LPropSheet::StartProc(LPropSheet* pThis, UINT uMsg, LPARAM lParam)
 
 ///////////////////////////////////////////////////////////////////////////////
 // LReBar
+
+#ifndef REBARBANDINFO_V6_SIZE
+#define REBARBANDINFO_V6_SIZE   100
+#endif // REBARBANDINFO_V6_SIZE
 
 BOOL LReBar::Create(
     __in DWORD dwStyle,

@@ -16,7 +16,7 @@
 /**
  * PDL ÈİÆ÷µü´úÆ÷
  */
-typedef struct { int unk; } *LIterator;
+typedef struct _tagLIterator { int unk; } *LIterator;
 
 /**
  * ÈİÆ÷¶ÔÏó¿½±´º¯Êı
