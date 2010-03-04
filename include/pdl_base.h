@@ -6,6 +6,10 @@
 
 #pragma once
 
+#if _MSC_VER <= 1200
+#define _WIN32_WINNT 0x0501
+#endif // _MSC_VER <= 1200
+
 #ifndef STRICT
 #define STRICT
 #endif // STRICT
@@ -26,6 +30,18 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <CommCtrl.h>
+
+#ifndef __in
+#define __in
+#endif // __in
+
+#ifndef __in_opt
+#define __in_opt
+#endif // __in_opt
+
+#ifndef __out_opt
+#define __out_opt
+#endif // __out_opt
 
 /**
  * \def PDLASSERT

@@ -181,7 +181,7 @@ template <typename CharT, class CharTraits>
 void LStringT<CharT, CharTraits>::Append(CharT ch)
 {
     int len = CharTraits::Len(m_str);
-    if (len == m_len)
+    if (len == (int)m_len)
     {
         if (0 == m_len)
             m_len = 1;

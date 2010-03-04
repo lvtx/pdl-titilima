@@ -630,7 +630,7 @@ protected:
      * @param [in] lParam 消息的附加参数。
      * @param [in] lRet 消息处理的返回值。
      */
-    virtual void OnMsgProcceded(UINT uMsg, WPARAM wParam, LPARAM lParam,
+    virtual void OnMsgProceeded(UINT uMsg, WPARAM wParam, LPARAM lParam,
         LRESULT lRet);
 protected:
     /**
