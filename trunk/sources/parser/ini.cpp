@@ -232,7 +232,12 @@ BOOL LIniParser::GetSection(
     sec->m_head = it;
     sec->m_tail = FindNextSection(it);
     if (NULL == sec->m_tail)
-        sec->m_tail = m_data.AddTail(""); // 插入一个空行作为分界线
+    {
+        it = m_data.GetTailIterator();
+        if (!m_data.IsEmpty(it))
+            it = m_data.AddTail(""); // 插入一个空行作为分界线
+        sec->m_tail = it;
+    }
     return TRUE;
 }
 
