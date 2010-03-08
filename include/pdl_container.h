@@ -688,6 +688,7 @@ public:
     LIterator InsertAfter(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCSTR lpString);
+    BOOL IsEmpty(__in LIterator it);
 
     /**
      * 从一个指定的文本文件中加载一个字符串链表。

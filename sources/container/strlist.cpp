@@ -102,6 +102,15 @@ LIterator LStrList::InsertBefore(__in LIterator it, __in PCWSTR lpString)
     return InsertBefore(it, strA);
 }
 
+BOOL LStrList::IsEmpty(__in LIterator it)
+{
+    PCSTR p = GetAt(it);
+    if (NULL == p || '\0' == *p)
+        return TRUE;
+    else
+        return FALSE;
+}
+
 DWORD LStrList::LoadFromFile(__in PCSTR lpFile, __in DWORD dwFlags)
 {
     LTxtFile file;
