@@ -61,6 +61,7 @@ public:
      */
     COLORREF SetNormalColor(__in COLORREF clrNormal, __in BOOL bRedraw = TRUE);
 
+    BOOL SizeToContent(__in BOOL bRedraw = TRUE, __in BOOL bForce = FALSE);
 protected:
     PDL_DECLARE_MSGMAP();
     DECLARE_ERASEBKGND_HANDLER(OnEraseBkgnd);

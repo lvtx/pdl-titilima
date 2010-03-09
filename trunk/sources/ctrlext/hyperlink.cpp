@@ -130,6 +130,44 @@ COLORREF LHyperLink::SetNormalColor(
     return ret;
 }
 
+BOOL LHyperLink::SizeToContent(
+    __in BOOL bRedraw /* = TRUE */,
+    __in BOOL bForce /* = FALSE */)
+{
+    if (!IsWindow())
+        return FALSE;
+
+    // 无文本直接返回
+    int nLen = GetWindowTextLengthA();
+    if (0 == nLen)
+        return FALSE;
+
+    LString strText;
+    GetWindowText(&strText);
+
+    RECT rc = { 0 };
+    GetClientRect(&rc);
+
+    RECT rcTxt = { 0 };
+    LClientDC dc(m_hWnd);
+    HFONT hFontParent = (HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0);
+    HFONT hFontOld = dc.SelectFont(hFontParent);
+    dc.DrawText(strText, -1, &rcTxt, DT_CALCRECT);
+    dc.SelectFont(hFontOld);
+
+    if (rc.right < rcTxt.right || bForce)
+        rc.right = rcTxt.right;
+    if (rc.bottom < rcTxt.bottom || bForce)
+        rc.bottom = rcTxt.bottom;
+
+    UINT uFlags = SWP_NOZORDER | SWP_NOMOVE;
+#ifndef _WIN32_WCE
+    if (!bRedraw)
+        uFlags |= SWP_NOREDRAW;
+#endif // _WIN32_WCE
+    return SetWindowPos(NULL, 0, 0, rc.right, rc.bottom, uFlags);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 PDL_BEGIN_MSGMAP(LHyperLink)
