@@ -617,6 +617,12 @@ DWORD LWnd::GetStyle(void)
     return GetWindowLong(GWL_STYLE);
 }
 
+HMENU LWnd::GetSystemMenu(__in BOOL bRevert)
+{
+    PDLASSERT(IsWindow());
+    return ::GetSystemMenu(m_hWnd, bRevert);
+}
+
 HWND LWnd::GetWindow(__in UINT uCmd)
 {
     return ::GetWindow(m_hWnd, uCmd);

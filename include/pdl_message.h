@@ -555,6 +555,21 @@
     DoDefault(WM_SIZE, n,                       \
         MAKELPARAM(cx, cy))
 
+// WM_SYSCOMMAND
+
+#define DECLARE_SYSCOMMAND_HANDLER(fn)          \
+    void fn(UINT nID, LPARAM lParam,            \
+        BOOL& bHandled);
+#define DECLAREV_SYSCOMMAND_HANDLER(fn)         \
+    virtual void fn(UINT nID, LPARAM lParam,    \
+        BOOL& bHandled);
+#define PROCESS_SYSCOMMAND(fn)                  \
+    else if (WM_SYSCOMMAND == uMsg) {           \
+        fn((UINT)wParam, lParam, bHandled);     \
+    }
+#define DEFAULT_SYSCOMMAND_HANDLER(id, lp)      \
+    DoDefault(WM_SYSCOMMAND, (WPARAM)id, lp);
+
 // WM_TIMER
 
 #define DECLARE_TIMER_HANDLER(fn)       \
