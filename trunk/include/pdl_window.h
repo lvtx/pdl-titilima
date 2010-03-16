@@ -394,6 +394,7 @@ public:
      */
     DWORD GetStyle(void);
 
+    HMENU GetSystemMenu(__in BOOL bRevert);
     HWND GetWindow(__in UINT uCmd);
     LONG GetWindowLong(__in int nIndex);
 #ifdef UNICODE
