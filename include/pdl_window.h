@@ -118,6 +118,10 @@ public:
      * @param [in] hWnd Ò»¸ö´°¿Ú¾ä±ú¡£
      */
     LWnd(__in HWND hWnd = NULL);
+    operator HWND(void) const
+    {
+        return m_hWnd;
+    }
 public:
     BOOL AnimateWindow(__in DWORD dwTime, __in DWORD dwFlags);
 

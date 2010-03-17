@@ -175,6 +175,21 @@
 #define DEFAULT_CREATE_HANDLER(cs)      \
     DoDefault(WM_CREATE, 0, (LPARAM)cs)
 
+// WM_CTLCOLOR
+
+#define DECLARE_CTLCOLOR_HANDLER(fn)                \
+    HBRUSH fn(HDC hdc, HWND hCtrl, BOOL& bHandled);
+#define DECLAREV_CTLCOLOR_HANDLER(fn)               \
+    virtual HBRUSH fn(HDC hdc, HWND hCtrl,          \
+        BOOL& bHandled);
+#define PROCESS_CTLCOLOR(msg, fn)                   \
+    else if (msg == uMsg) {                         \
+        ret = (LRESULT)fn((HDC)wParam,              \
+            (HWND)lParam, bHandled);                \
+    }
+#define DEFAULT_CTLCOLOR_HANDLER(msg, hdc, hwnd)    \
+    DoDefault(msg, (WPARAM)hdc, (LPARAM)hwnd);
+
 // WM_DESTROY
 
 #define DECLARE_DESTROY_HANDLER(fn)     \
