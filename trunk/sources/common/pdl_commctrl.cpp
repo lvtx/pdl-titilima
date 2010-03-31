@@ -25,7 +25,7 @@ DWORD LComCtl::GetVersion(void)
     return SendMessage(CCM_GETVERSION);
 }
 
-BOOL PDLAPI LComCtl::Init(__in DWORD dwICC)
+BOOL LComCtl::Init(__in DWORD dwICC)
 {
     INITCOMMONCONTROLSEX icc = { 0 };
     icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -68,6 +68,17 @@ BOOL LDateTime::SetTime(__in DWORD dwFlag, __in LPSYSTEMTIME lpSysTime)
 
 ///////////////////////////////////////////////////////////////////////////////
 // LHeader
+
+LHeader::LHeader(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
+{
+    // Nothing
+}
+
+LHeader& LHeader::operator=(__in HWND hWnd)
+{
+    m_hWnd = hWnd;
+    return *this;
+}
 
 BOOL LHeader::Create(__in HWND hParent, __in UINT uId, __in DWORD dwStyle)
 {
@@ -124,6 +135,11 @@ BOOL LHeader::Layout(__in LPRECT prc, __out LPWINDOWPOS pwpos)
     layout.pwpos = pwpos;
 
     return Header_Layout(m_hWnd, &layout);
+}
+
+BOOL LHeader::SetItem(__in int iIndex, __in LPHDITEM phdItem)
+{
+    return Header_SetItem(m_hWnd, iIndex, phdItem);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -583,6 +599,11 @@ int LListView::GetColumnWidth(__in int iCol)
 HWND LListView::GetEditControl(void)
 {
     return ListView_GetEditControl(m_hWnd);
+}
+
+HWND LListView::GetHeader(void)
+{
+    return ListView_GetHeader(m_hWnd);
 }
 
 HIMAGELIST LListView::GetImageList(__in int iImageList)

@@ -37,7 +37,7 @@ public:
     LComCtl(__in HWND hWnd = NULL);
     LComCtl& operator=(__in HWND hWnd);
 public:
-    static BOOL PDLAPI Init(DWORD dwICC);
+    static BOOL PDLAPI Init(__in DWORD dwICC);
 public:
     BOOL GetUnicodeFormat(void);
     DWORD GetVersion(void);
@@ -68,6 +68,10 @@ public:
 class LHeader : public LComCtl
 {
 public:
+    LHeader(__in HWND hWnd = NULL);
+    LHeader& operator=(__in HWND hWnd);
+    operator HWND(void) const { return m_hWnd; }
+public:
     BOOL Create(__in HWND hParent, __in UINT uId, __in DWORD dwStyle);
     int InsertItem(__in int index, __in const LPHDITEMA phdi);
     int InsertItem(__in int index, __in const LPHDITEMW phdi);
@@ -76,6 +80,7 @@ public:
     int InsertItem(__in int index, __in PCWSTR pszText, __in int cxy,
         __in int fmt = HDF_LEFT);
     BOOL Layout(__in LPRECT prc, __out LPWINDOWPOS pwpos);
+    BOOL SetItem(__in int iIndex, __in LPHDITEM phdItem);
 };
 
 /**
@@ -209,6 +214,7 @@ public:
     BOOL GetColumn(__in int iCol, __out LPLVCOLUMNW pcol);
     int GetColumnWidth(__in int iCol);
     HWND GetEditControl(void);
+    HWND GetHeader(void);
     HIMAGELIST GetImageList(__in int iImageList);
     BOOL GetItem(__inout LPLVITEMA pitem);
     BOOL GetItem(__inout LPLVITEMW pitem);
