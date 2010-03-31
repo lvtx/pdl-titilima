@@ -401,6 +401,27 @@
     DoDefault(WM_LBUTTONUP, f,                  \
         MAKELPARAM(x, y))
 
+// WM_MEASUREITEM
+
+#define DECLARE_MEASUREITEM_HANDLER(fn)         \
+    void fn(int nIDCtl,                         \
+        LPMEASUREITEMSTRUCT lpMIS,              \
+        BOOL& bHandled);
+#define DECLAREV_MEASUREITEM_HANDLER(fn)        \
+    virtual void fn(int nIDCtl,                 \
+        LPMEASUREITEMSTRUCT lpMIS,              \
+        BOOL& bHandled);
+#define PROCESS_MEASUREITEM(fn)                 \
+    else if (WM_MEASUREITEM == uMsg) {          \
+        fn((int)wParam,                         \
+            (LPMEASUREITEMSTRUCT)lParam,        \
+            bHandled);                          \
+        ret = bHandled;                         \
+    }
+#define DEFAULT_MEASUREITEM_HANDLER(id, mis)    \
+    DoDefault(WM_MEASUREITEM, (WPARAM)id,       \
+        (LPARAM)mis)
+
 // WM_MOUSELEAVE
 
 #define DECLARE_MOUSELEAVE_HANDLER(fn)  \
