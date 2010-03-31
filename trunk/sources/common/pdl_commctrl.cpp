@@ -25,6 +25,14 @@ DWORD LComCtl::GetVersion(void)
     return SendMessage(CCM_GETVERSION);
 }
 
+BOOL PDLAPI LComCtl::Init(__in DWORD dwICC)
+{
+    INITCOMMONCONTROLSEX icc = { 0 };
+    icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    icc.dwICC = dwICC;
+    return InitCommonControlsEx(&icc);
+}
+
 BOOL LComCtl::SetUnicodeFormat(__in BOOL bUnicode)
 {
     return (BOOL)SendMessage(CCM_SETUNICODEFORMAT, (WPARAM)bUnicode);

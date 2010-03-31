@@ -2,7 +2,6 @@
  * \file pdl_commctrl.h
  * \brief PDL 公共控件封装
  * \details 对公共控件的功能封装：
- *   \li \c LComCtlInit 公共控件初始化类
  *   \li \c LComCtl 公共控件基类
  *   \li \c LDateTime 日期/时间控件类
  *   \li \c LHeader Header 控件类
@@ -28,24 +27,6 @@
 #include "pdl_window.h"
 
 /**
- * \class LComCtlInit
- * \brief 公共控件初始化类
- */
-
-class LComCtlInit
-{
-public:
-    LComCtlInit(__in DWORD dwICC)
-    {
-        INITCOMMONCONTROLSEX init;
-        init.dwSize = sizeof(INITCOMMONCONTROLSEX);
-        init.dwICC = dwICC;
-
-        ::InitCommonControlsEx(&init);
-    }
-};
-
-/**
  * \class LComCtl
  * \brief 公共控件基类
  */
@@ -55,6 +36,8 @@ class LComCtl : public LWnd
 public:
     LComCtl(__in HWND hWnd = NULL);
     LComCtl& operator=(__in HWND hWnd);
+public:
+    static BOOL PDLAPI Init(DWORD dwICC);
 public:
     BOOL GetUnicodeFormat(void);
     DWORD GetVersion(void);
