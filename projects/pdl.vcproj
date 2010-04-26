@@ -67,7 +67,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				OutputFile="$(OutDir)\pdl.lib"
+				OutputFile="$(OutDir)\pdl_dbg.lib"
 				IgnoreAllDefaultLibraries="true"
 			/>
 			<Tool
@@ -178,7 +178,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\pdl_comdlg.h"
+				RelativePath="..\include\pdl_comdlg.hpp"
 				>
 			</File>
 			<File
@@ -278,10 +278,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\sources\common\pdl_comdlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\sources\common\pdl_commctrl.cpp"
 				>
 			</File>
@@ -314,7 +310,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\sources\common\stringt.h"
+				RelativePath="..\sources\common\string.hpp"
 				>
 			</File>
 			<File
