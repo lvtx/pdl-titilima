@@ -1,5 +1,5 @@
 #include "..\..\include\pdl_string.h"
-#include "stringt.h"
+#include "string.hpp"
 #ifdef _WIN32_WCE
 #include "..\adaptor\wince_adaptor.h"
 #endif // #ifdef _WIN32_WCE
