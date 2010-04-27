@@ -128,14 +128,14 @@ public:
     BOOL DragEnter(__in HWND hwndLock, __in int x, __in int y);
     BOOL DragLeave(__in HWND hwndLock);
     BOOL DragMove(__in int x, __in int y);
-    BOOL DragShowNolock(__in BOOL fShow);
+    static BOOL PDLAPI DragShowNolock(__in BOOL fShow);
     BOOL Draw(__in int i, __in HDC hdcDst, __in int x,
         __in int y, __in UINT fStyle);
     BOOL DrawEx(int i, HDC hdcDst, int x, int y, int dx, int dy,
         COLORREF rgbBk, COLORREF rgbFg, UINT fStyle);
     BOOL DrawIndirect(IMAGELISTDRAWPARAMS *pimldp);
     HIMAGELIST Duplicate(void);
-    void EndDrag();
+    static void PDLAPI EndDrag(void);
     HICON ExtractIcon(int i);
     COLORREF GetBkColor() const;
     HIMAGELIST GetHandle(void) { return m_hImageList; }
@@ -191,6 +191,7 @@ public:
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
         __in HWND hWndParent, __in UINT nID);
+    HIMAGELIST CreateDragImage(__in int iItem, __out LPPOINT lpptUpLeft);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
         __in UINT nID);

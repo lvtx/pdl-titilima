@@ -287,6 +287,11 @@ BOOL LImageList::DragMove(__in int x, __in int y)
     return ImageList_DragMove(x, y);
 }
 
+BOOL PDLAPI LImageList::DragShowNolock(__in BOOL fShow)
+{
+    return ImageList_DragShowNolock(fShow);
+}
+
 BOOL LImageList::Draw(
     __in int i,
     __in HDC hdcDst,
@@ -295,6 +300,11 @@ BOOL LImageList::Draw(
     __in UINT fStyle)
 {
     return ImageList_Draw(m_hImageList, i, hdcDst, x, y, fStyle);
+}
+
+void PDLAPI LImageList::EndDrag(void)
+{
+    return ImageList_EndDrag();
 }
 
 HICON LImageList::GetIcon(int i, UINT flags)
@@ -504,6 +514,11 @@ BOOL LListView::Create(
 {
     return LWnd::Create(WC_LISTVIEWW, lpWindowName, dwStyle, x, y,
         nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+}
+
+HIMAGELIST LListView::CreateDragImage(__in int iItem, __out LPPOINT lpptUpLeft)
+{
+    return ListView_CreateDragImage(m_hWnd, iItem, lpptUpLeft);
 }
 
 BOOL LListView::CreateEx(
