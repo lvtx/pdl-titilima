@@ -138,6 +138,9 @@ void LPtrList::Create(
 
 void LPtrList::Destroy(void)
 {
+    if (0 == m_dwUnitSize)
+        return;
+
     m_dwStatus &= ~LIST_ITERATING;
     Clear();
 

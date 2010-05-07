@@ -7,6 +7,7 @@
 
 #include "pdl_base.h"
 #include "pdl_string.h"
+#include "pdl_container.h"
 #include <Shlwapi.h>
 
 /**
@@ -194,6 +195,11 @@ public:
 protected:
     LAppModule(__in HINSTANCE hInstance);
     virtual ~LAppModule(void);
+private:
+    /**
+     * 查找窗口数据
+     */
+    static BOOL FindWndData(PVOID p, PVOID param);
 protected:
     /**
      * 全局的 LAppModule 对象指针
@@ -206,13 +212,9 @@ protected:
     /**
      * 暂存窗口数据
      */
-    PVOID* m_pvWndData;
+    LPtrList m_WndData;
     /**
-     * 窗口数据个数
+     * 窗口数据锁
      */
-    int m_cntWndData;
-    /**
-     * 窗口数据最大个数
-     */
-    int m_maxWndData;
+    ILock* m_wdLock;
 };

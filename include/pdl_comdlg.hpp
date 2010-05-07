@@ -134,6 +134,8 @@ public:
         m_cf->hDC = hdc;
         m_cf->lpLogFont = m_lf;
         m_cf->Flags = dwFlags;
+        if (NULL != lfInitial)
+            m_cf->Flags |= CF_INITTOLOGFONTSTRUCT;
     }
     ~LFontDialogT(void)
     {
