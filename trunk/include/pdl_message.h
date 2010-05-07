@@ -37,6 +37,19 @@
 
 // Generic Message
 
+#define DECLARE_MSG_HANDLER(fn)     \
+    LRESULT fn(WPARAM wParam,       \
+        LPARAM lParam,              \
+        BOOL& bHandled);
+#define DECLAREV_MSG_HANDLER(fn)        \
+    virtual LRESULT fn(WPARAM wParam,   \
+        LPARAM lParam,                  \
+        BOOL& bHandled);
+#define PROCESS_MSG(msg, fn)        \
+    else if (msg == uMsg) {         \
+        ret = fn(wParam, lParam,    \
+            bHandled);              \
+    }
 #define DECLARE_MESSAGE_HANDLER(fn)     \
     LRESULT fn(UINT uMsg,               \
         WPARAM wParam,                  \

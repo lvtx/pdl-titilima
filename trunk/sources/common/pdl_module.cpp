@@ -12,12 +12,16 @@ UINT WM_PDL_GETOBJECTW = 0;
 UINT WM_PDL_GETNOTIFY = 0;
 static LFile* g_log = NULL;
 
+typedef struct _tagWndData {
+    DWORD tid;
+    PVOID ptr;
+} WNDDATA, *PWNDDATA;
+
 LAppModule::LAppModule(__in HINSTANCE hInstance)
 {
     m_hInstance = hInstance;
-    m_cntWndData = 0;
-    m_maxWndData = PDL_INIT_WNDDATA;
-    m_pvWndData = new PVOID[PDL_INIT_WNDDATA];
+    m_wdLock = ILock::Create();
+    m_WndData.Create(sizeof(WNDDATA), NULL, NULL, m_wdLock);
 
     // 检测日志标志，并决定是否生成日志
     LString strPath, strFile;
@@ -48,6 +52,9 @@ LAppModule::LAppModule(__in HINSTANCE hInstance)
 
 LAppModule::~LAppModule(void)
 {
+    m_WndData.Destroy();
+    m_wdLock->Destroy();
+
     if (NULL != g_log)
     {
         g_log->Close();
@@ -58,17 +65,10 @@ LAppModule::~LAppModule(void)
 
 void LAppModule::AddWndData(__in PVOID lpWndData)
 {
-    if (m_cntWndData == m_maxWndData)
-    {
-        m_maxWndData *= 2;
-        PVOID* newData = new PVOID[m_maxWndData];
-        CopyMemory(newData, m_pvWndData, sizeof(PVOID) * m_cntWndData);
-        delete [] m_pvWndData;
-        m_pvWndData = newData;
-    }
-
-    m_pvWndData[m_cntWndData] = lpWndData;
-    ++m_cntWndData;
+    WNDDATA wd;
+    wd.tid = ::GetCurrentThreadId();
+    wd.ptr = lpWndData;
+    m_WndData.AddTail(&wd);
 }
 
 void LAppModule::DebugPrint(__in PCSTR lpszFormat, ...)
@@ -113,10 +113,13 @@ BOOL LAppModule::Destroy(void)
 
 PVOID LAppModule::ExtractWndData(void)
 {
-    PVOID ret = m_pvWndData[0];
-    --m_cntWndData;
-    MoveMemory(m_pvWndData, m_pvWndData + 1, sizeof(PVOID) * m_cntWndData);
-    return ret;
+    LIterator it = m_WndData.ForEach(FindWndData, NULL);
+    PDLASSERT(NULL != it);
+
+    WNDDATA wd;
+    m_WndData.GetAt(it, &wd);
+    m_WndData.Remove(it);
+    return wd.ptr;
 }
 
 HRSRC LAppModule::FindResourceA(__in PCSTR lpName, __in PCSTR lpType)
@@ -127,6 +130,12 @@ HRSRC LAppModule::FindResourceA(__in PCSTR lpName, __in PCSTR lpType)
 HRSRC LAppModule::FindResourceW(__in PCWSTR lpName, __in PCWSTR lpType)
 {
     return ::FindResourceW(m_hInstance, lpName, lpType);
+}
+
+BOOL LAppModule::FindWndData(PVOID p, PVOID param)
+{
+    PWNDDATA wd = (PWNDDATA)p;
+    return GetCurrentThreadId() != wd->tid;
 }
 
 LAppModule* LAppModule::GetApp(void)
