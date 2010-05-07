@@ -1,0 +1,169 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICO_MAIN            ICON                    "PDLWizard.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PAGE_START DIALOGEX 0, 0, 360, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_DISABLED | WS_CAPTION
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_LIST_TYPE,"SysListView32",LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,35,346,117
+    EDITTEXT        IDC_EDIT_NAME,46,158,252,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PATH,46,177,252,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "浏览(&B)...",IDC_BTN_BROWSE,303,176,50,16
+    LTEXT           "欢迎使用 PDL 应用程序向导，本向导将引领您创建基于 PDL 的 Windows 应用程序。",IDC_STATIC,7,7,290,8
+    LTEXT           "请选择应用程序的类型。",IDC_STATIC,7,21,89,8
+    LTEXT           "工程路径",IDC_STATIC,7,179,33,8
+    LTEXT           "工程名称",IDC_STATIC,7,160,33,8
+END
+
+IDD_PAGE_APP DIALOGEX 0, 0, 360, 200
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "请设置应用程序的选项。",IDC_STATIC,7,7,89,8
+    GROUPBOX        "字符集",IDC_STATIC,7,22,71,42
+    CONTROL         "ANSI(&A)",IDC_CHK_ANSI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,33,42,10
+    CONTROL         "Unicode(&U)",IDC_CHK_UNICODE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,47,51,10
+    CONTROL         "使用 Manifest 资源(&M)",IDC_CHK_MANIFEST,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,68,90,10
+END
+
+IDD_PAGE_FINISH DIALOGEX 0, 0, 360, 200
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "请确认您的工程配置，并单击“完成”生成工程文件。",IDC_STATIC,7,7,182,8
+    EDITTEXT        IDC_EDIT_CONFIG,7,19,346,175,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_PAGE_START, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 353
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_PAGE_APP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 353
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_PAGE_FINISH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 353
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "manifest.xml"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BMP_TYPE            BITMAP                  "iconlist.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEMPLATE
+//
+
+IDR_WIN32APP            TEMPLATE                "templates\\Win32App.txt"
+IDR_WIN32DLL            TEMPLATE                "templates\\Win32Dll.txt"
+IDR_WIN32CLI            TEMPLATE                "templates\\Win32Cli.txt"
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
