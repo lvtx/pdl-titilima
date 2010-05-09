@@ -9,6 +9,7 @@
 
 #include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
+#include "..\..\include\pdl_util.h"
 
 #define VECTOR_DEFMAXCNT    32
 #define VECTOR_ITERATING    0x00000001

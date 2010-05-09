@@ -345,31 +345,3 @@ public:
      */
     virtual void Unlock(void) = 0;
 };
-
-/**
- * \class LAutoLock
- * \brief 自动锁
- */
-class LAutoLock
-{
-public:
-    /**
-     * 构造函数
-     */
-    LAutoLock(__in ILock* lock) : m_lock(lock)
-    {
-        m_lock->Lock();
-    }
-    /**
-     * 析构函数
-     */
-    ~LAutoLock(void)
-    {
-        m_lock->Unlock();
-    }
-private:
-    /**
-     * 操作锁
-     */
-    ILock* m_lock;
-};

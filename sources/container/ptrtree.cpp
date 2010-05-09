@@ -11,6 +11,7 @@
 #include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
 #include "ptrtree.h"
+#include "..\..\include\pdl_util.h"
 
 LPtrTree::LPtrTree(void)
 {

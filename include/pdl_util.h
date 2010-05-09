@@ -2,10 +2,51 @@
  * \file pdl_util.h
  * \brief PDL 工具类
  * \details 这个文件中定义了 PDL 中一些常用的工具类：
+ *   \li \c LAutoClipboard PDL 智能剪贴板类
+ *   \li \c LAutoLock PDL 自动锁类
  *   \li \c LBuffer PDL 智能缓冲区类
+ *   \li \c LWaitCursor PDL 等待光标类
  */
 
 #pragma once
+
+/**
+ * \class LAutoClipboard
+ * \brief PDL 智能剪贴板类
+ * \details LAutoClipboard 类提供了对剪贴板的打开/关闭操作的封装。
+ */
+class LAutoClipboard
+{
+public:
+    LAutoClipboard(__in_opt HWND hWndNewOwner = NULL)
+    {
+        BOOL b = ::OpenClipboard(hWndNewOwner);
+        PDLASSERT(b);
+    }
+    ~LAutoClipboard(void)
+    {
+        ::CloseClipboard();
+    }
+};
+
+/**
+ * \class LAutoLock
+ * \brief PDL 自动锁类
+ */
+class LAutoLock
+{
+public:
+    LAutoLock(__in ILock* lock) : m_lock(lock)
+    {
+        m_lock->Lock();
+    }
+    ~LAutoLock(void)
+    {
+        m_lock->Unlock();
+    }
+private:
+    ILock* m_lock;
+};
 
 /**
  * \class LBuffer
@@ -125,4 +166,25 @@ private:
 private:
     PBYTE m_data;
     DWORD m_dwSize;
+};
+
+/**
+ * \class LWaitCursor
+ * \brief PDL 等待光标类
+ * \details LWaitCursor 类提供了对等待光标的封装。
+ */
+class LWaitCursor
+{
+public:
+    LWaitCursor(void)
+    {
+        HCURSOR hWait = LoadCursor(NULL, IDC_WAIT);
+        m_hCurOld = SetCursor(hWait);
+    }
+    ~LWaitCursor(void)
+    {
+        SetCursor(m_hCurOld);
+    }
+private:
+    HCURSOR m_hCurOld;
 };

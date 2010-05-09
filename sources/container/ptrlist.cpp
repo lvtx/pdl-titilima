@@ -9,6 +9,7 @@
 
 #include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
+#include "..\..\include\pdl_util.h"
 
 #define LIST_ITERATING  0x00000001
 
