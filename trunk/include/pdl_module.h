@@ -52,6 +52,13 @@ public:
     void AddWndData(__in PVOID lpWndData);
 
     /**
+     * 分配一段 thunk 使用的内存。
+     * @param [in] cntBytes 要分配的大小，以字节计。
+     * @return 如果分配成功则返回一段有效的内存地址，否则返回 NULL。
+     */
+    PVOID AllocThunkMemory(__in DWORD cntBytes);
+
+    /**
      * 提取上一次暂存的窗口数据指针。
      * @return 上一次暂存的窗口数据指针。
      */
@@ -197,9 +204,9 @@ protected:
     virtual ~LAppModule(void);
 private:
     /**
-     * 查找窗口数据
+     * 销毁 thunk 页面
      */
-    static BOOL FindWndData(PVOID p, PVOID param);
+    static void DestroyPage(PVOID ptr);
 protected:
     /**
      * 全局的 LAppModule 对象指针
@@ -217,4 +224,16 @@ protected:
      * 窗口数据锁
      */
     ILock* m_wdLock;
+    /**
+     * thunk 页面
+     */
+    LPtrList m_tPages;
+    /**
+     * thunk 锁
+     */
+    ILock* m_tLock;
+    /**
+     * 当前的页面使用
+     */
+    DWORD m_dwPageUsage;
 };

@@ -41,7 +41,8 @@ int PDLAPI LAssertBox(__in PCWSTR expr, __in PCWSTR srcfile, __in int nLine)
 
 PTHISTHUNK PDLAPI LCreateThisThunk(PVOID This, PVOID pfn)
 {
-    PTHISTHUNK thunk = new THISTHUNK;
+    PTHISTHUNK thunk = (PTHISTHUNK)VirtualAlloc(NULL, sizeof(THISTHUNK),
+        MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     if (NULL != thunk)
     {
         // pop eax
@@ -62,7 +63,7 @@ PTHISTHUNK PDLAPI LCreateThisThunk(PVOID This, PVOID pfn)
 
 void PDLAPI LDestroyThisThunk(PTHISTHUNK thunk)
 {
-    delete thunk;
+    VirtualFree(thunk, 0, MEM_RELEASE);
 }
 
 void PDLAPI LTrace(__in PCSTR lpszFormat, ...)

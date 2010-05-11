@@ -1103,12 +1103,13 @@ BOOL LWnd::UpdateWindow(void)
 
 LMsgWnd::LMsgWnd(void)
 {
-    m_thunk = new LThunk;
+    LAppModule* theApp = LAppModule::GetApp();
+    PDLASSERT(NULL != theApp);
+    m_thunk = new (theApp->AllocThunkMemory(sizeof(LThunk))) LThunk;
 }
 
 LMsgWnd::~LMsgWnd(void)
 {
-    delete m_thunk;
 }
 
 WNDPROC LMsgWnd::Attach(__in HWND hWnd, __in WNDPROC proc)

@@ -1023,7 +1023,9 @@ typedef struct ThunkPS {
 
 LPropSheet::LPropSheet(__in int nMaxCnt /* = 1 */)
 {
-    m_thunk = new THUNKPS;
+    LAppModule* theApp = LAppModule::GetApp();
+    PDLASSERT(NULL != theApp);
+    m_thunk = (PTHUNKPS)theApp->AllocThunkMemory(sizeof(THUNKPS));
 
     m_dwFlags = PSH_USECALLBACK;
     m_nPageCnt = 0;
@@ -1040,7 +1042,6 @@ LPropSheet::~LPropSheet(void)
 {
     if (NULL != m_hPages)
         delete [] m_hPages;
-    delete m_thunk;
 }
 
 BOOL LPropSheet::AddPage(__in LPropSheetPage* page)

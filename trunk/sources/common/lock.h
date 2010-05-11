@@ -31,6 +31,8 @@ public:
     void Unlock(void);
 private:
     CRITICAL_SECTION m_cs;
+    DWORD m_tid;
+    DWORD m_cnt;
 };
 
 class LGlobalLock : public ILock
@@ -45,4 +47,6 @@ public:
     void Unlock(void);
 private:
     HANDLE m_hMutex;
+    DWORD m_tid;
+    DWORD m_cnt;
 };
