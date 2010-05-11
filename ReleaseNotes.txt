@@ -1,3 +1,6 @@
+xxxx.xx.xx - 0.06.xxx
+* 针对 DEP 重新处理所有 thunk 代码。
+
 2010.05.07 - 0.05.201
 * 为菜单加入多语言支持。
 * 为 LIniParser 加入 LIniSection 辅助类。
