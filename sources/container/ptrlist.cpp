@@ -216,6 +216,13 @@ LIterator LPtrList::GetPrevIterator(__in LIterator it)
     return (LIterator)(((PNODE)it)->prev);
 }
 
+PVOID LPtrList::GetRawData(__in LIterator it)
+{
+    if (NULL == it)
+        return NULL;
+    return ((PNODE)it)->data;
+}
+
 PDLINLINE ILock* LPtrList::GetSafeLock(void) const
 {
     return (LIST_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
