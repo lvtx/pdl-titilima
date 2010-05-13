@@ -151,6 +151,13 @@ public:
     LIterator GetPrevIterator(__in LIterator it);
 
     /**
+     * 获取指定迭代器指向的原始数据。
+     * @param [in] it 一个有效的迭代器。
+     * @return 该迭代器对应的原始数据。
+     */
+    PVOID GetRawData(__in LIterator it);
+
+    /**
      * 获取链表尾部的迭代器。
      * @return 链表尾部的迭代器。
      */
@@ -485,6 +492,12 @@ public:
     DWORD GetCount(void);
 
     /**
+     * 获取指定位置的原始数据。
+     * @param [in] idx 要获取数据的索引位置。
+     * @return 如果成功则获取原始数据的指针，否则返回 NULL。
+     */
+    PVOID GetRawData(__in int idx);
+    /**
      * 向指定位置的后面插入一个元素。
      * @param [in] idx 要插入数据的索引。
      * @param [in] ptr 要插入的数据。
@@ -646,6 +659,15 @@ public:
                 return FALSE;
         }
         return v.Remove(-1);
+    }
+
+    /**
+     * 获得栈顶数据。
+     * @return 栈顶数据的指针。
+     */
+    T* Top(void)
+    {
+        return (T*)v.GetRawData(-1);
     }
 private:
     LPtrVector v;

@@ -152,6 +152,16 @@ DWORD LPtrVector::GetCount(void)
     return m_dwUnitCnt;
 }
 
+PVOID LPtrVector::GetRawData(__in int idx)
+{
+    if (NULL == m_data || (int)m_dwUnitCnt <= idx || 0 == m_dwUnitCnt)
+        return NULL;
+
+    if (idx < 0)
+        idx = m_dwUnitCnt - 1;
+    return DataFromPos(idx);
+}
+
 PDLINLINE ILock* LPtrVector::GetSafeLock(void) const
 {
     return (VECTOR_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
