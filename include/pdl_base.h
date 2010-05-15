@@ -27,6 +27,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif // _CRT_SECURE_NO_WARNINGS
 
+#ifdef UNICODE
+#define g_bUnicode  TRUE
+#else
+#define g_bUnicode  FALSE
+#endif // UNICODE
+
 #include <Windows.h>
 #include <tchar.h>
 #include <CommCtrl.h>
@@ -73,6 +79,7 @@
 #define PDLVERIFY       PDLASSERT
 #define PDLTRACE        LTrace
 #define PDLLOG          LTrace
+#define PDLINLINE
 
 #else
 
@@ -80,6 +87,7 @@
 #define PDLVERIFY(expr) ((void)(expr))
 #define PDLTRACE        (void)
 #define PDLLOG          LAppModule::DebugPrint
+#define PDLINLINE       __inline
 
 #endif // _DEBUG
 
@@ -91,12 +99,7 @@
 #define PDLAPI  __stdcall
 #endif
 
-/**
- * \def PDLINLINE
- * PDL 内联标志。
- */
 #ifndef PDLINLINE
-#define PDLINLINE   __inline
 #endif // PDLINLINE
 
 /**
