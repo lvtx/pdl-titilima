@@ -12,6 +12,7 @@
 #pragma once
 
 #include "pdl_base.h"
+#include "pdl_file.h"
 
 /**
  * PDL 容器迭代器
@@ -180,6 +181,15 @@ public:
     LIterator InsertBefore(__in LIterator it, __in LPCVOID ptr);
 
     /**
+     * 判断容器是否为空。
+     * @return 如果容器为空则返回 TRUE，否则返回 FALSE。
+     */
+    PDLINLINE BOOL IsEmpty(void)
+    {
+        return NULL == m_itHead;
+    }
+
+    /**
      * 修改指定位置的数据。
      * @param [in] it 要修改新数据的位置。
      * @param [in] ptr 要修改的新数据。
@@ -211,18 +221,10 @@ public:
 
 protected:
     /**
-     * 获得可用的操作锁。
-     */
-    PDLINLINE ILock* GetSafeLock(void) const;
-    /**
      * 为新元素申请空间。
      */
     LIterator New(__in LPCVOID ptr);
 protected:
-    /**
-     * 链表状态
-     */
-    DWORD m_dwStatus;
     /**
      * 链表头结点
      */
@@ -380,18 +382,10 @@ public:
 
 protected:
     /**
-     * 获得可用的操作锁。
-     */
-    PDLINLINE ILock* GetSafeLock(void) const;
-    /**
      * 为新元素申请空间。
      */
     LIterator New(__in LPCVOID ptr);
 protected:
-    /**
-     * 状态
-     */
-    DWORD m_dwStatus;
     /**
      * 第一个根结点
      */
@@ -547,10 +541,6 @@ protected:
      */
     PDLINLINE PVOID DataFromPos(__in int idx);
     /**
-     * 获得可用的操作锁。
-     */
-    PDLINLINE ILock* GetSafeLock(void) const;
-    /**
      * 增长向量的大小。
      */
     void Grow(void);
@@ -560,10 +550,6 @@ protected:
      */
     LIterator New(__in LPCVOID ptr);
 protected:
-    /**
-     * 向量状态
-     */
-    DWORD m_dwStatus;
     /**
      * 向量数据
      */
@@ -697,7 +683,7 @@ public:
      * 构造函数。
      * @param [in] lock 操作锁。
      */
-    LStrList(__in ILock* lock = NULL);
+    LStrList(__in ILock* lock = NULL, __in BOOL bUnicode = g_bUnicode);
 
 public:
     LIterator AddHead(__in PCSTR lpString);
@@ -710,7 +696,8 @@ public:
     LIterator InsertAfter(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCSTR lpString);
-    BOOL IsEmpty(__in LIterator it);
+    BOOL IsEmptyLine(__in LIterator it);
+    PDLINLINE BOOL IsUnicode(void);
 
     /**
      * 从一个指定的文本文件中加载一个字符串链表。
@@ -759,5 +746,9 @@ public:
     void SetAt(__in LIterator it, __in PCSTR lpString);
     void SetAt(__in LIterator it, __in PCWSTR lpString);
 protected:
-    PCSTR GetAt(__in LIterator it);
+    PVOID GetRawString(__in LIterator it);
+    DWORD LoadFromFile(LTxtFile* tf, BOOL bIncludeNull);
+    DWORD SaveToFile(LTxtFile* tf, BOOL bIncludeNull);
+protected:
+    DWORD m_dwFlags;
 };

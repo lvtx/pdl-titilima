@@ -234,7 +234,7 @@ BOOL LIniParser::GetSection(
     if (NULL == sec->m_tail)
     {
         it = m_data.GetTailIterator();
-        if (!m_data.IsEmpty(it))
+        if (!m_data.IsEmptyLine(it))
             it = m_data.AddTail(""); // 插入一个空行作为分界线
         sec->m_tail = it;
     }

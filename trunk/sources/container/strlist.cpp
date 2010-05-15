@@ -1,114 +1,227 @@
 #include "..\..\include\pdl_container.h"
-#include "..\common\lock.h"
+#include "..\..\include\pdl_util.h"
 #include "..\..\include\pdl_file.h"
 #include "..\..\include\pdl_string.h"
 
-void LStrList_Copy(void* dst, const void* src)
+#define SLFLAG_UNICODE  0x00000001
+
+void LStrList_CopyA(void* dst, const void* src)
 {
     PSTR* ppdst = (PSTR*)dst;
-    PCSTR psrc = (PCSTR)src;
-    *ppdst = new char[lstrlenA(psrc) + 1];
-    lstrcpyA(*ppdst, psrc);
+    PCSTR psrc = *((PCSTR*)src);
+    *ppdst = LStringA::AllocString(psrc);
 }
 
-void LStrList_Destroy(void* ptr)
+void LStrList_CopyW(void* dst, const void* src)
 {
-    PSTR* pp = (PSTR*)ptr;
-    if (NULL != *pp)
+    PWSTR* ppdst = (PWSTR*)dst;
+    PCWSTR psrc = *((PCWSTR*)src);
+    *ppdst = LStringW::AllocString(psrc);
+}
+
+void LStrList_DestroyA(void* ptr)
+{
+    PSTR p = *((PSTR*)ptr);
+    if (NULL != p)
+        LStringA::FreeString(p);
+}
+
+void LStrList_DestroyW(void* ptr)
+{
+    PWSTR p = *((PWSTR*)ptr);
+    if (NULL != p)
+        LStringW::FreeString(p);
+}
+
+LStrList::LStrList(__in ILock* lock, __in BOOL bUnicode) : LPtrList()
+{
+    m_dwFlags = 0;
+    CopyPtr pfnCopy = LStrList_CopyA;
+    DestructPtr pfnDestruct = LStrList_DestroyA;
+    if (bUnicode)
     {
-        delete [] *pp;
-        *pp = NULL;
+        m_dwFlags = SLFLAG_UNICODE;
+        pfnCopy = LStrList_CopyW;
+        pfnDestruct = LStrList_DestroyW;
     }
-}
-
-LStrList::LStrList(__in ILock* lock /* = NULL */) : LPtrList()
-{
-    m_lock = LDummyLock::Get();
-    LPtrList::Create(sizeof(PCSTR), LStrList_Copy, LStrList_Destroy, lock);
+    LPtrList::Create(sizeof(PVOID), pfnCopy, pfnDestruct, lock);
 }
 
 LIterator LStrList::AddHead(__in PCSTR lpString)
 {
-    LPtrList::AddHead(lpString);
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        LStringW str = lpString;
+        AddHead(str);
+    }
+    else
+    {
+        LPtrList::AddHead(&lpString);
+    }
     return m_itHead;
 }
 
 LIterator LStrList::AddHead(__in PCWSTR lpString)
 {
-    LStringA strA = lpString;
-    return AddHead(strA);
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        LPtrList::AddHead(&lpString);
+    }
+    else
+    {
+        LStringA str = lpString;
+        AddHead(str);
+    }
+    return m_itHead;
 }
 
 LIterator LStrList::AddTail(__in PCSTR lpString)
 {
-    LPtrList::AddTail(lpString);
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        LStringW str = lpString;
+        AddTail(str);
+    }
+    else
+    {
+        LPtrList::AddTail(&lpString);
+    }
     return m_itTail;
 }
 
 LIterator LStrList::AddTail(__in PCWSTR lpString)
 {
-    LStringA strA = lpString;
-    return AddTail(strA);
-}
-
-PCSTR LStrList::GetAt(__in LIterator it)
-{
-    PCSTR ret = NULL;
-    if (LPtrList::GetAt(it, &ret))
-        return ret;
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        LPtrList::AddTail(&lpString);
+    }
     else
-        return FALSE;
+    {
+        LStringA str = lpString;
+        AddTail(str);
+    }
+    return m_itTail;
 }
 
 BOOL LStrList::GetAt(__in LIterator it, __out LStringA* str)
 {
-    PCSTR ret = GetAt(it);
-    if (NULL == ret)
+    PVOID pv = GetRawString(it);
+    if (NULL == pv)
         return FALSE;
 
-    str->Copy(ret);
+    if (IsUnicode())
+        str->Copy((PCWSTR)pv);
+    else
+        str->Copy((PCSTR)pv);
     return TRUE;
 }
 
 BOOL LStrList::GetAt(__in LIterator it, __out LStringW* str)
 {
-    PCSTR ret = GetAt(it);
-    if (NULL == ret)
+    PVOID pv = GetRawString(it);
+    if (NULL == pv)
         return FALSE;
 
-    str->Copy(ret);
+    if (IsUnicode())
+        str->Copy((PCWSTR)pv);
+    else
+        str->Copy((PCSTR)pv);
     return TRUE;
+}
+
+PVOID LStrList::GetRawString(__in LIterator it)
+{
+    PVOID ret = NULL;
+    if (!LPtrList::GetAt(it, &ret))
+        return NULL;
+
+    PDLASSERT(NULL != ret);
+    return ret;
 }
 
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCSTR lpString)
 {
-    return LPtrList::InsertAfter(it, lpString);
+    LIterator ret = NULL;
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        LStringW str = lpString;
+        ret = InsertAfter(it, str);
+    }
+    else
+    {
+        ret = LPtrList::InsertAfter(it, &lpString);
+    }
+    return ret;
 }
 
 LIterator LStrList::InsertAfter(__in LIterator it, __in PCWSTR lpString)
 {
-    LStringA strA = lpString;
-    return InsertAfter(it, strA);
+    LIterator ret = NULL;
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        ret = LPtrList::InsertAfter(it, &lpString);
+    }
+    else
+    {
+        LStringA str = lpString;
+        ret = InsertAfter(it, str);
+    }
+    return ret;
 }
 
 LIterator LStrList::InsertBefore(__in LIterator it, __in PCSTR lpString)
 {
-    return LPtrList::InsertBefore(it, lpString);
+    LIterator ret = NULL;
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        LStringW str = lpString;
+        ret = InsertBefore(it, str);
+    }
+    else
+    {
+        ret = LPtrList::InsertBefore(it, &lpString);
+    }
+    return ret;
 }
 
 LIterator LStrList::InsertBefore(__in LIterator it, __in PCWSTR lpString)
 {
-    LStringA strA = lpString;
-    return InsertBefore(it, strA);
+    LIterator ret = NULL;
+    LAutoLock al(m_lock);
+    if (IsUnicode())
+    {
+        ret = LPtrList::InsertBefore(it, &lpString);
+    }
+    else
+    {
+        LStringA str = lpString;
+        ret = InsertBefore(it, str);
+    }
+    return ret;
 }
 
-BOOL LStrList::IsEmpty(__in LIterator it)
+BOOL LStrList::IsEmptyLine(__in LIterator it)
 {
-    PCSTR p = GetAt(it);
-    if (NULL == p || '\0' == *p)
+    PVOID pv = GetRawString(it);
+    if (NULL == pv)
         return TRUE;
+
+    if (IsUnicode())
+        return L'\0' == *((PCWSTR)pv);
     else
-        return FALSE;
+        return '\0' == *((PCSTR)pv);
+}
+
+PDLINLINE BOOL LStrList::IsUnicode(void)
+{
+    return 0 != (SLFLAG_UNICODE & m_dwFlags);
 }
 
 DWORD LStrList::LoadFromFile(__in PCSTR lpFile, __in DWORD dwFlags)
@@ -120,19 +233,8 @@ DWORD LStrList::LoadFromFile(__in PCSTR lpFile, __in DWORD dwFlags)
     if (SLFILE_CLEAR & dwFlags)
         Clear();
 
-    DWORD ret = 0;
-    LStringA str;
-    while (!file.Eof())
-    {
-        file.ReadLn(&str);
-        if (('\0' != str[0]) || (SLFILE_INCLUDENULL & dwFlags))
-        {
-            AddTail(str);
-            ++ret;
-        }
-    }
-
-    return ret;
+    BOOL bIncludeNull = (0 != (SLFILE_INCLUDENULL & dwFlags));
+    return LoadFromFile(&file, bIncludeNull);
 }
 
 DWORD LStrList::LoadFromFile(__in PCWSTR lpFile, __in DWORD dwFlags)
@@ -144,18 +246,58 @@ DWORD LStrList::LoadFromFile(__in PCWSTR lpFile, __in DWORD dwFlags)
     if (SLFILE_CLEAR & dwFlags)
         Clear();
 
-    DWORD ret = 0;
-    LStringA str;
-    while (!file.Eof())
+    BOOL bIncludeNull = (0 != (SLFILE_INCLUDENULL & dwFlags));
+    return LoadFromFile(&file, bIncludeNull);
+}
+
+DWORD LStrList::LoadFromFile(LTxtFile* tf, BOOL bIncludeNull)
+{
+    LAutoLock al(m_lock);
+
+    // 如果列表为空，则按照来源文件编码
+    if (LPtrList::IsEmpty())
     {
-        file.ReadLn(&str);
-        if (('\0' != str[0]) || (SLFILE_INCLUDENULL & dwFlags))
+        m_dwFlags = 0;
+        if (tf->IsUnicode())
         {
-            AddTail(str);
-            ++ret;
+            m_dwFlags = SLFLAG_UNICODE;
+            m_pfnCopy = LStrList_CopyW;
+            m_pfnDestroy = LStrList_DestroyW;
+        }
+        else
+        {
+            m_pfnCopy = LStrList_CopyA;
+            m_pfnDestroy = LStrList_DestroyA;
         }
     }
 
+    DWORD ret = 0;
+    if (IsUnicode())
+    {
+        LStringW str;
+        while (!tf->Eof())
+        {
+            tf->ReadLn(&str);
+            if ((L'\0' != str[0]) || bIncludeNull)
+            {
+                AddTail(str);
+                ++ret;
+            }
+        }
+    }
+    else
+    {
+        LStringA str;
+        while (!tf->Eof())
+        {
+            tf->ReadLn(&str);
+            if (('\0' != str[0]) || bIncludeNull)
+            {
+                AddTail(str);
+                ++ret;
+            }
+        }
+    }
     return ret;
 }
 
@@ -165,33 +307,18 @@ DWORD LStrList::SaveToFile(__in PCSTR lpFile, __in DWORD dwFlags)
         return 0;
 
     LTxtFile::MODE mode;
+    BOOL bUnicode = IsUnicode();
     if (SLFILE_CLEAR & dwFlags)
         mode = LTxtFile::modeReset;
     else
         mode = LTxtFile::modeAppend;
-    LTxtFile file;
+
+    LTxtFile file(bUnicode);
     if (!file.Open(lpFile, mode))
         return 0;
 
-    DWORD ret = 0;
-    LIterator it = GetHeadIterator();
-    while (NULL != it)
-    {
-        PCSTR str = GetAt(it);
-        LIterator itNext = GetNextIterator(it);
-        if (('\0' != *str) || (SLFILE_INCLUDENULL & dwFlags))
-        {
-            if (NULL != itNext)
-                file.WriteLn(str);
-            else
-                file.Write(str);
-            ++ret;
-        }
-
-        it = itNext;
-    }
-
-    return ret;
+    BOOL bIncludeNull = (0 != (SLFILE_INCLUDENULL & dwFlags));
+    return SaveToFile(&file, bIncludeNull);
 }
 
 DWORD LStrList::SaveToFile(__in PCWSTR lpFile, __in DWORD dwFlags)
@@ -200,25 +327,51 @@ DWORD LStrList::SaveToFile(__in PCWSTR lpFile, __in DWORD dwFlags)
         return 0;
 
     LTxtFile::MODE mode;
+    BOOL bUnicode = IsUnicode();
     if (SLFILE_CLEAR & dwFlags)
         mode = LTxtFile::modeReset;
     else
         mode = LTxtFile::modeAppend;
-    LTxtFile file;
+
+    LTxtFile file(bUnicode);
     if (!file.Open(lpFile, mode))
         return 0;
 
+    BOOL bIncludeNull = (0 != (SLFILE_INCLUDENULL & dwFlags));
+    return SaveToFile(&file, bIncludeNull);
+}
+
+DWORD LStrList::SaveToFile(LTxtFile* tf, BOOL bIncludeNull)
+{
     DWORD ret = 0;
+    LAutoLock al(m_lock);
+
     LIterator it = GetHeadIterator();
-    while (NULL != it)
+    if (IsUnicode())
     {
-        PCSTR str = GetAt(it);
-        if (('\0' != *str) || (SLFILE_INCLUDENULL & dwFlags))
+        while (NULL != it)
         {
-            file.WriteLn(str);
-            ++ret;
+            PCWSTR str = (PCWSTR)GetRawString(it);
+            if (L'\0' != *str || bIncludeNull)
+            {
+                tf->WriteLn(str);
+                ++ret;
+            }
+            it = GetNextIterator(it);
         }
-        it = GetNextIterator(it);
+    }
+    else
+    {
+        while (NULL != it)
+        {
+            PCSTR str = (PCSTR)GetRawString(it);
+            if ('\0' != *str || bIncludeNull)
+            {
+                tf->WriteLn(str);
+                ++ret;
+            }
+            it = GetNextIterator(it);
+        }
     }
 
     return ret;
@@ -226,11 +379,26 @@ DWORD LStrList::SaveToFile(__in PCWSTR lpFile, __in DWORD dwFlags)
 
 void LStrList::SetAt(__in LIterator it, __in PCSTR lpString)
 {
-    LPtrList::SetAt(it, lpString);
+    if (IsUnicode())
+    {
+        LStringW str = lpString;
+        SetAt(it, str);
+    }
+    else
+    {
+        LPtrList::SetAt(it, &lpString);
+    }
 }
 
 void LStrList::SetAt(__in LIterator it, __in PCWSTR lpString)
 {
-    LStringA strA = lpString;
-    SetAt(it, strA);
+    if (IsUnicode())
+    {
+        LPtrList::SetAt(it, &lpString);
+    }
+    else
+    {
+        LStringA str = lpString;
+        SetAt(it, str);
+    }
 }

@@ -126,7 +126,7 @@ public:
         modeReadWrite,   // 读写模式
         modeReset        // 清空模式
     } MODE;
-    LTxtFile(void);
+    LTxtFile(__in BOOL bUnicode = g_bUnicode);
     ~LTxtFile(void);
 public:
 
@@ -146,7 +146,7 @@ public:
      */
     int GetChar(void);
 
-    BOOL IsUnicode(void);
+    PDLINLINE BOOL IsUnicode(void);
 
     /**
      * 以指定的模式打开一个文本文件。
@@ -257,6 +257,10 @@ protected:
      * 读取缓存块。
      */
     DWORD ReadBlock(void);
+    /**
+     * 设置 Unicode 模式。
+     */
+    PDLINLINE void SetUnicodeMode(BOOL bUnicode);
     /**
      * 开始读操作。
      */
