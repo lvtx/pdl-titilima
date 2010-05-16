@@ -907,6 +907,11 @@ int LProgressBar::GetStep(void)
     return (int)SendMessage(PBM_GETSTEP);
 }
 
+UINT LProgressBar::GetPos(void)
+{
+    return (UINT)SendMessage(PBM_GETPOS);
+}
+
 int LProgressBar::SetPos(__in int nPos)
 {
     return (int)SendMessage(PBM_SETPOS, nPos);
