@@ -33,8 +33,6 @@ ILock* ILock::Create(__in PCWSTR lpName)
 
 LLock::LLock(void)
 {
-    m_tid = 0;
-    m_cnt = 0;
     ::InitializeCriticalSection(&m_cs);
 }
 
@@ -50,27 +48,11 @@ void LLock::Destroy(void)
 
 void LLock::Lock(void)
 {
-    DWORD tid = GetCurrentThreadId();
-    if (tid == m_tid)
-    {
-        ++m_cnt;
-        return;
-    }
-
     EnterCriticalSection(&m_cs);
-    m_tid = tid;
-    m_cnt = 1;
 }
 
 void LLock::Unlock(void)
 {
-    if (GetCurrentThreadId() == m_tid)
-        --m_cnt;
-    if (m_cnt > 0)
-        return;
-
-    m_tid = 0;
-    m_cnt = 0;
     LeaveCriticalSection(&m_cs);
 }
 

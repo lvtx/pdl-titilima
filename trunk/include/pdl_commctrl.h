@@ -282,6 +282,7 @@ public:
     LProgressBar& operator=(__in HWND hWnd);
 public:
     int GetStep(void);
+    UINT GetPos(void);
     int SetPos(__in int nPos);
     void SetRange32(__in int nLower, __in int nUpper);
     int SetStep(__in int nStepInc);
