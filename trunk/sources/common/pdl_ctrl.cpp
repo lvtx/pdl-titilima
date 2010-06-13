@@ -291,12 +291,12 @@ void LEdit::ReplaceSel(
 
 void LEdit::SetSelA(__in int nStartChar, __in int nEndChar)
 {
-    SendMessageA(EM_SETSEL, nStartChar, nEndChar);
+    PostMessageA(EM_SETSEL, nStartChar, nEndChar);
 }
 
 void LEdit::SetSelW(__in int nStartChar, __in int nEndChar)
 {
-    SendMessageW(EM_SETSEL, nStartChar, nEndChar);
+    PostMessageW(EM_SETSEL, nStartChar, nEndChar);
 }
 
 //////////////////////////////////////////////////////////////////////////

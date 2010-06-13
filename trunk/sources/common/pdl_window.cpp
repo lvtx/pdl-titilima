@@ -1761,15 +1761,21 @@ INT_PTR LDialog::EndDialog(__in INT_PTR nResult)
     return ::EndDialog(m_hWnd, nResult);
 }
 
-BOOL LDialog::LoadLanguageRes(void)
+BOOL LDialog::LoadLanguageRes(LIniParser* lang, PCSTR lpSection)
 {
-    if (NULL == m_lang)
+    if (NULL == lang)
+        lang = m_lang;
+    if (NULL == lang)
         return FALSE;
 
     LString text;
     char section[16];
-    wsprintfA(section, "%d", m_uId);
-    m_lang->GetString(section, "Caption", _T(""), &text);
+    if (NULL == lpSection)
+    {
+        wsprintfA(section, "%d", m_uId);
+        lpSection = section;
+    }
+    lang->GetString(section, "Caption", _T(""), &text);
     if (!text.IsEmpty())
         SetWindowText(text);
 
@@ -1782,7 +1788,7 @@ BOOL LDialog::LoadLanguageRes(void)
         if (id > 0)
         {
             wsprintfA(key, "%d", id);
-            m_lang->GetString(section, key, _T(""), &text);
+            lang->GetString(section, key, _T(""), &text);
             if (!text.IsEmpty())
             {
                 text.ReplaceBackslashChars();
@@ -1870,7 +1876,7 @@ INT_PTR CALLBACK LDialog::DialogProc(
     LPARAM lParam)
 {
     if (WM_INITDIALOG == uMsg)
-        This->LoadLanguageRes();
+        This->LoadLanguageRes(NULL, NULL);
 
     LRESULT ret = This->HandlePDLMessage(uMsg, wParam, lParam);
     if (0 != ret)

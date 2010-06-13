@@ -988,7 +988,7 @@ protected:
      * 加载语言文件。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL LoadLanguageRes(void);
+    BOOL LoadLanguageRes(LIniParser* lang, PCSTR lpSection);
 protected:
     /**
      * 对话框的资源 ID
