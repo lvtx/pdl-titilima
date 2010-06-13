@@ -1775,7 +1775,7 @@ BOOL LDialog::LoadLanguageRes(LIniParser* lang, PCSTR lpSection)
         wsprintfA(section, "%d", m_uId);
         lpSection = section;
     }
-    lang->GetString(section, "Caption", _T(""), &text);
+    lang->GetString(lpSection, "Caption", _T(""), &text);
     if (!text.IsEmpty())
         SetWindowText(text);
 
@@ -1788,7 +1788,7 @@ BOOL LDialog::LoadLanguageRes(LIniParser* lang, PCSTR lpSection)
         if (id > 0)
         {
             wsprintfA(key, "%d", id);
-            lang->GetString(section, key, _T(""), &text);
+            lang->GetString(lpSection, key, _T(""), &text);
             if (!text.IsEmpty())
             {
                 text.ReplaceBackslashChars();
