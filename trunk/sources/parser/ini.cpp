@@ -119,7 +119,11 @@ int LIniParser::GetInt(
 
     if (NULL != pszRet)
     {
-        if (isdigit(pszRet[0]))
+        PCSTR p = pszRet;
+        if ('-' == *p || '+' == *p)
+            ++p;
+
+        if (isdigit(*p))
             nRet = atoi(pszRet);
         else
             nRet = nDefault;
