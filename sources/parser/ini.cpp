@@ -358,6 +358,23 @@ BOOL LIniParser::RemoveSection(__in PCSTR lpszSection)
         return FALSE;
 
     LIterator itNext = FindNextSection(itSec);
+
+    // 从索引中删除
+    LIterator it = m_secList.GetHeadIterator();
+    while (NULL != it)
+    {
+        LIterator itDel = NULL;
+        m_secList.GetAt(it, &itDel);
+        if (itSec == itDel)
+        {
+            m_secList.Remove(it);
+            break;
+        }
+
+        it = m_secList.GetNextIterator(it);
+    }
+
+    // 从数据中删除
     while (itNext != itSec)
     {
         LIterator itDel = itSec;
