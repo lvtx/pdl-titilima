@@ -318,50 +318,6 @@ int LDC::DrawTextW(
     return ::DrawTextW(m_hDC, lpString, nCount, lpRect, uFormat);
 }
 
-int LDC::DrawTextClipped(
-    __in PCSTR lpString,
-    __in int nCount,
-    __inout LPRECT lpRect,
-    __in UINT uFormat)
-{
-    LStringW str = lpString;
-    return DrawTextClipped(str, nCount, lpRect, uFormat);
-}
-
-int LDC::DrawTextClipped(
-    __in PCWSTR lpString,
-    __in int nCount,
-    __inout LPRECT lpRect,
-    __in UINT uFormat)
-{
-    int cx   = lpRect->right - lpRect->left;
-    int nLen = lstrlenW(lpString);
-
-    PWSTR p = new WCHAR[nLen + 4]; // 4 for "...\0"
-    lstrcpyW(p, lpString);
-
-    RECT rc = { 0 };
-    do
-    {
-        rc.right = 0;
-        DrawTextW(p, -1, &rc, DT_CALCRECT | uFormat);
-        if (cx < rc.right)
-        {
-            p[nLen]     = L'.';
-            p[nLen - 1] = L'.';
-            p[nLen + 1] = L'.';
-            p[nLen + 2] = L'\0';
-        }
-        --nLen;
-    } while (cx < rc.right && nLen > 0);
-
-    if (0 < nLen)
-        DrawTextW(p, -1, lpRect, uFormat);
-
-    delete [] p;
-    return nLen;
-}
-
 BOOL LDC::ExtTextOutA(
     __in int X, __in int Y,
     __in UINT fuOptions,
