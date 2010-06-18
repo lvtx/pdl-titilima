@@ -223,19 +223,6 @@ public:
     int DrawTextW(__in PCWSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
 #endif // UNICODE
-
-    /**
-     * 在给定的矩形范围内绘制文字，如果超出范围，则使用省略号来剪切文字。
-     */
-    int DrawTextClipped(__in PCSTR lpString, __in int nCount,
-        __inout LPRECT lpRect, __in UINT uFormat);
-
-    /**
-     * 在给定的矩形范围内绘制文字，如果超出范围，则使用省略号来剪切文字。
-     */
-    int DrawTextClipped(__in PCWSTR lpString, __in int nCount,
-        __inout LPRECT lpRect, __in UINT uFormat);
-
     BOOL ExtTextOut(__in int X, __in int Y, __in UINT fuOptions,
         __in CONST RECT* lprc, __in PCTSTR lpString, __in UINT cbCount,
         __in CONST INT* lpDx);
