@@ -348,6 +348,8 @@ BOOL LIniParser::RemoveKey(__in PCSTR lpszSection, __in PCSTR lpszKey)
     LIterator it = FindKey(lpszSection, lpszKey);
     if (NULL == it)
         return FALSE;
+
+    m_dwState |= INISTATE_DIRTY;    
     return m_data.Remove(it);
 }
 
@@ -356,6 +358,8 @@ BOOL LIniParser::RemoveSection(__in PCSTR lpszSection)
     LIterator itSec = FindSection(lpszSection);
     if (NULL == itSec)
         return FALSE;
+
+    m_dwState |= INISTATE_DIRTY;    
 
     LIterator itNext = FindNextSection(itSec);
 
