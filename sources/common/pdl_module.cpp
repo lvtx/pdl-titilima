@@ -124,23 +124,20 @@ PVOID LAppModule::AllocThunkMemory(__in DWORD cntBytes)
 
 void LAppModule::DebugPrint(__in PCSTR lpszFormat, ...)
 {
-    if (NULL == g_log)
-        return;
-
     char str[1024];
     va_list arglist;
     va_start(arglist, lpszFormat);
     int cnt = wvsprintfA(str, lpszFormat, arglist);
     va_end(arglist);
 
-    g_log->Write(str, cnt);
+    if (NULL != g_log)
+        g_log->Write(str, cnt);
+    else
+        OutputDebugStringA(str);
 }
 
 void LAppModule::DebugPrint(__in PCWSTR lpszFormat, ...)
 {
-    if (NULL == g_log)
-        return;
-
     WCHAR str[1024];
     va_list arglist;
     va_start(arglist, lpszFormat);
@@ -148,7 +145,10 @@ void LAppModule::DebugPrint(__in PCWSTR lpszFormat, ...)
     va_end(arglist);
 
     LStringA strA = str;
-    g_log->Write(strA, strA.GetLength());
+    if (NULL != g_log)
+        g_log->Write(strA, strA.GetLength());
+    else
+        OutputDebugStringA(strA);
 }
 
 BOOL LAppModule::Destroy(void)
