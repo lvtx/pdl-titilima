@@ -1396,7 +1396,8 @@ LRESULT CALLBACK LSubclassWnd::WindowProc(
         ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
-    This->OnMsgProceeded(uMsg, wParam, lParam, ret);
+    if (WM_NCDESTROY != uMsg && bHandled)
+        This->OnMsgProceeded(uMsg, wParam, lParam, ret);
     return ret;
 }
 
@@ -1715,7 +1716,8 @@ LRESULT CALLBACK LWindow::WindowProc(
         ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
-    This->OnMsgProceeded(uMsg, wParam, lParam, ret);
+    if (WM_NCDESTROY != uMsg && bHandled)
+        This->OnMsgProceeded(uMsg, wParam, lParam, ret);
     return ret;
 }
 
@@ -1892,6 +1894,7 @@ INT_PTR CALLBACK LDialog::DialogProc(
         ret = This->OnMessage(uMsg, wParam, lParam, bHandled);
     } while (FALSE);
 
-    This->OnMsgProceeded(uMsg, wParam, lParam, ret);
+    if (WM_NCDESTROY != uMsg && bHandled)
+        This->OnMsgProceeded(uMsg, wParam, lParam, ret);
     return bHandled ? ret : 0;
 }

@@ -485,6 +485,19 @@
     DoDefault(WM_MOUSEWHEEL, MAKEWPARAM(f, d),  \
         MAKELPARAM(x, y))
 
+// WM_NCDESTROY
+
+#define DECLARE_NCDESTROY_HANDLER(fn)   \
+    void fn(BOOL& bHandled);
+#define DECLAREV_NCDESTROY_HANDLER(fn)  \
+    virtual void fn(BOOL& bHandled);
+#define PROCESS_NCDESTROY(fn)           \
+    else if (WM_NCDESTROY == uMsg) {    \
+        fn(bHandled);                   \
+    }
+#define DEFAULT_NCDESTROY_HANDLER()     \
+    DoDefault(WM_NCDESTROY, 0, 0)
+
 // WM_NOTIFY
 
 #define DECLARE_NOTIFY_HANDLER(fn)      \
