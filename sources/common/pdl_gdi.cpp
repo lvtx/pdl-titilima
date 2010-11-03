@@ -183,6 +183,28 @@ LFont& LFont::operator=(__in HFONT hFont)
     return *this;
 }
 
+BOOL LFont::CreateIndirect(__in LPLOGFONTA lf)
+{
+    HFONT hFont = CreateFontIndirectA(lf);
+    if (NULL == hFont)
+        return FALSE;
+
+    DeleteObject();
+    m_hGdiObj = hFont;
+    return TRUE;
+}
+
+BOOL LFont::CreateIndirect(__in LPLOGFONTW lf)
+{
+    HFONT hFont = CreateFontIndirectW(lf);
+    if (NULL == hFont)
+        return FALSE;
+
+    DeleteObject();
+    m_hGdiObj = hFont;
+    return TRUE;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LPen
 

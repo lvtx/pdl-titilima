@@ -374,6 +374,7 @@ public:
      */
     DWORD GetExStyle(void);
 
+    HFONT GetFont(void);
     HMENU GetMenu(void);
     HWND GetParent(void);
 
