@@ -562,6 +562,11 @@ DWORD LWnd::GetExStyle(void)
     return GetWindowLong(GWL_EXSTYLE);
 }
 
+HFONT LWnd::GetFont(void)
+{
+    return (HFONT)SendMessage(WM_GETFONT);
+}
+
 HMENU LWnd::GetMenu(void)
 {
 #ifndef _WIN32_WCE

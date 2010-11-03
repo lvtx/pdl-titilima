@@ -19,6 +19,15 @@
 
 #include "pdl_base.h"
 
+const COLORREF COLOR_BLACK = RGB(0, 0, 0);
+const COLORREF COLOR_BLUE = RGB(0, 0, 255);
+const COLORREF COLOR_GREEN = RGB(0, 128, 0);
+const COLORREF COLOR_LIME = RGB(0, 255, 0);
+const COLORREF COLOR_RED = RGB(255, 0, 0);
+const COLORREF COLOR_SILVER = RGB(192, 192, 192);
+const COLORREF COLOR_WHITE = RGB(255, 255, 255);
+const COLORREF COLOR_YELLOW = RGB(255, 255, 0);
+
 /**
  * \class LGdiObj
  * \brief GDI 对象基类
@@ -128,6 +137,9 @@ public:
     LFont(__in HFONT hFont = NULL);
     operator HFONT(void) { return (HFONT)m_hGdiObj; }
     LFont& operator=(__in HFONT hFont);
+public:
+    BOOL CreateIndirect(__in LPLOGFONTA lf);
+    BOOL CreateIndirect(__in LPLOGFONTW lf);
 };
 
 /**
