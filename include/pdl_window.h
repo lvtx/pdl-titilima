@@ -920,7 +920,7 @@ public:
      * @param [in] uIDDialog 对话框的资源 ID。
      * @param [in] lang ini 格式的语言文件。
      */
-    LDialog(__in UINT uIDDialog, __in LIniParser* lang = NULL);
+    LDialog(__in UINT uIDDialog = 0, __in LIniParser* lang = NULL);
 
 public:
     /**
