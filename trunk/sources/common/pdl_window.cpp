@@ -1731,7 +1731,7 @@ LRESULT CALLBACK LWindow::WindowProc(
 
 PDL_DEFINE_WINCLASS(LDialog)
 
-LDialog::LDialog(__in UINT uIDDialog, LIniParser* lang)
+LDialog::LDialog(UINT uIDDialog, LIniParser* lang)
     : m_uId(uIDDialog)
     , m_lang(lang)
 {
@@ -1744,6 +1744,7 @@ BOOL LDialog::Create(
 {
     LAppModule *theApp = LAppModule::GetApp();
     theApp->AddWndData(this);
+    PDLASSERT(0 != m_uId);
     return NULL != ::CreateDialogParam(theApp->GetInstance(),
         MAKEINTRESOURCE(m_uId), hParent, StartDlgProc, lParam);
 }
@@ -1759,6 +1760,7 @@ int LDialog::DoModal(
 {
     LAppModule *theApp = LAppModule::GetApp();
     theApp->AddWndData(this);
+    PDLASSERT(0 != m_uId);
     return (int)::DialogBoxParam(theApp->GetInstance(),
         MAKEINTRESOURCE(m_uId), hParent, StartDlgProc, lParam);
 }
