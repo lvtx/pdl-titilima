@@ -542,6 +542,7 @@ public:
     BOOL SizeToContent(__in BOOL bRedraw = TRUE, __in BOOL bForce = FALSE);
 
     BOOL ShowCaret(void);
+    BOOL ShowDlgItem(__in int nIDDlgItem, __in int nCmdShow);
     BOOL ShowWindow(__in int nCmdShow);
     int TranslateAccelerator(__in HACCEL hAccTable, __in LPMSG lpMsg);
 #ifdef UNICODE
@@ -1071,5 +1072,10 @@ protected:
     {
         bHandled = FALSE;
         return 0;
+    }
+    virtual HBRUSH OnCtlColorNotify(UINT uMsg, HDC hdc, BOOL& bHandled)
+    {
+        bHandled = FALSE;
+        return NULL;
     }
 };

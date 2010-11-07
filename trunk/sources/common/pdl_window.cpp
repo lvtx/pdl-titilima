@@ -1067,6 +1067,14 @@ BOOL LWnd::ShowCaret(void)
     return ::ShowCaret(m_hWnd);
 }
 
+BOOL LWnd::ShowDlgItem(__in int nIDDlgItem, __in int nCmdShow)
+{
+    HWND hCtrl = GetDlgItem(nIDDlgItem);
+    if (NULL == hCtrl)
+        return FALSE;
+    return ::ShowWindow(hCtrl, nCmdShow);
+}
+
 BOOL LWnd::ShowWindow(__in int nCmdShow)
 {
     PDLASSERT(IsWindow());
@@ -1149,6 +1157,10 @@ LRESULT LMsgWnd::HandleNotify(
     switch (uMsg)
     {
     case WM_COMPAREITEM:
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORSTATIC:
     case WM_DELETEITEM:
     case WM_NOTIFY:
         break;
@@ -1203,6 +1215,21 @@ LRESULT LMsgWnd::HandleNotify(
                 WM_PDL_GETNOTIFY, PDL_NOTIFY_DRAWITEM, 0);
             if (NULL != di)
                 ret = di->OnCompareItem(cis);
+            else
+                bHandled = FALSE;
+        }
+        break;
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORSTATIC:
+        {
+            HDC hdc = (HDC)wParam;
+            HWND hCtrl = (HWND)lParam;
+            LNotify* n = (LNotify*)::SendMessage(hCtrl, WM_PDL_GETNOTIFY,
+                PDL_NOTIFY, 0);
+            if (NULL != n)
+                ret = (LRESULT)n->OnCtlColorNotify(uMsg, hdc, bHandled);
             else
                 bHandled = FALSE;
         }
