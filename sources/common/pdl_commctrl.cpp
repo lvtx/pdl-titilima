@@ -1292,14 +1292,22 @@ BOOL LStatusBar::SetParts(__in int nParts, __in LPINT aWidths)
     return (BOOL)SendMessage(SB_SETPARTS, (WPARAM)nParts, (LPARAM)aWidths);
 }
 
-BOOL LStatusBar::SetText(__in int nPart, __in PCSTR lpszText)
+BOOL LStatusBar::SetText(
+    __in int nPart,
+    __in PCSTR lpszText,
+    __in_opt int nType)
 {
-    return (BOOL)SendMessage(SB_SETTEXTA, (WPARAM)nPart, (LPARAM)lpszText);
+    return (BOOL)SendMessage(SB_SETTEXTA, (WPARAM)(nPart | nType),
+        (LPARAM)lpszText);
 }
 
-BOOL LStatusBar::SetText(__in int nPart, __in PCWSTR lpszText)
+BOOL LStatusBar::SetText(
+    __in int nPart,
+    __in PCWSTR lpszText,
+    __in_opt int nType)
 {
-    return (BOOL)SendMessage(SB_SETTEXTW, (WPARAM)nPart, (LPARAM)lpszText);
+    return (BOOL)SendMessage(SB_SETTEXTW, (WPARAM)(nPart | nType),
+        (LPARAM)lpszText);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -380,8 +380,10 @@ public:
         __in DWORD dwStyle, __in UINT nID);
     BOOL GetRect(__in int nPart, __out LPRECT lprc);
     BOOL SetParts(__in int nParts, __in LPINT aWidths);
-    BOOL SetText(__in int nPart, __in PCSTR lpszText);
-    BOOL SetText(__in int nPart, __in PCWSTR lpszText);
+    BOOL SetText(__in int nPart, __in PCSTR lpszText,
+        __in_opt int nType);
+    BOOL SetText(__in int nPart, __in PCWSTR lpszText,
+        __in_opt int nType);
 };
 
 /**

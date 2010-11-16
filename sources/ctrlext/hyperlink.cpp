@@ -25,15 +25,15 @@ LHyperLink::LHyperLink(void) : m_bHover(FALSE)
     {
         LString strColor = _T("0,0,255");
         key.QueryStringValue(_T("Anchor Color"), &strColor);
-        m_clrNormal = LParseColorString(strColor, RGB(0, 0, 255));
+        m_clrNormal = LParseColorString(strColor, COLOR_BLUE);
         strColor = _T("255,0,0");
         key.QueryStringValue(_T("Anchor Color Hover"), &strColor);
-        m_clrHover = LParseColorString(strColor, RGB(255, 0, 0));
+        m_clrHover = LParseColorString(strColor, COLOR_RED);
     }
     else
     {
-        m_clrNormal = RGB(0, 0, 255);
-        m_clrHover = RGB(255, 0, 0);
+        m_clrNormal = COLOR_BLUE;
+        m_clrHover = COLOR_RED;
     }
 }
 
