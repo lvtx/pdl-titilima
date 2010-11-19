@@ -44,16 +44,26 @@ void LWnd::CenterWindow(
     {
         HWND hParent = GetParent();
         if (NULL == hParent)
-            hParent = ::GetDesktopWindow();
+        {
+            HMONITOR hm = ::MonitorFromWindow(::GetDesktopWindow(),
+                MONITOR_DEFAULTTONEAREST);
 
-        ::GetClientRect(hParent, &rcParent);
+            MONITORINFO mi;
+            mi.cbSize = sizeof(MONITORINFO);
+            PDLVERIFY(::GetMonitorInfo(hm, &mi));
+            CopyRect(&rcParent, &mi.rcWork);
+        }
+        else
+        {
+            GetWindowRect(&rcParent);
+        }
     }
     else
     {
         ::CopyRect(&rcParent, lprc);
     }
 
-    GetClientRect(&rcClient);
+    GetWindowRect(&rcClient);
 
     RECT rcPos;
     GetRectInParent(&rcPos);
@@ -61,13 +71,13 @@ void LWnd::CenterWindow(
     {
         rcPos.left = (rcParent.right + rcParent.left + rcClient.left
             - rcClient.right) / 2;
-        rcPos.right = rcPos.left + rcClient.right;
+        rcPos.right = rcPos.left + rcClient.right - rcClient.left;;
     }
     if (WNDPOS_VCENTER & dwPos)
     {
         rcPos.top = (rcParent.bottom + rcParent.top + rcClient.top
             - rcClient.bottom) / 2;
-        rcPos.bottom = rcPos.top + rcClient.bottom;
+        rcPos.bottom = rcPos.top + rcClient.bottom - rcClient.top;
     }
 
     UINT uFlags = SWP_NOZORDER | SWP_NOSIZE;
