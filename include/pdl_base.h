@@ -73,6 +73,8 @@
 #define PDL_TSTR(s)     _PDL_STR(s)
 #endif // UNICODE
 
+#define PDLTODO(x)      message(__FILE__"("PDL_STR(__LINE__)") : TODO: " x)
+
 #ifdef _DEBUG
 
 #define PDLASSERT(expr) (void)((!!(expr)) || (LAssertBox(L###expr, PDL_WSTR(__FILE__), __LINE__)))
