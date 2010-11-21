@@ -220,6 +220,7 @@ public:
     BOOL GetItem(__inout LPLVITEMA pitem);
     BOOL GetItem(__inout LPLVITEMW pitem);
     int GetItemCount(void) const;
+    LPARAM GetItemData(__in int iItem);
     BOOL GetItemRect(__in int iItem, __out LPRECT rc, __in int code);
     UINT GetItemState(__in int iItem, __in UINT mask);
     void GetItemText(__in int iItem, __in int iSubItem, __out PSTR pszText,
@@ -249,6 +250,7 @@ public:
     HIMAGELIST SetImageList(__in HIMAGELIST hImageList, __in int iImageList);
     BOOL SetItem(const LPLVITEMA pitem);
     BOOL SetItem(const LPLVITEMW pitem);
+    BOOL SetItemData(__in int iItem, LPARAM lParam);
     void SetItemState(__in int i, __in UINT state, __in UINT mask);
     void SetItemText(__in int i, __in int iSubItem, __in PCSTR pszText);
     void SetItemText(__in int i, __in int iSubItem, __in PCWSTR pszText);

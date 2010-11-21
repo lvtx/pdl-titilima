@@ -641,6 +641,15 @@ int LListView::GetItemCount(void) const
     return ListView_GetItemCount(m_hWnd);
 }
 
+LPARAM LListView::GetItemData(__in int iItem)
+{
+    LVITEM li = { 0 };
+    li.mask = LVIF_PARAM;
+    li.iItem = iItem;
+    GetItem(&li);
+    return li.lParam;
+}
+
 BOOL LListView::GetItemRect(__in int iItem, __out LPRECT rc, __in int code)
 {
     return ListView_GetItemRect(m_hWnd, iItem, rc, code);
@@ -829,6 +838,15 @@ BOOL LListView::SetItem(const LPLVITEMA pitem)
 BOOL LListView::SetItem(const LPLVITEMW pitem)
 {
     return (BOOL)SendMessage(LVM_SETITEMW, 0, (LPARAM)pitem);
+}
+
+BOOL LListView::SetItemData(__in int iItem, LPARAM lParam)
+{
+    LVITEM li = { 0 };
+    li.mask = LVIF_PARAM;
+    li.iItem = iItem;
+    li.lParam = lParam;
+    return SetItem(&li);
 }
 
 void LListView::SetItemState(__in int i, __in UINT state, __in UINT mask)
