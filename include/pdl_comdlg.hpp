@@ -4,17 +4,19 @@
  * \details 对公共对话框的功能封装：
  *   \li \c LFileDialogT
  *   \li \c LFontDialogT
+ *   \li \c LFolderDialogT
  */
 
 #pragma once
 
 #include "pdl_base.h"
 #include <CommDlg.h>
+#include <ShlObj.h>
 
-template<typename T>
+template <typename T>
 class LComDlgTraits;
 
-template<>
+template <>
 class LComDlgTraits<char>
 {
 public:
@@ -37,9 +39,19 @@ public:
     {
         return ::ChooseFontA(cf);
     }
+    // BROWSEINFO
+    typedef BROWSEINFOA BIT;
+    static PIDLIST_ABSOLUTE WINAPI BFF(BIT* lpbi)
+    {
+        return ::SHBrowseForFolderA(lpbi);
+    }
+    static BOOL WINAPI GPFIL(PCIDLIST_ABSOLUTE pidl, PT pszPath)
+    {
+        return ::SHGetPathFromIDListA(pidl, pszPath);
+    }
 };
 
-template<>
+template <>
 class LComDlgTraits<WCHAR>
 {
 public:
@@ -62,9 +74,19 @@ public:
     {
         return ::ChooseFontW(cf);
     }
+    // BROWSEINFO
+    typedef BROWSEINFOW BIT;
+    static PIDLIST_ABSOLUTE WINAPI BFF(BIT* lpbi)
+    {
+        return ::SHBrowseForFolderW(lpbi);
+    }
+    static BOOL WINAPI GPFIL(PCIDLIST_ABSOLUTE pidl, PT pszPath)
+    {
+        return ::SHGetPathFromIDListW(pidl, pszPath);
+    }
 };
 
-template< typename T, typename Traits = LComDlgTraits<T> >
+template < typename T, typename Traits = LComDlgTraits<T> >
 class LFileDialogT
 {
 public:
@@ -114,7 +136,7 @@ protected:
     BOOL m_bOpenFileDialog;
 };
 
-template< typename T, typename Traits = LComDlgTraits<T> >
+template < typename T, typename Traits = LComDlgTraits<T> >
 class LFontDialogT
 {
 public:
@@ -153,15 +175,58 @@ public:
     typename Traits::CFT* m_cf;
 };
 
+template < typename T, typename Traits = LComDlgTraits<T> >
+class LFolderDialogT
+{
+public:
+    LFolderDialogT(__in UINT ulFlags = BIF_RETURNONLYFSDIRS)
+    {
+        m_bi = new Traits::BIT;
+        ZeroMemory(m_bi, sizeof(Traits::BIT));
+        ZeroMemory(m_szDisplayName, sizeof(m_szDisplayName));
+        ZeroMemory(m_szFolderName, sizeof(m_szFolderName));
+
+        m_bi->pszDisplayName = m_szDisplayName;
+        m_bi->ulFlags = ulFlags;
+    }
+    ~LFolderDialogT(void)
+    {
+        delete m_bi;
+    }
+public:
+    BOOL DoModal(__in HWND hParent,
+        __in typename Traits::PCT lpszTitle = NULL)
+    {
+        m_bi->hwndOwner = hParent;
+        m_bi->lpszTitle = lpszTitle;
+
+        PIDLIST_ABSOLUTE pidl = Traits::BFF(m_bi);
+        if (NULL == pidl)
+            return FALSE;
+
+        Traits::GPFIL(pidl, m_szFolderName);
+        ::CoTaskMemFree(pidl);
+        return TRUE;
+    }
+public:
+    typename Traits::CT m_szDisplayName[MAX_PATH];
+    typename Traits::CT m_szFolderName[MAX_PATH];
+    typename Traits::BIT* m_bi;
+};
+
 typedef LFileDialogT<char> LFileDialogA;
 typedef LFileDialogT<WCHAR> LFileDialogW;
 typedef LFontDialogT<char> LFontDialogA;
 typedef LFontDialogT<WCHAR> LFontDialogW;
+typedef LFolderDialogT<char> LFolderDialogA;
+typedef LFolderDialogT<WCHAR> LFolderDialogW;
 
 #ifdef UNICODE
 typedef LFileDialogW LFileDialog;
 typedef LFontDialogW LFontDialog;
+typedef LFolderDialogW LFolderDialog;
 #else
 typedef LFileDialogA LFileDialog;
 typedef LFontDialogA LFontDialog;
+typedef LFolderDialogA LFolderDialog;
 #endif // UNICODE
