@@ -712,6 +712,16 @@ int LListView::HitTest(__inout LPLVHITTESTINFO hi)
     return ListView_HitTest(m_hWnd, hi);
 }
 
+int LListView::HitTest(__in POINT pt, __out UINT* pFlags /* = 0 */)
+{
+    LVHITTESTINFO hi = { 0 };
+    hi.pt = pt;
+    int ret = HitTest(&hi);
+    if (PDL_ARGUMENT_PRESENT(pFlags))
+        *pFlags = hi.flags;
+    return ret;
+}
+
 int LListView::InsertColumn(
     __in int iCol,
     __in PCSTR pszText,
