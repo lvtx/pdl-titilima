@@ -6,10 +6,6 @@
 
 #pragma once
 
-#if _MSC_VER <= 1200
-#define _WIN32_WINNT 0x0501
-#endif // _MSC_VER <= 1200
-
 #ifndef STRICT
 #define STRICT
 #endif // STRICT
@@ -27,27 +23,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif // _CRT_SECURE_NO_WARNINGS
 
-#ifdef UNICODE
-#define g_bUnicode  TRUE
-#else
-#define g_bUnicode  FALSE
-#endif // UNICODE
-
 #include <Windows.h>
 #include <tchar.h>
 #include <CommCtrl.h>
-
-#ifndef __in
-#define __in
-#endif // __in
-
-#ifndef __in_opt
-#define __in_opt
-#endif // __in_opt
-
-#ifndef __out_opt
-#define __out_opt
-#endif // __out_opt
 
 /**
  * \def PDLASSERT
@@ -63,33 +41,20 @@
  * \def PDLLOG
  * 输出日志信息。
  */
-#define _PDL_STR(s)     #s
-#define PDL_STR(s)      _PDL_STR(s)
-#define _PDL_WSTR(s)    L ## s
-#define PDL_WSTR(s)     _PDL_WSTR(s)
-#ifdef UNICODE
-#define PDL_TSTR(s)     _PDL_WSTR(s)
-#else
-#define PDL_TSTR(s)     _PDL_STR(s)
-#endif // UNICODE
-
-#define PDLTODO(x)      message(__FILE__"("PDL_STR(__LINE__)") : TODO: " x)
 
 #ifdef _DEBUG
 
+#define _PDL_WSTR(s)    L ## s
+#define PDL_WSTR(s)     _PDL_WSTR(s)
 #define PDLASSERT(expr) (void)((!!(expr)) || (LAssertBox(L###expr, PDL_WSTR(__FILE__), __LINE__)))
-#define PDLVERIFY       PDLASSERT
 #define PDLTRACE        LTrace
 #define PDLLOG          LTrace
-#define PDLINLINE
 
 #else
 
-#define PDLASSERT(expr) ((void)0)
-#define PDLVERIFY(expr) ((void)(expr))
+#define PDLASSERT(expr) (expr)
 #define PDLTRACE        (void)
 #define PDLLOG          LAppModule::DebugPrint
-#define PDLINLINE       __inline
 
 #endif // _DEBUG
 
@@ -101,7 +66,12 @@
 #define PDLAPI  __stdcall
 #endif
 
+/**
+ * \def PDLINLINE
+ * PDL 内联标志。
+ */
 #ifndef PDLINLINE
+#define PDLINLINE   __inline
 #endif // PDLINLINE
 
 /**
@@ -349,4 +319,32 @@ public:
      * 解锁。
      */
     virtual void Unlock(void) = 0;
+};
+
+/**
+ * \class LAutoLock
+ * \brief 自动锁
+ */
+class LAutoLock
+{
+public:
+    /**
+     * 构造函数
+     */
+    LAutoLock(__in ILock* lock) : m_lock(lock)
+    {
+        m_lock->Lock();
+    }
+    /**
+     * 析构函数
+     */
+    ~LAutoLock(void)
+    {
+        m_lock->Unlock();
+    }
+private:
+    /**
+     * 操作锁
+     */
+    ILock* m_lock;
 };

@@ -25,14 +25,6 @@ DWORD LComCtl::GetVersion(void)
     return SendMessage(CCM_GETVERSION);
 }
 
-BOOL LComCtl::Init(__in DWORD dwICC)
-{
-    INITCOMMONCONTROLSEX icc = { 0 };
-    icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
-    icc.dwICC = dwICC;
-    return InitCommonControlsEx(&icc);
-}
-
 BOOL LComCtl::SetUnicodeFormat(__in BOOL bUnicode)
 {
     return (BOOL)SendMessage(CCM_SETUNICODEFORMAT, (WPARAM)bUnicode);
@@ -68,17 +60,6 @@ BOOL LDateTime::SetTime(__in DWORD dwFlag, __in LPSYSTEMTIME lpSysTime)
 
 ///////////////////////////////////////////////////////////////////////////////
 // LHeader
-
-LHeader::LHeader(__in HWND hWnd /* = NULL */) : LComCtl(hWnd)
-{
-    // Nothing
-}
-
-LHeader& LHeader::operator=(__in HWND hWnd)
-{
-    m_hWnd = hWnd;
-    return *this;
-}
 
 BOOL LHeader::Create(__in HWND hParent, __in UINT uId, __in DWORD dwStyle)
 {
@@ -135,11 +116,6 @@ BOOL LHeader::Layout(__in LPRECT prc, __out LPWINDOWPOS pwpos)
     layout.pwpos = pwpos;
 
     return Header_Layout(m_hWnd, &layout);
-}
-
-BOOL LHeader::SetItem(__in int iIndex, __in LPHDITEM phdItem)
-{
-    return Header_SetItem(m_hWnd, iIndex, phdItem);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -287,11 +263,6 @@ BOOL LImageList::DragMove(__in int x, __in int y)
     return ImageList_DragMove(x, y);
 }
 
-BOOL PDLAPI LImageList::DragShowNolock(__in BOOL fShow)
-{
-    return ImageList_DragShowNolock(fShow);
-}
-
 BOOL LImageList::Draw(
     __in int i,
     __in HDC hdcDst,
@@ -300,16 +271,6 @@ BOOL LImageList::Draw(
     __in UINT fStyle)
 {
     return ImageList_Draw(m_hImageList, i, hdcDst, x, y, fStyle);
-}
-
-void PDLAPI LImageList::EndDrag(void)
-{
-    return ImageList_EndDrag();
-}
-
-HICON LImageList::GetIcon(int i, UINT flags)
-{
-    return ::ImageList_GetIcon(m_hImageList, i, flags);
 }
 
 int LImageList::GetImageCount(void) const
@@ -475,10 +436,11 @@ BOOL LListView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_LISTVIEWA, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
 }
 
 BOOL LListView::Create(
@@ -486,10 +448,11 @@ BOOL LListView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_LISTVIEWW, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
 }
 
 BOOL LListView::Create(
@@ -498,10 +461,11 @@ BOOL LListView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_LISTVIEWA, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+        nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
 }
 
 BOOL LListView::Create(
@@ -510,15 +474,11 @@ BOOL LListView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_LISTVIEWW, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
-}
-
-HIMAGELIST LListView::CreateDragImage(__in int iItem, __out LPPOINT lpptUpLeft)
-{
-    return ListView_CreateDragImage(m_hWnd, iItem, lpptUpLeft);
+        nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
 }
 
 BOOL LListView::CreateEx(
@@ -527,10 +487,11 @@ BOOL LListView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWA, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, NULL);
+        lpRect, hWndParent, nID, lpParam);
 }
 
 BOOL LListView::CreateEx(
@@ -539,10 +500,11 @@ BOOL LListView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWW, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, NULL);
+        lpRect, hWndParent, nID, lpParam);
 }
 
 BOOL LListView::CreateEx(
@@ -552,10 +514,10 @@ BOOL LListView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID, __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWA, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
 }
 
 BOOL LListView::CreateEx(
@@ -565,10 +527,11 @@ BOOL LListView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_LISTVIEWW, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)(UINT_PTR)nID, lpParam);
 }
 
 BOOL LListView::DeleteAllItems(void)
@@ -616,11 +579,6 @@ HWND LListView::GetEditControl(void)
     return ListView_GetEditControl(m_hWnd);
 }
 
-HWND LListView::GetHeader(void)
-{
-    return ListView_GetHeader(m_hWnd);
-}
-
 HIMAGELIST LListView::GetImageList(__in int iImageList)
 {
     return ListView_GetImageList(m_hWnd, iImageList);
@@ -639,15 +597,6 @@ BOOL LListView::GetItem(__inout LPLVITEMW pitem)
 int LListView::GetItemCount(void) const
 {
     return ListView_GetItemCount(m_hWnd);
-}
-
-LPARAM LListView::GetItemData(__in int iItem)
-{
-    LVITEM li = { 0 };
-    li.mask = LVIF_PARAM;
-    li.iItem = iItem;
-    GetItem(&li);
-    return li.lParam;
 }
 
 BOOL LListView::GetItemRect(__in int iItem, __out LPRECT rc, __in int code)
@@ -707,21 +656,6 @@ int LListView::GetSelectionMark(void)
     return ListView_GetSelectionMark(m_hWnd);
 }
 
-int LListView::HitTest(__inout LPLVHITTESTINFO hi)
-{
-    return ListView_HitTest(m_hWnd, hi);
-}
-
-int LListView::HitTest(__in POINT pt, __out UINT* pFlags /* = 0 */)
-{
-    LVHITTESTINFO hi = { 0 };
-    hi.pt = pt;
-    int ret = HitTest(&hi);
-    if (PDL_ARGUMENT_PRESENT(pFlags))
-        *pFlags = hi.flags;
-    return ret;
-}
-
 int LListView::InsertColumn(
     __in int iCol,
     __in PCSTR pszText,
@@ -769,8 +703,8 @@ int LListView::InsertColumn(__in int iCol, __in const LPLVCOLUMNW pcol)
 int LListView::InsertItem(
     __in int iItem,
     __in PCSTR pszText,
-    __in int iImage /* = I_IMAGENONE */,
-    __in LPARAM lParam /* = 0 */)
+    __in int iImage,
+    __in LPARAM lParam)
 {
     LVITEMA item = { 0 };
 
@@ -786,8 +720,8 @@ int LListView::InsertItem(
 int LListView::InsertItem(
     __in int iItem,
     __in PCWSTR pszText,
-    __in int iImage /* = I_IMAGENONE */,
-    __in LPARAM lParam /* = 0 */)
+    __in int iImage,
+    __in LPARAM lParam)
 {
     LVITEMW item = { 0 };
 
@@ -850,15 +784,6 @@ BOOL LListView::SetItem(const LPLVITEMW pitem)
     return (BOOL)SendMessage(LVM_SETITEMW, 0, (LPARAM)pitem);
 }
 
-BOOL LListView::SetItemData(__in int iItem, LPARAM lParam)
-{
-    LVITEM li = { 0 };
-    li.mask = LVIF_PARAM;
-    li.iItem = iItem;
-    li.lParam = lParam;
-    return SetItem(&li);
-}
-
 void LListView::SetItemState(__in int i, __in UINT state, __in UINT mask)
 {
     ListView_SetItemState(m_hWnd, i, state, mask);
@@ -894,11 +819,6 @@ BOOL LListView::SortItems(__in PFNLVCOMPARE pfnCompare, __in LPARAM lParamSort)
     return ListView_SortItems(m_hWnd, pfnCompare, lParamSort);
 }
 
-BOOL LListView::Update(__in int iItem)
-{
-    return ListView_Update(m_hWnd, iItem);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // LMonthCal
 
@@ -920,10 +840,6 @@ BOOL LMonthCal::GetCurSel(__in LPSYSTEMTIME lpSysTime)
 //////////////////////////////////////////////////////////////////////////
 // LProgressBar
 
-#ifndef PBM_GETSTEP
-#define PBM_GETSTEP             (WM_USER+13)
-#endif // PBM_GETSTEP
-
 LProgressBar& LProgressBar::operator=(__in HWND hWnd)
 {
     m_hWnd = hWnd;
@@ -933,11 +849,6 @@ LProgressBar& LProgressBar::operator=(__in HWND hWnd)
 int LProgressBar::GetStep(void)
 {
     return (int)SendMessage(PBM_GETSTEP);
-}
-
-UINT LProgressBar::GetPos(void)
-{
-    return (UINT)SendMessage(PBM_GETPOS);
 }
 
 int LProgressBar::SetPos(__in int nPos)
@@ -962,12 +873,6 @@ int LProgressBar::StepIt(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // LPropSheetPage & LPropSheet
-
-#ifndef PSM_SHOWWIZBUTTONS
-#define PSM_SHOWWIZBUTTONS              (WM_USER + 138)
-#define PropSheet_ShowWizButtons(hDlg, dwFlag, dwButton) \
-    PSTMSG(hDlg, PSM_SHOWWIZBUTTONS, (WPARAM)(dwFlag), (LPARAM)(dwButton))
-#endif // PSM_SHOWWIZBUTTONS
 
 LPropSheetPage::LPropSheetPage(__in UINT idPage) : LDialog(idPage)
 {
@@ -1056,9 +961,7 @@ typedef struct ThunkPS {
 
 LPropSheet::LPropSheet(__in int nMaxCnt /* = 1 */)
 {
-    LAppModule* theApp = LAppModule::GetApp();
-    PDLASSERT(NULL != theApp);
-    m_thunk = (PTHUNKPS)theApp->AllocThunkMemory(sizeof(THUNKPS));
+    m_thunk = new THUNKPS;
 
     m_dwFlags = PSH_USECALLBACK;
     m_nPageCnt = 0;
@@ -1075,6 +978,7 @@ LPropSheet::~LPropSheet(void)
 {
     if (NULL != m_hPages)
         delete [] m_hPages;
+    delete m_thunk;
 }
 
 BOOL LPropSheet::AddPage(__in LPropSheetPage* page)
@@ -1213,45 +1117,55 @@ int CALLBACK LPropSheet::StartProc(LPropSheet* pThis, UINT uMsg, LPARAM lParam)
 ///////////////////////////////////////////////////////////////////////////////
 // LReBar
 
-#ifndef REBARBANDINFO_V6_SIZE
-#define REBARBANDINFO_V6_SIZE   100
-#endif // REBARBANDINFO_V6_SIZE
-
 BOOL LReBar::Create(
     __in DWORD dwStyle,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     RECT rc = { 0, 0, 100, 100 };
     BOOL ret = LWnd::Create(REBARCLASSNAME, _T(""),
         dwStyle | WS_CHILD | WS_VISIBLE, &rc,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
     if (!ret)
         return FALSE;
 
     REBARINFO ri = { 0 };
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
-    return SetBarInfo(&ri);
+    if (!SetBarInfo(&ri))
+        return FALSE;
+
+    DLLVERSIONINFO dvi = { 0 };
+    LAppModule::GetModuleVersion(::GetModuleHandle(_T("comctl32.dll")), &dvi);
+    LComCtl::SetVersion(dvi.dwMajorVersion);
+    return TRUE;
 }
 
 BOOL LReBar::CreateEx(
     __in DWORD dwExStyle,
     __in DWORD dwStyle,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     RECT rc = { 0, 0, 100, 100 };
     BOOL ret = LWnd::CreateEx(dwExStyle, REBARCLASSNAME, _T(""),
         dwStyle | WS_CHILD | WS_VISIBLE, &rc, hWndParent,
-        nID, NULL);
+        nID, lpParam);
     if (!ret)
         return FALSE;
 
     REBARINFO ri = { 0 };
     ri.cbSize = sizeof(REBARINFO);
     ri.fMask = 0;
-    return SetBarInfo(&ri);
+    if (!SetBarInfo(&ri))
+        return FALSE;
+
+    DLLVERSIONINFO dvi = { 0 };
+    LAppModule::GetModuleVersion(::GetModuleHandle(_T("comctl32.dll")), &dvi);
+    LComCtl::SetVersion(dvi.dwMajorVersion);
+    return TRUE;
 }
 
 int LReBar::SizeOfREBARBANDINFO(void)
@@ -1320,22 +1234,14 @@ BOOL LStatusBar::SetParts(__in int nParts, __in LPINT aWidths)
     return (BOOL)SendMessage(SB_SETPARTS, (WPARAM)nParts, (LPARAM)aWidths);
 }
 
-BOOL LStatusBar::SetText(
-    __in int nPart,
-    __in PCSTR lpszText,
-    __in_opt int nType)
+BOOL LStatusBar::SetText(__in int nPart, __in PCSTR lpszText)
 {
-    return (BOOL)SendMessage(SB_SETTEXTA, (WPARAM)(nPart | nType),
-        (LPARAM)lpszText);
+    return (BOOL)SendMessage(SB_SETTEXTA, (WPARAM)nPart, (LPARAM)lpszText);
 }
 
-BOOL LStatusBar::SetText(
-    __in int nPart,
-    __in PCWSTR lpszText,
-    __in_opt int nType)
+BOOL LStatusBar::SetText(__in int nPart, __in PCWSTR lpszText)
 {
-    return (BOOL)SendMessage(SB_SETTEXTW, (WPARAM)(nPart | nType),
-        (LPARAM)lpszText);
+    return (BOOL)SendMessage(SB_SETTEXTW, (WPARAM)nPart, (LPARAM)lpszText);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1353,6 +1259,11 @@ LTabCtrl& LTabCtrl::operator=(__in HWND hWnd)
     return *this;
 }
 
+LTabCtrl::operator HWND(void) const
+{
+    return m_hWnd;
+}
+
 void LTabCtrl::AdjustRect(__in BOOL fLarger, __inout LPRECT prc)
 {
     SendMessage(TCM_ADJUSTRECT, (WPARAM)fLarger, (LPARAM)prc);
@@ -1363,10 +1274,11 @@ BOOL LTabCtrl::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TABCONTROLA, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
 }
 
 BOOL LTabCtrl::Create(
@@ -1374,10 +1286,11 @@ BOOL LTabCtrl::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TABCONTROLW, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
 }
 
 BOOL LTabCtrl::Create(
@@ -1386,10 +1299,11 @@ BOOL LTabCtrl::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TABCONTROLA, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+        nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
 }
 
 BOOL LTabCtrl::Create(
@@ -1398,10 +1312,11 @@ BOOL LTabCtrl::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TABCONTROLW, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+        nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1410,10 +1325,11 @@ BOOL LTabCtrl::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLA, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, NULL);
+        lpRect, hWndParent, nID, lpParam);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1422,10 +1338,11 @@ BOOL LTabCtrl::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLW, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, NULL);
+        lpRect, hWndParent, nID, lpParam);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1435,10 +1352,11 @@ BOOL LTabCtrl::CreateEx(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLA, lpWindowName, dwStyle,
-        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
+        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
 }
 
 BOOL LTabCtrl::CreateEx(
@@ -1448,55 +1366,16 @@ BOOL LTabCtrl::CreateEx(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TABCONTROLW, lpWindowName, dwStyle,
-        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, NULL);
-}
-
-BOOL LTabCtrl::DeleteAllItems(void)
-{
-    PDLASSERT(IsWindow());
-    return TabCtrl_DeleteAllItems(m_hWnd);
-}
-
-int LTabCtrl::DeleteItem(__in int iItem)
-{
-    PDLASSERT(IsWindow());
-    return TabCtrl_DeleteItem(m_hWnd, iItem);
+        x, y, nWidth, nHeight, hWndParent, (HMENU)nID, lpParam);
 }
 
 int LTabCtrl::GetCurSel(void)
 {
     return (int)SendMessage(TCM_GETCURSEL);
-}
-
-BOOL LTabCtrl::GetItem(__in int iItem, __out LPTCITEMA pitem)
-{
-    return (BOOL)SendMessage(TCM_GETITEMA, (WPARAM)iItem, (LPARAM)pitem);
-}
-
-BOOL LTabCtrl::GetItem(__in int iItem, __out LPTCITEMW pitem)
-{
-    return (BOOL)SendMessage(TCM_GETITEMW, (WPARAM)iItem, (LPARAM)pitem);
-}
-
-int LTabCtrl::GetItemCount(void)
-{
-    PDLASSERT(IsWindow());
-    return TabCtrl_GetItemCount(m_hWnd);
-}
-
-HWND LTabCtrl::GetToolTips(void)
-{
-    PDLASSERT(IsWindow());
-    return TabCtrl_GetToolTips(m_hWnd);
-}
-
-int LTabCtrl::HitTest(__inout LPTCHITTESTINFO pinfo)
-{
-    PDLASSERT(IsWindow());
-    return TabCtrl_HitTest(m_hWnd, pinfo);
 }
 
 int LTabCtrl::InsertItem(__in int iItem, __in const LPTCITEMA pitem)
@@ -1512,7 +1391,7 @@ int LTabCtrl::InsertItem(__in int iItem, __in const LPTCITEMW pitem)
 int LTabCtrl::InsertItem(
     __in int iItem,
     __in PCSTR lpszItem,
-    __in int nImage /* = I_IMAGENONE */,
+    __in int nImage /* = -1 */,
     __in LPARAM lParam /* = 0 */)
 {
     TCITEMA item = { 0 };
@@ -1525,11 +1404,9 @@ int LTabCtrl::InsertItem(
     return InsertItem(iItem, &item);
 }
 
-int LTabCtrl::InsertItem(
-    __in int iItem,
-    __in PCWSTR lpszItem,
-    __in int nImage /* = I_IMAGENONE */,
-    __in LPARAM lParam /* = 0 */)
+int LTabCtrl::InsertItem(__in int iItem, __in PCWSTR lpszItem,
+                         __in int nImage /* = -1 */,
+                         __in LPARAM lParam /* = 0 */)
 {
     TCITEMW item = { 0 };
 
@@ -1541,25 +1418,9 @@ int LTabCtrl::InsertItem(
     return InsertItem(iItem, &item);
 }
 
-int LTabCtrl::SetCurSel(__in int iItem)
-{
-    PDLASSERT(IsWindow());
-    return TabCtrl_SetCurSel(m_hWnd, iItem);
-}
-
 HIMAGELIST LTabCtrl::SetImageList(__in HIMAGELIST himl)
 {
     return (HIMAGELIST)SendMessage(TCM_SETIMAGELIST, 0, (LPARAM)himl);
-}
-
-BOOL LTabCtrl::SetItem(__in int iItem, __in LPTCITEMA pitem)
-{
-    return (BOOL)SendMessage(TCM_SETITEMA, (WPARAM)iItem, (LPARAM)pitem);
-}
-
-BOOL LTabCtrl::SetItem(__in int iItem, __in LPTCITEMW pitem)
-{
-    return (BOOL)SendMessage(TCM_SETITEMW, (WPARAM)iItem, (LPARAM)pitem);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1724,10 +1585,11 @@ BOOL LTreeView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TREEVIEWA, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
 }
 
 BOOL LTreeView::Create(
@@ -1735,10 +1597,11 @@ BOOL LTreeView::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TREEVIEWW, lpWindowName, dwStyle, lpRect,
-        hWndParent, nID, NULL);
+        hWndParent, nID, lpParam);
 }
 
 BOOL LTreeView::Create(
@@ -1747,10 +1610,11 @@ BOOL LTreeView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id)
+    __in UINT id,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TREEVIEWA, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)id, NULL);
+        nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
 }
 
 BOOL LTreeView::Create(
@@ -1759,10 +1623,11 @@ BOOL LTreeView::Create(
     __in int x, __in int y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id)
+    __in UINT id,
+    __in PVOID lpParam)
 {
     return LWnd::Create(WC_TREEVIEWW, lpWindowName, dwStyle, x, y,
-        nWidth, nHeight, hWndParent, (HMENU)id, NULL);
+        nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1771,10 +1636,11 @@ BOOL LTreeView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWA, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, NULL);
+        lpRect, hWndParent, nID, lpParam);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1783,10 +1649,11 @@ BOOL LTreeView::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWW, lpWindowName, dwStyle,
-        lpRect, hWndParent, nID, NULL);
+        lpRect, hWndParent, nID, lpParam);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1796,10 +1663,11 @@ BOOL LTreeView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id)
+    __in UINT id,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWA, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, NULL);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
 }
 
 BOOL LTreeView::CreateEx(
@@ -1809,10 +1677,11 @@ BOOL LTreeView::CreateEx(
     __in int X, __in int Y,
     __in int nWidth, __in int nHeight,
     __in HWND hWndParent,
-    __in UINT id)
+    __in UINT id,
+    __in PVOID lpParam)
 {
     return LWnd::CreateEx(dwExStyle, WC_TREEVIEWW, lpWindowName, dwStyle,
-        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, NULL);
+        X, Y, nWidth, nHeight, hWndParent, (HMENU)id, lpParam);
 }
 
 BOOL LTreeView::DeleteAllItems(void)
@@ -1907,8 +1776,8 @@ HTREEITEM LTreeView::InsertItem(
     __in HTREEITEM hParent,
     __in HTREEITEM hInsertAfter,
     __in PCSTR lpszItem,
-    __in int nImage /* = I_IMAGENONE */,
-    __in int nSelImage /* = I_IMAGENONE */,
+    __in int nImage /* = -1 */,
+    __in int nSelImage /* = -1 */,
     __in LPARAM lParam /* = 0 */)
 {
     TVINSERTSTRUCTA tvis = { 0 };
@@ -1935,8 +1804,8 @@ HTREEITEM LTreeView::InsertItem(
     __in HTREEITEM hParent,
     __in HTREEITEM hInsertAfter,
     __in PCWSTR lpszItem,
-    __in int nImage /* = I_IMAGENONE */,
-    __in int nSelImage /* = I_IMAGENONE */,
+    __in int nImage /* = -1 */,
+    __in int nSelImage /* = -1 */,
     __in LPARAM lParam /* = 0 */)
 {
     TVINSERTSTRUCTW tvis = { 0 };

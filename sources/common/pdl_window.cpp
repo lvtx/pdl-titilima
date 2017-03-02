@@ -44,26 +44,16 @@ void LWnd::CenterWindow(
     {
         HWND hParent = GetParent();
         if (NULL == hParent)
-        {
-            HMONITOR hm = ::MonitorFromWindow(::GetDesktopWindow(),
-                MONITOR_DEFAULTTONEAREST);
+            hParent = ::GetDesktopWindow();
 
-            MONITORINFO mi;
-            mi.cbSize = sizeof(MONITORINFO);
-            PDLVERIFY(::GetMonitorInfo(hm, &mi));
-            CopyRect(&rcParent, &mi.rcWork);
-        }
-        else
-        {
-            GetWindowRect(&rcParent);
-        }
+        ::GetClientRect(hParent, &rcParent);
     }
     else
     {
         ::CopyRect(&rcParent, lprc);
     }
 
-    GetWindowRect(&rcClient);
+    GetClientRect(&rcClient);
 
     RECT rcPos;
     GetRectInParent(&rcPos);
@@ -71,13 +61,13 @@ void LWnd::CenterWindow(
     {
         rcPos.left = (rcParent.right + rcParent.left + rcClient.left
             - rcClient.right) / 2;
-        rcPos.right = rcPos.left + rcClient.right - rcClient.left;;
+        rcPos.right = rcPos.left + rcClient.right;
     }
     if (WNDPOS_VCENTER & dwPos)
     {
         rcPos.top = (rcParent.bottom + rcParent.top + rcClient.top
             - rcClient.bottom) / 2;
-        rcPos.bottom = rcPos.top + rcClient.bottom - rcClient.top;
+        rcPos.bottom = rcPos.top + rcClient.bottom;
     }
 
     UINT uFlags = SWP_NOZORDER | SWP_NOSIZE;
@@ -222,13 +212,13 @@ BOOL LWnd::Create(
     m_hWnd = ::CreateWindowW(lpClassName, lpWindowName, dwStyle, x, y,
         nWidth, nHeight, hWndParent, hMenu, theApp->GetInstance(), lpParam);
 
-    return NULL != m_hWnd;
-}
+#ifdef _DEBUG
+	TCHAR gMsg[256] = { 0 };
+	swprintf_s(gMsg, _T("lpClassName: %s, lpWindowName: %s, m_hWnd: %u, GetLastError: %d"), lpClassName, lpWindowName, m_hWnd, GetLastError());
+	OutputDebugString(gMsg);
+#endif // _DEBUG
 
-BOOL LWnd::CreateCaret(__in HBITMAP hBitmap, __in int nWidth, __in int nHeight)
-{
-    PDLASSERT(IsWindow());
-    return ::CreateCaret(m_hWnd, hBitmap, nWidth, nHeight);
+    return NULL != m_hWnd;
 }
 
 BOOL LWnd::CreateEx(
@@ -353,41 +343,15 @@ void LWnd::Cut(void)
     SendMessage(WM_CUT);
 }
 
-HDWP LWnd::DeferWindowPos(
-    __in HDWP hWinPosInfo,
-    __in_opt HWND hWndInsertAfter,
-    __in int x, __in int y,
-    __in int cx, __in int cy,
-    __in UINT uFlags)
-{
-    PDLASSERT(IsWindow());
-    return ::DeferWindowPos(hWinPosInfo, m_hWnd, hWndInsertAfter,
-        x, y, cx, cy, uFlags);
-}
-
-HDWP LWnd::DeferWindowPos(
-    __in HDWP hWinPosInfo,
-    __in_opt HWND hWndInsertAfter,
-    __in LPCRECT rc,
-    __in UINT uFlags)
-{
-    PDLASSERT(NULL != rc);
-    return DeferWindowPos(hWinPosInfo, hWndInsertAfter,
-        rc->left, rc->top,
-        rc->right - rc->left, rc->bottom - rc->top,
-        uFlags);
-}
-
 BOOL LWnd::DestroyWindow(void)
 {
-    PDLASSERT(IsWindow());
     return ::DestroyWindow(m_hWnd);
 }
 
 HWND LWnd::Detach(void)
 {
     HWND hRet = m_hWnd;
-    m_hWnd = NULL;
+    m_hWnd    = NULL;
     return hRet;
 }
 
@@ -395,7 +359,9 @@ BOOL LWnd::EnableDlgItem(__in int nIDDlgItem, __in BOOL bEnable /* = TRUE */)
 {
     HWND hCtrl = GetDlgItem(nIDDlgItem);
     if (NULL == hCtrl)
+    {
         return FALSE;
+    }
     return ::EnableWindow(hCtrl, bEnable);
 }
 
@@ -548,33 +514,28 @@ UINT LWnd::GetDlgItemInt(
 
 UINT LWnd::GetDlgItemTextA(
      __in int nIDDlgItem,
-     __in PSTR lpString,
+     __in PSTR PSTRing,
      __in int nMaxCount)
 {
 #ifdef _WIN32_WCE
     PDLASSERT(FALSE);
     return 0;
 #else
-    return ::GetDlgItemTextA(m_hWnd, nIDDlgItem, lpString, nMaxCount);
+    return ::GetDlgItemTextA(m_hWnd, nIDDlgItem, PSTRing, nMaxCount);
 #endif // _WIN32_WCE
 }
 
 UINT LWnd::GetDlgItemTextW(
      __in int nIDDlgItem,
-     __in PWSTR lpString,
+     __in PWSTR PSTRing,
      __in int nMaxCount)
 {
-    return ::GetDlgItemTextW(m_hWnd, nIDDlgItem, lpString, nMaxCount);
+    return ::GetDlgItemTextW(m_hWnd, nIDDlgItem, PSTRing, nMaxCount);
 }
 
 DWORD LWnd::GetExStyle(void)
 {
     return GetWindowLong(GWL_EXSTYLE);
-}
-
-HFONT LWnd::GetFont(void)
-{
-    return (HFONT)SendMessage(WM_GETFONT);
 }
 
 HMENU LWnd::GetMenu(void)
@@ -627,15 +588,22 @@ BOOL LWnd::GetScrollInfo(__in int nBar, __inout LPSCROLLINFO lpsi)
     return ::GetScrollInfo(m_hWnd, nBar, lpsi);
 }
 
+BOOL LWnd::GetSize(__out LPSIZE size)
+{
+    PDLASSERT(NULL != size);
+
+    RECT rc;
+    if (!GetWindowRect(&rc))
+        return FALSE;
+
+    size->cx = rc.right - rc.left + 1;
+    size->cy = rc.bottom - rc.top + 1;
+    return TRUE;
+}
+
 DWORD LWnd::GetStyle(void)
 {
     return GetWindowLong(GWL_STYLE);
-}
-
-HMENU LWnd::GetSystemMenu(__in BOOL bRevert)
-{
-    PDLASSERT(IsWindow());
-    return ::GetSystemMenu(m_hWnd, bRevert);
 }
 
 HWND LWnd::GetWindow(__in UINT uCmd)
@@ -715,14 +683,12 @@ int LWnd::GetWindowTextLengthA(void)
 
 int LWnd::GetWindowTextLengthW(void)
 {
-    PDLASSERT(IsWindow());
     return ::GetWindowTextLengthW(m_hWnd);
 }
 
-BOOL LWnd::HideCaret(void)
+BOOL LWnd::KillTimer(__in UINT_PTR uIDEvent)
 {
-    PDLASSERT(IsWindow());
-    return ::HideCaret(m_hWnd);
+    return ::KillTimer(m_hWnd, uIDEvent);
 }
 
 BOOL LWnd::Invalidate(__in BOOL bErase /* = TRUE */)
@@ -732,13 +698,11 @@ BOOL LWnd::Invalidate(__in BOOL bErase /* = TRUE */)
 
 BOOL LWnd::InvalidateRect(__in LPCRECT lpRect, __in BOOL bErase /* = TRUE */)
 {
-    PDLASSERT(IsWindow());
     return ::InvalidateRect(m_hWnd, lpRect, bErase);
 }
 
 UINT LWnd::IsDlgButtonChecked(__in int nIDButton)
 {
-    PDLASSERT(IsWindow());
     return ::IsDlgButtonChecked(m_hWnd, nIDButton);
 }
 
@@ -755,13 +719,11 @@ BOOL LWnd::IsWindow(void) const
 
 BOOL LWnd::IsWindowUnicode(void)
 {
-    PDLASSERT(IsWindow());
     return ::IsWindowUnicode(m_hWnd);
 }
 
 BOOL LWnd::IsWindowVisible(void)
 {
-    PDLASSERT(IsWindow());
     return ::IsWindowVisible(m_hWnd);
 }
 
@@ -769,12 +731,6 @@ BOOL LWnd::IsZoomed(void)
 {
     PDLASSERT(IsWindow());
     return ::IsZoomed(m_hWnd);
-}
-
-BOOL LWnd::KillTimer(__in UINT_PTR uIDEvent)
-{
-    PDLASSERT(IsWindow());
-    return ::KillTimer(m_hWnd, uIDEvent);
 }
 
 int LWnd::MessageBoxA(
@@ -804,6 +760,7 @@ int LWnd::MessageBoxW(
 BOOL LWnd::MoveWindow(__in LPCRECT lprc, __in BOOL bRepaint /* = TRUE */)
 {
     PDLASSERT(NULL != lprc);
+
     return MoveWindow(lprc->left, lprc->top, lprc->right - lprc->left,
         lprc->bottom - lprc->top, bRepaint);
 }
@@ -942,12 +899,6 @@ HICON LWnd::SetIcon(__in HICON hIcon, __in BOOL bBigIcon)
     return (HICON)SendMessage(WM_SETICON, bBigIcon, (LPARAM)hIcon);
 }
 
-HWND LWnd::SetParent(__in_opt HWND hWndNewParent)
-{
-    PDLASSERT(IsWindow());
-    return ::SetParent(m_hWnd, hWndNewParent);
-}
-
 int LWnd::SetScrollInfo(
     __in int nBar,
     __in LPCSCROLLINFO lpsi,
@@ -955,15 +906,6 @@ int LWnd::SetScrollInfo(
 {
     PDLASSERT(IsWindow());
     return ::SetScrollInfo(m_hWnd, nBar, lpsi, redraw);
-}
-
-DWORD LWnd::SetStyle(__in DWORD dwStyle, __in DWORD dwMask)
-{
-    DWORD dwOldStyle = GetStyle();
-    DWORD dwAdd = dwStyle & dwMask;
-    DWORD dwRemove = (dwStyle ^ dwMask) & dwMask;
-    DWORD dwNewStyle = (dwOldStyle & ~dwRemove) | dwAdd;
-    return SetWindowLong(GWL_STYLE, dwNewStyle);
 }
 
 UINT_PTR LWnd::SetTimer(
@@ -1035,9 +977,7 @@ BOOL LWnd::SetWindowTextW(__in PCWSTR lpszString)
     return ::SetWindowTextW(m_hWnd, lpszString);
 }
 
-BOOL LWnd::SizeToContent(
-    __in BOOL bRedraw /* = TRUE */,
-    __in BOOL bForce /* = FALSE */)
+BOOL LWnd::SizeToContent(__in BOOL bRedraw /* = TRUE */)
 {
     // 如果不是子窗口，则返回FALSE
     if (!(WS_CHILD & GetWindowLong(GWL_STYLE)))
@@ -1052,16 +992,8 @@ BOOL LWnd::SizeToContent(
     GetWindowText(&strText);
 
     RECT rc = { 0 };
-    GetClientRect(&rc);
-
-    RECT rcTxt = { 0 };
     LClientDC dc(m_hWnd);
-    dc.DrawText(strText, -1, &rcTxt, DT_CALCRECT);
-
-    if (rc.right < rcTxt.right || bForce)
-        rc.right = rcTxt.right;
-    if (rc.bottom < rcTxt.bottom || bForce)
-        rc.bottom = rcTxt.bottom;
+    dc.DrawText(strText, -1, &rc, DT_CALCRECT);
 
     UINT uFlags = SWP_NOZORDER | SWP_NOMOVE;
 #ifndef _WIN32_WCE
@@ -1071,36 +1003,10 @@ BOOL LWnd::SizeToContent(
     return SetWindowPos(NULL, 0, 0, rc.right, rc.bottom, uFlags);
 }
 
-BOOL LWnd::ShowCaret(void)
-{
-    PDLASSERT(IsWindow());
-    return ::ShowCaret(m_hWnd);
-}
-
-BOOL LWnd::ShowDlgItem(__in int nIDDlgItem, __in int nCmdShow)
-{
-    HWND hCtrl = GetDlgItem(nIDDlgItem);
-    if (NULL == hCtrl)
-        return FALSE;
-    return ::ShowWindow(hCtrl, nCmdShow);
-}
-
 BOOL LWnd::ShowWindow(__in int nCmdShow)
 {
     PDLASSERT(IsWindow());
     return ::ShowWindow(m_hWnd, nCmdShow);
-}
-
-int LWnd::TranslateAcceleratorA(__in HACCEL hAccTable, __in LPMSG lpMsg)
-{
-    PDLASSERT(IsWindow());
-    return ::TranslateAcceleratorA(m_hWnd, hAccTable, lpMsg);
-}
-
-int LWnd::TranslateAcceleratorW(__in HACCEL hAccTable, __in LPMSG lpMsg)
-{
-    PDLASSERT(IsWindow());
-    return ::TranslateAcceleratorW(m_hWnd, hAccTable, lpMsg);
 }
 
 BOOL LWnd::TrackMouseEvent(__in DWORD dwFlags)
@@ -1126,13 +1032,12 @@ BOOL LWnd::UpdateWindow(void)
 
 LMsgWnd::LMsgWnd(void)
 {
-    LAppModule* theApp = LAppModule::GetApp();
-    PDLASSERT(NULL != theApp);
-    m_thunk = new (theApp->AllocThunkMemory(sizeof(LThunk))) LThunk;
+    m_thunk = new LThunk;
 }
 
 LMsgWnd::~LMsgWnd(void)
 {
+    delete m_thunk;
 }
 
 WNDPROC LMsgWnd::Attach(__in HWND hWnd, __in WNDPROC proc)
@@ -1167,10 +1072,6 @@ LRESULT LMsgWnd::HandleNotify(
     switch (uMsg)
     {
     case WM_COMPAREITEM:
-    case WM_CTLCOLORBTN:
-    case WM_CTLCOLOREDIT:
-    case WM_CTLCOLORLISTBOX:
-    case WM_CTLCOLORSTATIC:
     case WM_DELETEITEM:
     case WM_NOTIFY:
         break;
@@ -1225,21 +1126,6 @@ LRESULT LMsgWnd::HandleNotify(
                 WM_PDL_GETNOTIFY, PDL_NOTIFY_DRAWITEM, 0);
             if (NULL != di)
                 ret = di->OnCompareItem(cis);
-            else
-                bHandled = FALSE;
-        }
-        break;
-    case WM_CTLCOLORBTN:
-    case WM_CTLCOLOREDIT:
-    case WM_CTLCOLORLISTBOX:
-    case WM_CTLCOLORSTATIC:
-        {
-            HDC hdc = (HDC)wParam;
-            HWND hCtrl = (HWND)lParam;
-            LNotify* n = (LNotify*)::SendMessage(hCtrl, WM_PDL_GETNOTIFY,
-                PDL_NOTIFY, 0);
-            if (NULL != n)
-                ret = (LRESULT)n->OnCtlColorNotify(uMsg, hdc, bHandled);
             else
                 bHandled = FALSE;
         }
@@ -1355,7 +1241,7 @@ LRESULT LMsgWnd::HandlePDLMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void LMsgWnd::OnMsgProceeded(
+void LMsgWnd::OnMsgProcceded(
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam,
@@ -1392,7 +1278,7 @@ LRESULT LMsgWnd::OnMessage(
 //////////////////////////////////////////////////////////////////////////
 // LSubclassWnd
 
-LSubclassWnd::LSubclassWnd(void) : LMsgWnd()
+LSubclassWnd::LSubclassWnd(void)
 {
     /* Dummy */
 }
@@ -1438,8 +1324,7 @@ LRESULT CALLBACK LSubclassWnd::WindowProc(
         ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
-    if (WM_NCDESTROY != uMsg && bHandled)
-        This->OnMsgProceeded(uMsg, wParam, lParam, ret);
+    This->OnMsgProcceded(uMsg, wParam, lParam, ret);
     return ret;
 }
 
@@ -1758,8 +1643,7 @@ LRESULT CALLBACK LWindow::WindowProc(
         ret = This->DoDefault(uMsg, wParam, lParam);
     } while (FALSE);
 
-    if (WM_NCDESTROY != uMsg && bHandled)
-        This->OnMsgProceeded(uMsg, wParam, lParam, ret);
+    This->OnMsgProcceded(uMsg, wParam, lParam, ret);
     return ret;
 }
 
@@ -1768,7 +1652,7 @@ LRESULT CALLBACK LWindow::WindowProc(
 
 PDL_DEFINE_WINCLASS(LDialog)
 
-LDialog::LDialog(UINT uIDDialog, LIniParser* lang)
+LDialog::LDialog(__in UINT uIDDialog, LIniParser* lang)
     : m_uId(uIDDialog)
     , m_lang(lang)
 {
@@ -1781,7 +1665,6 @@ BOOL LDialog::Create(
 {
     LAppModule *theApp = LAppModule::GetApp();
     theApp->AddWndData(this);
-    PDLASSERT(0 != m_uId);
     return NULL != ::CreateDialogParam(theApp->GetInstance(),
         MAKEINTRESOURCE(m_uId), hParent, StartDlgProc, lParam);
 }
@@ -1797,7 +1680,6 @@ int LDialog::DoModal(
 {
     LAppModule *theApp = LAppModule::GetApp();
     theApp->AddWndData(this);
-    PDLASSERT(0 != m_uId);
     return (int)::DialogBoxParam(theApp->GetInstance(),
         MAKEINTRESOURCE(m_uId), hParent, StartDlgProc, lParam);
 }
@@ -1807,24 +1689,15 @@ INT_PTR LDialog::EndDialog(__in INT_PTR nResult)
     return ::EndDialog(m_hWnd, nResult);
 }
 
-BOOL LDialog::LoadLanguageRes(LIniParser* lang, PCSTR lpSection)
+BOOL LDialog::LoadLanguageRes(void)
 {
-    if (NULL == lang)
-        lang = m_lang;
-    if (NULL == lang)
+    if (NULL == m_lang)
         return FALSE;
 
-    LString text;
     char section[16];
-    if (NULL == lpSection)
-    {
-        wsprintfA(section, "%d", m_uId);
-        lpSection = section;
-    }
-    lang->GetString(lpSection, "Caption", _T(""), &text);
-    if (!text.IsEmpty())
-        SetWindowText(text);
+    wsprintfA(section, "%d", m_uId);
 
+    LString text;
     char key[16];
     LWnd ctrl = GetWindow(GW_CHILD);
     UINT id;
@@ -1834,12 +1707,10 @@ BOOL LDialog::LoadLanguageRes(LIniParser* lang, PCSTR lpSection)
         if (id > 0)
         {
             wsprintfA(key, "%d", id);
-            lang->GetString(lpSection, key, _T(""), &text);
-            if (!text.IsEmpty())
+            if (m_lang->GetString(section, key, _T(""), &text) > 0)
             {
-                text.ReplaceBackslashChars();
                 ctrl.SetWindowText(text);
-                ctrl.SizeToContent(FALSE, FALSE);
+                ctrl.SizeToContent(FALSE);
             }
         }
         ctrl = ctrl.GetWindow(GW_HWNDNEXT);
@@ -1867,36 +1738,6 @@ void LDialog::SetFont(
     }
 }
 
-void LDialog::SetIcon(__in HINSTANCE hInstance, __in PCSTR lpIcon)
-{
-    // Big icon
-    HICON hIcon = ::LoadIconA(hInstance, lpIcon);
-    if (NULL != hIcon)
-        LWnd::SetIcon(hIcon, ICON_BIG);
-
-    // Small icon
-    hIcon = (HICON)::LoadImageA(hInstance, lpIcon, IMAGE_ICON,
-        ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON),
-        0);
-    if (NULL != hIcon)
-        LWnd::SetIcon(hIcon, ICON_SMALL);
-}
-
-void LDialog::SetIcon(__in HINSTANCE hInstance, __in PCWSTR lpIcon)
-{
-    // Big icon
-    HICON hIcon = ::LoadIconW(hInstance, lpIcon);
-    if (NULL != hIcon)
-        LWnd::SetIcon(hIcon, ICON_BIG);
-
-    // Small icon
-    hIcon = (HICON)::LoadImageW(hInstance, lpIcon, IMAGE_ICON,
-        ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON),
-        0);
-    if (NULL != hIcon)
-        LWnd::SetIcon(hIcon, ICON_SMALL);
-}
-
 INT_PTR CALLBACK LDialog::StartDlgProc(
     HWND hDlg,
     UINT uMsg,
@@ -1922,7 +1763,7 @@ INT_PTR CALLBACK LDialog::DialogProc(
     LPARAM lParam)
 {
     if (WM_INITDIALOG == uMsg)
-        This->LoadLanguageRes(NULL, NULL);
+        This->LoadLanguageRes();
 
     LRESULT ret = This->HandlePDLMessage(uMsg, wParam, lParam);
     if (0 != ret)
@@ -1938,7 +1779,88 @@ INT_PTR CALLBACK LDialog::DialogProc(
         ret = This->OnMessage(uMsg, wParam, lParam, bHandled);
     } while (FALSE);
 
-    if (WM_NCDESTROY != uMsg && bHandled)
-        This->OnMsgProceeded(uMsg, wParam, lParam, ret);
+    This->OnMsgProcceded(uMsg, wParam, lParam, ret);
     return bHandled ? ret : 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LDrawItem
+
+int LDrawItem::OnCompareItem(PCOMPAREITEMSTRUCT cis)
+{
+    return 0;
+}
+
+BOOL LDrawItem::OnDeleteItem(PDELETEITEMSTRUCT dis)
+{
+    return FALSE;
+}
+
+BOOL LDrawItem::OnDrawItem(PDRAWITEMSTRUCT dis)
+{
+    return FALSE;
+}
+
+BOOL LDrawItem::OnMeasureItem(PMEASUREITEMSTRUCT mis)
+{
+    return FALSE;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LCustomDraw
+
+DWORD LCustomDraw::OnPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnPreErase(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnPostErase(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnItemPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnItemPreErase(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+DWORD LCustomDraw::OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
+{
+    return CDRF_DODEFAULT;
+}
+
+void LNotify::OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled)
+{
+    bHandled = FALSE;
+}
+
+LRESULT LNotify::OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled)
+{
+    bHandled = FALSE;
+    return 0;
 }

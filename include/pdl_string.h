@@ -8,18 +8,17 @@
 #include "pdl_base.h"
 #include <comdef.h>
 
-class LStringW;
-
 /**
  * \class LStringA
  * \brief PDL ANSI ×Ö·û´®Àà
  */
+
 class LStringA
 {
 public:
     LStringA(void);
     LStringA(__in PCSTR lpszString);
-    LStringA(__in PCWSTR lpszString, __in UINT CodePage = CP_ACP);
+    LStringA(__in PCWSTR lpszString);
     LStringA(__in const LStringA& obj);
     ~LStringA(void);
     operator PCSTR(void) const;
@@ -38,21 +37,18 @@ public:
     int Compare(__in PCSTR lpszString, __in BOOL bCase = TRUE);
     BSTR ConvertToBSTR(void);
     void Copy(__in PCSTR lpszString);
-    void Copy(__in PCWSTR lpszString, __in UINT CodePage = CP_ACP);
+    void Copy(__in PCWSTR lpszString);
     PSTR Detach(void);
     void Empty(void);
-    BOOL ExpandEnvironment(void);
     int Find(__in char ch, int iStart = 0);
     int Find(__in PCSTR pszSub, int iStart = 0);
     int Format(__in PCSTR lpszFormat, ...);
     static void FreeString(__in PSTR lpString);
-    char GetAt(__in int idx);
     int GetLength(void) const;
     BOOL IsEmpty(void) const;
     LStringA Left(__in int nChars);
     LStringA Mid(__in int iStart, __in int nChars = -1);
     int Replace(__in PCSTR pszOld, __in PCSTR pszNew);
-    void ReplaceBackslashChars(void);
     int ReverseFind(__in char ch);
     int SetAt(__in int pos, __in char ch);
     void ToLower(void);
@@ -73,7 +69,7 @@ class LStringW
 {
 public:
     LStringW(void);
-    LStringW(__in PCSTR lpszString, __in UINT CodePage = CP_ACP);
+    LStringW(__in PCSTR lpszString);
     LStringW(__in PCWSTR lpszString);
     LStringW(__in const LStringW& obj);
     ~LStringW(void);
@@ -91,23 +87,20 @@ public:
     void Append(__in WCHAR ch);
     void Attach(__in PWSTR lpszString);
     int Compare(__in PCWSTR lpszString, __in BOOL bCase = TRUE);
-    void Copy(__in PCSTR lpszString, __in UINT CodePage = CP_ACP);
+    void Copy(__in PCSTR lpszString);
     void Copy(__in PCWSTR lpszString);
     BSTR ConvertToBSTR(void);
     PWSTR Detach(void);
     void Empty(void);
-    BOOL ExpandEnvironment(void);
     int Find(__in WCHAR ch, int iStart = 0);
     int Find(__in PCWSTR pszSub, int iStart = 0);
     int Format(__in PCWSTR lpszFormat, ...);
     static void FreeString(__in PWSTR lpString);
-    WCHAR GetAt(__in int idx);
     int GetLength(void) const;
     BOOL IsEmpty(void) const;
     LStringW Left(__in int nChars);
     LStringW Mid(__in int iStart, __in int nChars = -1);
     int Replace(__in PCWSTR pszOld, __in PCWSTR pszNew);
-    void ReplaceBackslashChars(void);
     int ReverseFind(__in WCHAR ch);
     int SetAt(__in int pos, __in WCHAR ch);
     void ToLower(void);
@@ -124,11 +117,3 @@ typedef LStringW LString;
 #else // !UNICODE
 typedef LStringA LString;
 #endif // UNICODE
-
-template <class T>
-PDLINLINE void LPathAddBackslash(__inout T* str)
-{
-    int len = str->GetLength();
-    if ('\\' != str->GetAt(len - 1))
-        str->Append('\\');
-}

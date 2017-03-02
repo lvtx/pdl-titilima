@@ -11,7 +11,6 @@
 #include "..\include\pdl_file.h"
 #include "..\include\pdl_module.h"
 #include "..\container\ptrtree.h"
-#include "..\..\include\pdl_util.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // xmlAttrib

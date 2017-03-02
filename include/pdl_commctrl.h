@@ -2,6 +2,7 @@
  * \file pdl_commctrl.h
  * \brief PDL 公共控件封装
  * \details 对公共控件的功能封装：
+ *   \li \c LComCtlInit 公共控件初始化类
  *   \li \c LComCtl 公共控件基类
  *   \li \c LDateTime 日期/时间控件类
  *   \li \c LHeader Header 控件类
@@ -27,6 +28,24 @@
 #include "pdl_window.h"
 
 /**
+ * \class LComCtlInit
+ * \brief 公共控件初始化类
+ */
+
+class LComCtlInit
+{
+public:
+    LComCtlInit(__in DWORD dwICC)
+    {
+        INITCOMMONCONTROLSEX init;
+        init.dwSize = sizeof(INITCOMMONCONTROLSEX);
+        init.dwICC = dwICC;
+
+        ::InitCommonControlsEx(&init);
+    }
+};
+
+/**
  * \class LComCtl
  * \brief 公共控件基类
  */
@@ -36,8 +55,6 @@ class LComCtl : public LWnd
 public:
     LComCtl(__in HWND hWnd = NULL);
     LComCtl& operator=(__in HWND hWnd);
-public:
-    static BOOL PDLAPI Init(__in DWORD dwICC);
 public:
     BOOL GetUnicodeFormat(void);
     DWORD GetVersion(void);
@@ -68,10 +85,6 @@ public:
 class LHeader : public LComCtl
 {
 public:
-    LHeader(__in HWND hWnd = NULL);
-    LHeader& operator=(__in HWND hWnd);
-    operator HWND(void) const { return m_hWnd; }
-public:
     BOOL Create(__in HWND hParent, __in UINT uId, __in DWORD dwStyle);
     int InsertItem(__in int index, __in const LPHDITEMA phdi);
     int InsertItem(__in int index, __in const LPHDITEMW phdi);
@@ -80,7 +93,6 @@ public:
     int InsertItem(__in int index, __in PCWSTR pszText, __in int cxy,
         __in int fmt = HDF_LEFT);
     BOOL Layout(__in LPRECT prc, __out LPWINDOWPOS pwpos);
-    BOOL SetItem(__in int iIndex, __in LPHDITEM phdItem);
 };
 
 /**
@@ -128,17 +140,16 @@ public:
     BOOL DragEnter(__in HWND hwndLock, __in int x, __in int y);
     BOOL DragLeave(__in HWND hwndLock);
     BOOL DragMove(__in int x, __in int y);
-    static BOOL PDLAPI DragShowNolock(__in BOOL fShow);
+    BOOL DragShowNolock(__in BOOL fShow);
     BOOL Draw(__in int i, __in HDC hdcDst, __in int x,
         __in int y, __in UINT fStyle);
     BOOL DrawEx(int i, HDC hdcDst, int x, int y, int dx, int dy,
         COLORREF rgbBk, COLORREF rgbFg, UINT fStyle);
     BOOL DrawIndirect(IMAGELISTDRAWPARAMS *pimldp);
     HIMAGELIST Duplicate(void);
-    static void PDLAPI EndDrag(void);
+    void EndDrag();
     HICON ExtractIcon(int i);
     COLORREF GetBkColor() const;
-    HIMAGELIST GetHandle(void) { return m_hImageList; }
     HICON GetIcon(int i, UINT flags);
     BOOL GetIconSize(int *cx, int *cy);
     int GetImageCount(void) const;
@@ -181,31 +192,30 @@ public:
 public:
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID);
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID);
-    HIMAGELIST CreateDragImage(__in int iItem, __out LPPOINT lpptUpLeft);
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL DeleteAllItems(void);
     BOOL DeleteColumn(__in int iCol);
     BOOL DeleteItem(__in int nItem);
@@ -215,12 +225,10 @@ public:
     BOOL GetColumn(__in int iCol, __out LPLVCOLUMNW pcol);
     int GetColumnWidth(__in int iCol);
     HWND GetEditControl(void);
-    HWND GetHeader(void);
     HIMAGELIST GetImageList(__in int iImageList);
     BOOL GetItem(__inout LPLVITEMA pitem);
     BOOL GetItem(__inout LPLVITEMW pitem);
     int GetItemCount(void) const;
-    LPARAM GetItemData(__in int iItem);
     BOOL GetItemRect(__in int iItem, __out LPRECT rc, __in int code);
     UINT GetItemState(__in int iItem, __in UINT mask);
     void GetItemText(__in int iItem, __in int iSubItem, __out PSTR pszText,
@@ -230,18 +238,16 @@ public:
     int GetNextItem(__in int iStart, __in UINT flags);
     UINT GetSelectedCount(void);
     int GetSelectionMark(void);
-    int HitTest(__inout LPLVHITTESTINFO hi);
-    int HitTest(__in POINT pt, __out UINT* pFlags = NULL);
     int InsertColumn(__in int iCol, __in PCSTR pszText, __in int cx,
         __in int fmt = LVCFMT_LEFT);
     int InsertColumn(__in int iCol, __in PCWSTR pszText, __in int cx,
         __in int fmt = LVCFMT_LEFT);
     int InsertColumn(__in int iCol, __in const LPLVCOLUMNA pcol);
     int InsertColumn(__in int iCol, __in const LPLVCOLUMNW pcol);
-    int InsertItem(__in int iItem, __in PCSTR pszText,
-        __in int iImage = I_IMAGENONE, __in LPARAM lParam = 0);
-    int InsertItem(__in int iItem, __in PCWSTR pszText,
-        __in int iImage = I_IMAGENONE, __in LPARAM lParam = 0);
+    int InsertItem(__in int iItem, __in PCSTR pszText, __in int iImage,
+        __in LPARAM lParam);
+    int InsertItem(__in int iItem, __in PCWSTR pszText, __in int iImage,
+        __in LPARAM lParam);
     int InsertItem(__in const LPLVITEMA pitem);
     int InsertItem(__in const LPLVITEMW pitem);
     BOOL SetCallbackMask(__in UINT mask);
@@ -251,13 +257,11 @@ public:
     HIMAGELIST SetImageList(__in HIMAGELIST hImageList, __in int iImageList);
     BOOL SetItem(const LPLVITEMA pitem);
     BOOL SetItem(const LPLVITEMW pitem);
-    BOOL SetItemData(__in int iItem, LPARAM lParam);
     void SetItemState(__in int i, __in UINT state, __in UINT mask);
     void SetItemText(__in int i, __in int iSubItem, __in PCSTR pszText);
     void SetItemText(__in int i, __in int iSubItem, __in PCWSTR pszText);
     int SetSelectionMark(__in int iIndex);
     BOOL SortItems(__in PFNLVCOMPARE pfnCompare, __in LPARAM lParamSort);
-    BOOL Update(__in int iItem);
 };
 
 /**
@@ -285,7 +289,6 @@ public:
     LProgressBar& operator=(__in HWND hWnd);
 public:
     int GetStep(void);
-    UINT GetPos(void);
     int SetPos(__in int nPos);
     void SetRange32(__in int nLower, __in int nUpper);
     int SetStep(__in int nStepInc);
@@ -360,9 +363,10 @@ private:
 class LReBar : public LComCtl
 {
 public:
-    BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID);
+    BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID,
+        __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in DWORD dwStyle,
-        __in HWND hWndParent, __in UINT nID);
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
     static int SizeOfREBARBANDINFO(void);
     BOOL InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOA lpRbbi);
     BOOL InsertBand(__in UINT ulIndex, __in LPREBARBANDINFOW lpRbbi);
@@ -383,10 +387,8 @@ public:
         __in DWORD dwStyle, __in UINT nID);
     BOOL GetRect(__in int nPart, __out LPRECT lprc);
     BOOL SetParts(__in int nParts, __in LPINT aWidths);
-    BOOL SetText(__in int nPart, __in PCSTR lpszText,
-        __in_opt int nType);
-    BOOL SetText(__in int nPart, __in PCWSTR lpszText,
-        __in_opt int nType);
+    BOOL SetText(__in int nPart, __in PCSTR lpszText);
+    BOOL SetText(__in int nPart, __in PCWSTR lpszText);
 };
 
 /**
@@ -399,53 +401,43 @@ class LTabCtrl : public LComCtl
 public:
     LTabCtrl(__in HWND hWnd = NULL);
     LTabCtrl& operator=(__in HWND hWnd);
-    operator HWND(void) const { return m_hWnd; }
+    operator HWND(void) const;
 public:
     void AdjustRect(__in BOOL fLarger, __inout LPRECT prc);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID);
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT nID);
+        __in HWND hWndParent, __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT nID);
-    BOOL DeleteAllItems(void);
-    BOOL DeleteItem(__in int iItem);
+        __in UINT nID, __in PVOID lpParam);
     int GetCurSel(void);
-    BOOL GetItem(__in int iItem, __out LPTCITEMA pitem);
-    BOOL GetItem(__in int iItem, __out LPTCITEMW pitem);
-    int GetItemCount(void);
-    HWND GetToolTips(void);
-    int HitTest(__inout LPTCHITTESTINFO pinfo);
     int InsertItem(__in int iItem, __in const LPTCITEMA pitem);
     int InsertItem(__in int iItem, __in const LPTCITEMW pitem);
     int InsertItem(__in int iItem, __in PCSTR lpszItem,
-        __in int nImage = I_IMAGENONE, __in LPARAM lParam = 0);
+        __in int nImage = -1, __in LPARAM lParam = 0);
     int InsertItem(__in int iItem, __in PCWSTR lpszItem,
-        __in int nImage = I_IMAGENONE, __in LPARAM lParam = 0);
-    int SetCurSel(__in int iItem);
+        __in int nImage = -1, __in LPARAM lParam = 0);
     HIMAGELIST SetImageList(__in HIMAGELIST himl);
-    BOOL SetItem(__in int iItem, __in LPTCITEMA pitem);
-    BOOL SetItem(__in int iItem, __in LPTCITEMW pitem);
 };
 
 /**
@@ -463,7 +455,6 @@ class LToolBar : public LComCtl
 {
 public:
     LToolBar(__in HWND hWnd = NULL);
-    operator HWND(void) const { return m_hWnd; }
 public:
     BOOL Create(__in DWORD dwStyle, __in HWND hWndParent, __in UINT nID);
     BOOL AddButtons(__in UINT uNumButtons, __in LPCTBBUTTON lpButtons,
@@ -485,7 +476,6 @@ class LToolTip : public LComCtl
 {
 public:
     LToolTip(__in HWND hWnd = NULL);
-    operator HWND(void) const { return m_hWnd; }
 public:
     BOOL Create(__in DWORD dwStyle, __in HWND hWndParent);
     void Activate(__in BOOL fActivate = TRUE);
@@ -526,30 +516,30 @@ public:
 public:
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL Create(__in PCSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT id);
+        __in HWND hWndParent, __in UINT id, __in PVOID lpParam);
     BOOL Create(__in PCWSTR lpWindowName, __in DWORD dwStyle,
         __in int x, __in int y, __in int nWidth, __in int nHeight,
-        __in HWND hWndParent, __in UINT id);
+        __in HWND hWndParent, __in UINT id, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in LPCRECT lpRect, __in HWND hWndParent,
-        __in UINT nID);
+        __in UINT nID, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT id);
+        __in UINT id, __in PVOID lpParam);
     BOOL CreateEx(__in DWORD dwExStyle, __in PCWSTR lpWindowName,
         __in DWORD dwStyle, __in int X, __in int Y,
         __in int nWidth, __in int nHeight, __in HWND hWndParent,
-        __in UINT id);
+        __in UINT id, __in PVOID lpParam);
     BOOL DeleteAllItems(void);
     BOOL DeleteItem(__in HTREEITEM hItem);
     HWND EditLabel(__in HTREEITEM hItem);
@@ -566,11 +556,11 @@ public:
     HTREEITEM GetSelection(void);
     HTREEITEM HitTest(__inout LPTVHITTESTINFO lpht);
     HTREEITEM InsertItem(__in HTREEITEM hParent, __in HTREEITEM hInsertAfter,
-        __in PCSTR lpszItem, __in int nImage = I_IMAGENONE,
-        __in int nSelImage = I_IMAGENONE, __in LPARAM lParam = 0);
+        __in PCSTR lpszItem, __in int nImage = -1, __in int nSelImage = -1,
+        __in LPARAM lParam = 0);
     HTREEITEM InsertItem(__in HTREEITEM hParent, __in HTREEITEM hInsertAfter,
-        __in PCWSTR lpszItem, __in int nImage = I_IMAGENONE,
-        __in int nSelImage = I_IMAGENONE, __in LPARAM lParam = 0);
+        __in PCWSTR lpszItem, __in int nImage = -1, __in int nSelImage = -1,
+        __in LPARAM lParam = 0);
     HTREEITEM InsertItem(__in LPTVINSERTSTRUCTA lpis);
     HTREEITEM InsertItem(__in LPTVINSERTSTRUCTW lpis);
     BOOL SelectItem(__in HTREEITEM hItem);

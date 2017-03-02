@@ -45,6 +45,4 @@ public:
     void Unlock(void);
 private:
     HANDLE m_hMutex;
-    DWORD m_tid;
-    DWORD m_cnt;
 };

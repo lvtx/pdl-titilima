@@ -43,7 +43,7 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\..\PDL\trunk\include&quot;;&quot;$(SolutionDir)include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
@@ -67,7 +67,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				OutputFile="$(OutDir)\pdl_dbg.lib"
+				OutputFile="$(OutDir)\pdl.lib"
 				IgnoreAllDefaultLibraries="true"
 			/>
 			<Tool
@@ -113,10 +113,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\..\PDL\trunk\include&quot;;&quot;$(SolutionDir)include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -178,7 +177,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\pdl_comdlg.hpp"
+				RelativePath="..\include\pdl_comdlg.h"
 				>
 			</File>
 			<File
@@ -230,10 +229,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\pdl_util.h"
-				>
-			</File>
-			<File
 				RelativePath="..\include\pdl_window.h"
 				>
 			</File>
@@ -278,6 +273,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\sources\common\pdl_comdlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\sources\common\pdl_commctrl.cpp"
 				>
 			</File>
@@ -310,7 +309,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\sources\common\string.hpp"
+				RelativePath="..\sources\common\stringt.h"
 				>
 			</File>
 			<File

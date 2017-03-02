@@ -115,7 +115,8 @@ BOOL LSplitter::SetPane(
         return FALSE;
 
     m_wndPane[i] = hWnd;
-    m_wndPane[i].SetParent(m_hWnd); // 改变面板窗口的所属关系
+    // 改变面板窗口的所属关系
+    ::SetParent(hWnd, m_hWnd);
     if (0 == i)
     {
         PDLASSERT(nSize >= nMinSize);

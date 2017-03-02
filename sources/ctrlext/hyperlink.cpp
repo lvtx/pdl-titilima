@@ -25,15 +25,15 @@ LHyperLink::LHyperLink(void) : m_bHover(FALSE)
     {
         LString strColor = _T("0,0,255");
         key.QueryStringValue(_T("Anchor Color"), &strColor);
-        m_clrNormal = LParseColorString(strColor, COLOR_BLUE);
+        m_clrNormal = LParseColorString(strColor, RGB(0, 0, 255));
         strColor = _T("255,0,0");
         key.QueryStringValue(_T("Anchor Color Hover"), &strColor);
-        m_clrHover = LParseColorString(strColor, COLOR_RED);
+        m_clrHover = LParseColorString(strColor, RGB(255, 0, 0));
     }
     else
     {
-        m_clrNormal = COLOR_BLUE;
-        m_clrHover = COLOR_RED;
+        m_clrNormal = RGB(0, 0, 255);
+        m_clrHover = RGB(255, 0, 0);
     }
 }
 
@@ -57,10 +57,11 @@ BOOL LHyperLink::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     BOOL bRet = LStatic::Create(lpWindowName, dwStyle | SS_NOTIFY,
-        lpRect, hWndParent, nID);
+        lpRect, hWndParent, nID, lpParam);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -70,10 +71,11 @@ BOOL LHyperLink::Create(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     BOOL bRet = LStatic::Create(lpWindowName, dwStyle | SS_NOTIFY,
-        lpRect, hWndParent, nID);
+        lpRect, hWndParent, nID, lpParam);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -84,10 +86,11 @@ BOOL LHyperLink::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     BOOL bRet = LStatic::CreateEx(dwExStyle, lpWindowName,
-        dwStyle, lpRect, hWndParent, nID);
+        dwStyle, lpRect, hWndParent, nID, lpParam);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -98,10 +101,11 @@ BOOL LHyperLink::CreateEx(
     __in DWORD dwStyle,
     __in LPCRECT lpRect,
     __in HWND hWndParent,
-    __in UINT nID)
+    __in UINT nID,
+    __in PVOID lpParam)
 {
     BOOL bRet = LStatic::CreateEx(dwExStyle, lpWindowName,
-        dwStyle, lpRect, hWndParent, nID);
+        dwStyle, lpRect, hWndParent, nID, lpParam);
     LSubclassWnd::SubclassWindow(m_hWnd);
     return bRet;
 }
@@ -128,44 +132,6 @@ COLORREF LHyperLink::SetNormalColor(
     if (bRedraw)
         Invalidate(FALSE);
     return ret;
-}
-
-BOOL LHyperLink::SizeToContent(
-    __in BOOL bRedraw /* = TRUE */,
-    __in BOOL bForce /* = FALSE */)
-{
-    if (!IsWindow())
-        return FALSE;
-
-    // 无文本直接返回
-    int nLen = GetWindowTextLengthA();
-    if (0 == nLen)
-        return FALSE;
-
-    LString strText;
-    GetWindowText(&strText);
-
-    RECT rc = { 0 };
-    GetClientRect(&rc);
-
-    RECT rcTxt = { 0 };
-    LClientDC dc(m_hWnd);
-    HFONT hFontParent = (HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0);
-    HFONT hFontOld = dc.SelectFont(hFontParent);
-    dc.DrawText(strText, -1, &rcTxt, DT_CALCRECT);
-    dc.SelectFont(hFontOld);
-
-    if (rc.right < rcTxt.right || bForce)
-        rc.right = rcTxt.right;
-    if (rc.bottom < rcTxt.bottom || bForce)
-        rc.bottom = rcTxt.bottom;
-
-    UINT uFlags = SWP_NOZORDER | SWP_NOMOVE;
-#ifndef _WIN32_WCE
-    if (!bRedraw)
-        uFlags |= SWP_NOREDRAW;
-#endif // _WIN32_WCE
-    return SetWindowPos(NULL, 0, 0, rc.right, rc.bottom, uFlags);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

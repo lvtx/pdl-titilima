@@ -1,6 +1,0 @@
-VSWIZARD 7.0
-Wizard=VsWizard.VsWizardEngine.9.0
-
-Param="WIZARD_NAME = PDLWizard"
-Param="ABSOLUTE_PATH = E:\PDL\wizard"
-Param="FALLBACK_LCID = 2052"

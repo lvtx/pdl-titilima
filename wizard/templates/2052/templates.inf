@@ -1,8 +1,0 @@
-main.cpp
-[!if !CONSOLE_APP]
-main.rc
-resource.h
-    [!if ENABLE_MANIFEST]
-manifest.xml
-    [!endif]
-[!endif]

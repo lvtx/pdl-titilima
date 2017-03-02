@@ -19,16 +19,6 @@
 
 #include "pdl_base.h"
 
-const COLORREF COLOR_BLACK = RGB(0, 0, 0);
-const COLORREF COLOR_BLUE = RGB(0, 0, 255);
-const COLORREF COLOR_GRAY = RGB(128, 128, 128);
-const COLORREF COLOR_GREEN = RGB(0, 128, 0);
-const COLORREF COLOR_LIME = RGB(0, 255, 0);
-const COLORREF COLOR_RED = RGB(255, 0, 0);
-const COLORREF COLOR_SILVER = RGB(192, 192, 192);
-const COLORREF COLOR_WHITE = RGB(255, 255, 255);
-const COLORREF COLOR_YELLOW = RGB(255, 255, 0);
-
 /**
  * \class LGdiObj
  * \brief GDI 对象基类
@@ -39,7 +29,7 @@ class LGdiObj
 public:
     LGdiObj(__in HGDIOBJ hGdiObj = NULL);
     virtual ~LGdiObj(void);
-    operator HGDIOBJ(void) { return m_hGdiObj; }
+    operator HGDIOBJ(void);
     LGdiObj& operator=(__in HGDIOBJ hGdiObj);
 public:
 
@@ -74,7 +64,7 @@ class LBitmap : public LGdiObj
 {
 public:
     LBitmap(__in HBITMAP hBitmap = NULL);
-    operator HBITMAP(void) { return (HBITMAP)m_hGdiObj; }
+    operator HBITMAP(void);
     LBitmap& operator=(__in HBITMAP hBitmap);
 public:
 
@@ -115,7 +105,7 @@ class LBrush : public LGdiObj
 {
 public:
     LBrush(__in HBRUSH hBrush = NULL);
-    operator HBRUSH(void) { return (HBRUSH)m_hGdiObj; }
+    operator HBRUSH(void);
     LBrush& operator=(__in HBRUSH hBrush);
 public:
 
@@ -136,11 +126,8 @@ class LFont : public LGdiObj
 {
 public:
     LFont(__in HFONT hFont = NULL);
-    operator HFONT(void) { return (HFONT)m_hGdiObj; }
+    operator HFONT(void);
     LFont& operator=(__in HFONT hFont);
-public:
-    BOOL CreateIndirect(__in LPLOGFONTA lf);
-    BOOL CreateIndirect(__in LPLOGFONTW lf);
 };
 
 /**
@@ -152,7 +139,7 @@ class LPen : public LGdiObj
 {
 public:
     LPen(__in HPEN hPen = NULL);
-    operator HPEN(void) { return (HPEN)m_hGdiObj; }
+    operator HPEN(void);
     LPen& operator=(__in HPEN hPen);
 };
 
@@ -165,7 +152,7 @@ class LRgn : public LGdiObj
 {
 public:
     LRgn(__in HRGN hRgn = NULL);
-    operator HRGN(void) { return (HRGN)m_hGdiObj; }
+    operator HRGN(void);
     LRgn& operator=(__in HRGN hPen);
 };
 
@@ -179,7 +166,7 @@ class LDC
 public:
     LDC(__in HDC hDC = NULL);
     virtual ~LDC(void);
-    operator HDC(void) { return m_hDC; }
+    operator HDC(void) const;
 public:
 
     /**
@@ -226,7 +213,6 @@ public:
 
     BOOL DrawEdge(__in LPRECT qrc, __in UINT edge, __in UINT grfFlags);
     BOOL DrawFocusRect(__in LPCRECT lprc);
-    BOOL DrawIcon(__in int X, __in int Y, __in HICON hIcon);
     int DrawText(__in PCTSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
 #ifdef UNICODE
@@ -236,6 +222,19 @@ public:
     int DrawTextW(__in PCWSTR lpString, __in int nCount,
         __inout LPRECT lpRect, __in UINT uFormat);
 #endif // UNICODE
+
+    /**
+     * 在给定的矩形范围内绘制文字，如果超出范围，则使用省略号来剪切文字。
+     */
+    int DrawTextClipped(__in PCSTR lpString, __in int nCount,
+        __inout LPRECT lpRect, __in UINT uFormat);
+
+    /**
+     * 在给定的矩形范围内绘制文字，如果超出范围，则使用省略号来剪切文字。
+     */
+    int DrawTextClipped(__in PCWSTR lpString, __in int nCount,
+        __inout LPRECT lpRect, __in UINT uFormat);
+
     BOOL ExtTextOut(__in int X, __in int Y, __in UINT fuOptions,
         __in CONST RECT* lprc, __in PCTSTR lpString, __in UINT cbCount,
         __in CONST INT* lpDx);
@@ -323,7 +322,7 @@ public:
      */
     ~LPaintDC(void);
 
-    operator HDC(void) { return m_hDC; }
+    operator HDC(void) const;
 public:
     /**
      * WM_PAINT 绘制结构
@@ -358,7 +357,7 @@ public:
      */
     ~LClientDC(void);
 
-    operator HDC(void) { return m_hDC; }
+    operator HDC(void) const;
 protected:
     /**
      * 要进行绘制的窗口句柄
@@ -388,7 +387,7 @@ public:
      */
     ~LWindowDC(void);
 
-    operator HDC(void) { return m_hDC; }
+    operator HDC(void) const;
 protected:
     /**
      * 要进行绘制的窗口句柄
@@ -405,7 +404,7 @@ class LBufferDC : public LDC
 {
 public:
     ~LBufferDC(void);
-    operator HDC(void) { return m_hDC; }
+    operator HDC(void) const;
 public:
 
     /**

@@ -1,12 +1,10 @@
 #include "..\..\include\pdl_module.h"
 #include "..\..\include\pdl_file.h"
 #include "..\..\include\pdl_registry.h"
-#include "..\..\include\pdl_util.h"
 #include <comdef.h>
 
 #define PDL_INIT_WNDDATA    2
 #define RT_STRINGW          MAKEINTRESOURCEW(6)
-#define PAGE_SIZE           4096
 
 LAppModule* LAppModule::m_pApp = NULL;
 UINT WM_PDL_GETOBJECTA = 0;
@@ -14,28 +12,12 @@ UINT WM_PDL_GETOBJECTW = 0;
 UINT WM_PDL_GETNOTIFY = 0;
 static LFile* g_log = NULL;
 
-typedef struct _tagWndData {
-    DWORD tid;
-    PVOID ptr;
-} WNDDATA, *PWNDDATA;
-
-typedef struct _tagThunkPage {
-    DWORD cbUsed;
-    PVOID pvBase;
-} THUNKPAGE, *PTHUNKPAGE;
-
 LAppModule::LAppModule(__in HINSTANCE hInstance)
 {
     m_hInstance = hInstance;
-
-    // 初始化窗口数据
-    m_wdLock = ILock::Create();
-    m_WndData.Create(sizeof(WNDDATA), NULL, NULL, m_wdLock);
-
-    // 初始化 thunk 结构
-    m_dwPageUsage = 0;
-    m_tLock = ILock::Create();
-    m_tPages.Create(sizeof(THUNKPAGE), NULL, DestroyPage, m_tLock);
+    m_cntWndData = 0;
+    m_maxWndData = PDL_INIT_WNDDATA;
+    m_pvWndData = new PVOID[PDL_INIT_WNDDATA];
 
     // 检测日志标志，并决定是否生成日志
     LString strPath, strFile;
@@ -66,12 +48,6 @@ LAppModule::LAppModule(__in HINSTANCE hInstance)
 
 LAppModule::~LAppModule(void)
 {
-    m_tPages.Destroy();
-    m_tLock->Destroy();
-
-    m_WndData.Destroy();
-    m_wdLock->Destroy();
-
     if (NULL != g_log)
     {
         g_log->Close();
@@ -82,62 +58,38 @@ LAppModule::~LAppModule(void)
 
 void LAppModule::AddWndData(__in PVOID lpWndData)
 {
-    WNDDATA wd;
-    wd.tid = ::GetCurrentThreadId();
-    wd.ptr = lpWndData;
-    m_WndData.AddTail(&wd);
-}
-
-PVOID LAppModule::AllocThunkMemory(__in DWORD cntBytes)
-{
-    LAutoLock lock(m_tLock);
-    THUNKPAGE tp;
-
-    // 查找可用页面
-    LIterator it = m_tPages.GetHeadIterator();
-    while (NULL != it)
+    if (m_cntWndData == m_maxWndData)
     {
-        m_tPages.GetAt(it, &tp);
-        if (PAGE_SIZE - tp.cbUsed >= cntBytes)
-            break;
-
-        it = m_tPages.GetNextIterator(it);
+        m_maxWndData *= 2;
+        PVOID* newData = new PVOID[m_maxWndData];
+        CopyMemory(newData, m_pvWndData, sizeof(PVOID) * m_cntWndData);
+        delete [] m_pvWndData;
+        m_pvWndData = newData;
     }
 
-    DWORD dwOffset = 0;
-    if (NULL == it)
-    {
-        tp.cbUsed = cntBytes;
-        tp.pvBase = VirtualAlloc(NULL, PAGE_SIZE, MEM_COMMIT,
-            PAGE_EXECUTE_READWRITE);
-        if (NULL == tp.pvBase)
-            return NULL;
-    }
-    else
-    {
-        dwOffset = tp.cbUsed;
-        tp.cbUsed += cntBytes;
-        m_tPages.Modify(it, &tp);
-    }
-    return offset_cast<PVOID>(tp.pvBase, dwOffset);
+    m_pvWndData[m_cntWndData] = lpWndData;
+    ++m_cntWndData;
 }
 
 void LAppModule::DebugPrint(__in PCSTR lpszFormat, ...)
 {
+    if (NULL == g_log)
+        return;
+
     char str[1024];
     va_list arglist;
     va_start(arglist, lpszFormat);
     int cnt = wvsprintfA(str, lpszFormat, arglist);
     va_end(arglist);
 
-    if (NULL != g_log)
-        g_log->Write(str, cnt);
-    else
-        OutputDebugStringA(str);
+    g_log->Write(str, cnt);
 }
 
 void LAppModule::DebugPrint(__in PCWSTR lpszFormat, ...)
 {
+    if (NULL == g_log)
+        return;
+
     WCHAR str[1024];
     va_list arglist;
     va_start(arglist, lpszFormat);
@@ -145,10 +97,7 @@ void LAppModule::DebugPrint(__in PCWSTR lpszFormat, ...)
     va_end(arglist);
 
     LStringA strA = str;
-    if (NULL != g_log)
-        g_log->Write(strA, strA.GetLength());
-    else
-        OutputDebugStringA(strA);
+    g_log->Write(strA, strA.GetLength());
 }
 
 BOOL LAppModule::Destroy(void)
@@ -162,35 +111,12 @@ BOOL LAppModule::Destroy(void)
     return FALSE;
 }
 
-void LAppModule::DestroyPage(PVOID ptr)
-{
-    PTHUNKPAGE p = (PTHUNKPAGE)ptr;
-    ::VirtualFree(p->pvBase, 0, MEM_RELEASE);
-}
-
 PVOID LAppModule::ExtractWndData(void)
 {
-    LAutoLock lock(m_wdLock);
-
-    LIterator it = m_WndData.GetHeadIterator();
-    if (NULL == it)
-        return NULL;
-
-    WNDDATA wd;
-    do
-    {
-        m_WndData.GetAt(it, &wd);
-        if (GetCurrentThreadId() == wd.tid)
-            break;
-
-        it = m_WndData.GetNextIterator(it);
-    } while (NULL != it);
-
-    if (NULL == it)
-        return NULL;
-
-    m_WndData.Remove(it);
-    return wd.ptr;
+    PVOID ret = m_pvWndData[0];
+    --m_cntWndData;
+    MoveMemory(m_pvWndData, m_pvWndData + 1, sizeof(PVOID) * m_cntWndData);
+    return ret;
 }
 
 HRSRC LAppModule::FindResourceA(__in PCSTR lpName, __in PCSTR lpType)

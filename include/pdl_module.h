@@ -6,8 +6,6 @@
 #pragma once
 
 #include "pdl_base.h"
-#include "pdl_string.h"
-#include "pdl_container.h"
 #include <Shlwapi.h>
 
 /**
@@ -15,6 +13,8 @@
  * \brief PDL 应用程序模块类
  */
 
+class LStringA;
+class LStringW;
 class LAppModule
 {
 public:
@@ -52,13 +52,6 @@ public:
     void AddWndData(__in PVOID lpWndData);
 
     /**
-     * 分配一段 thunk 使用的内存。
-     * @param [in] cntBytes 要分配的大小，以字节计。
-     * @return 如果分配成功则返回一段有效的内存地址，否则返回 NULL。
-     */
-    PVOID AllocThunkMemory(__in DWORD cntBytes);
-
-    /**
      * 提取上一次暂存的窗口数据指针。
      * @return 上一次暂存的窗口数据指针。
      */
@@ -80,12 +73,8 @@ public:
      */
     static void DebugPrint(__in PCWSTR lpszFormat, ...);
 
-    HRSRC FindResource(__in PCTSTR lpName, __in PCTSTR lpType);
-#ifdef UNICODE
     HRSRC FindResourceA(__in PCSTR lpName, __in PCSTR lpType);
-#else
     HRSRC FindResourceW(__in PCWSTR lpName, __in PCWSTR lpType);
-#endif // UNICODE
 
     /**
      * 获取模块的文件名。
@@ -161,52 +150,31 @@ public:
      */
     static BOOL PDLAPI GetModulePath(__in HMODULE hMod, __out LStringW* path);
 
-    HACCEL LoadAccelerators(__in PCTSTR lpTableName);
-    HBITMAP LoadBitmap(__in PCTSTR lpBitmapName);
-    HCURSOR LoadCursor(__in PCTSTR lpCursorName);
-    HICON LoadIcon(__in PCTSTR lpIconName);
-    HANDLE LoadImage(__in PCTSTR name, __in UINT type, __in int cx,
-        __in int cy, __in UINT fuLoad);
-    HMENU LoadMenu(__in PCTSTR lpMenuName);
-#ifdef UNICODE
     HACCEL LoadAcceleratorsA(__in PCSTR lpTableName);
+    HACCEL LoadAcceleratorsW(__in PCWSTR lpTableName);
     HBITMAP LoadBitmapA(__in PCSTR lpBitmapName);
+    HBITMAP LoadBitmapW(__in PCWSTR lpBitmapName);
     HCURSOR LoadCursorA(__in PCSTR lpCursorName);
+    HCURSOR LoadCursorW(__in PCWSTR lpCursorName);
     HICON LoadIconA(__in PCSTR lpIconName);
+    HICON LoadIconW(__in PCWSTR lpIconName);
     HANDLE LoadImageA(__in PCSTR name, __in UINT type, __in int cx,
         __in int cy, __in UINT fuLoad);
-    HMENU LoadMenuA(__in PCSTR lpMenuName);
-#else
-    HACCEL LoadAcceleratorsW(__in PCWSTR lpTableName);
-    HBITMAP LoadBitmapW(__in PCWSTR lpBitmapName);
-    HCURSOR LoadCursorW(__in PCWSTR lpCursorName);
-    HICON LoadIconW(__in PCWSTR lpIconName);
     HANDLE LoadImageW(__in PCWSTR name, __in UINT type, __in int cx,
         __in int cy, __in UINT fuLoad);
+    HMENU LoadMenuA(__in PCSTR lpMenuName);
     HMENU LoadMenuW(__in PCWSTR lpMenuName);
-#endif // UNICODE
     HGLOBAL LoadResource(__in HRSRC hResInfo);
-    int LoadString(__in UINT uID, __out PTSTR lpBuffer,
-        __in int nBufferMax);
-    int LoadString(__in UINT id, __out LString* str);
-#ifdef UNICODE
     int LoadStringA(__in UINT uID, __out PSTR lpBuffer,
         __in int nBufferMax);
-    int LoadStringA(__in UINT id, __out LStringA* str);
-#else
     int LoadStringW(__in UINT uID, __out PWSTR lpBuffer,
         __in int nBufferMax);
+    int LoadStringA(__in UINT id, __out LStringA* str);
     int LoadStringW(__in UINT id, __out LStringW* str);
-#endif // UNICODE
     DWORD SizeofResource(__in HRSRC hResInfo);
 protected:
     LAppModule(__in HINSTANCE hInstance);
     virtual ~LAppModule(void);
-private:
-    /**
-     * 销毁 thunk 页面
-     */
-    static void DestroyPage(PVOID ptr);
 protected:
     /**
      * 全局的 LAppModule 对象指针
@@ -219,21 +187,13 @@ protected:
     /**
      * 暂存窗口数据
      */
-    LPtrList m_WndData;
+    PVOID* m_pvWndData;
     /**
-     * 窗口数据锁
+     * 窗口数据个数
      */
-    ILock* m_wdLock;
+    int m_cntWndData;
     /**
-     * thunk 页面
+     * 窗口数据最大个数
      */
-    LPtrList m_tPages;
-    /**
-     * thunk 锁
-     */
-    ILock* m_tLock;
-    /**
-     * 当前的页面使用
-     */
-    DWORD m_dwPageUsage;
+    int m_maxWndData;
 };

@@ -48,25 +48,21 @@ void LLock::Destroy(void)
 
 void LLock::Lock(void)
 {
-    EnterCriticalSection(&m_cs);
+    ::EnterCriticalSection(&m_cs);
 }
 
 void LLock::Unlock(void)
 {
-    LeaveCriticalSection(&m_cs);
+    ::LeaveCriticalSection(&m_cs);
 }
 
 LGlobalLock::LGlobalLock(__in PCSTR lpName)
 {
-    m_tid = 0;
-    m_cnt = 0;
     m_hMutex = ::CreateMutexA(NULL, FALSE, lpName);
 }
 
 LGlobalLock::LGlobalLock(__in PCWSTR lpName)
 {
-    m_tid = 0;
-    m_cnt = 0;
     m_hMutex = ::CreateMutexW(NULL, FALSE, lpName);
 }
 
@@ -82,26 +78,10 @@ void LGlobalLock::Destroy(void)
 
 void LGlobalLock::Lock(void)
 {
-    DWORD tid = GetCurrentThreadId();
-    if (tid == m_tid)
-    {
-        ++m_cnt;
-        return;
-    }
-
-    WaitForSingleObject(m_hMutex, INFINITE);
-    m_tid = tid;
-    m_cnt = 1;
+    ::WaitForSingleObject(m_hMutex, INFINITE);
 }
 
 void LGlobalLock::Unlock(void)
 {
-    if (GetCurrentThreadId() == m_tid)
-        --m_cnt;
-    if (m_cnt > 0)
-        return;
-
-    m_tid = 0;
-    m_cnt = 0;
-    ReleaseMutex(m_hMutex);
+    ::ReleaseMutex(m_hMutex);
 }

@@ -11,10 +11,10 @@
 #include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
 #include "ptrtree.h"
-#include "..\..\include\pdl_util.h"
 
 LPtrTree::LPtrTree(void)
 {
+    m_dwStatus = 0;
     m_itRootFirst = NULL;
     m_itRootLast = NULL;
     m_dwUnitSize = 0;
@@ -33,6 +33,8 @@ LIterator LPtrTree::AddChild(
     __in LPCVOID ptr,
     __in DWORD type)
 {
+    if (TREE_ITERATING & m_dwStatus)
+        return NULL;
     if (LT_FIRST != type && LT_LAST != type)
         return NULL;
 
@@ -91,6 +93,9 @@ LIterator LPtrTree::AddChild(
 
 BOOL LPtrTree::Clear(void)
 {
+    if (TREE_ITERATING & m_dwStatus)
+        return FALSE;
+
     LAutoLock lock(m_lock);
     PTNODE node = (PTNODE)m_itRootFirst;
 
@@ -137,6 +142,7 @@ void LPtrTree::Create(
 
 void LPtrTree::Destroy(void)
 {
+    m_dwStatus &= ~TREE_ITERATING;
     Clear();
 
     m_dwUnitSize = 0;
@@ -188,9 +194,14 @@ LIterator LPtrTree::GetPrevSibling(__in LIterator it)
     return (LIterator)(((PTNODE)it)->prev);
 }
 
+PDLINLINE ILock* LPtrTree::GetSafeLock(void) const
+{
+    return (TREE_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
+}
+
 void LPtrTree::Modify(__in LIterator it, __in LPCVOID ptr)
 {
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
 
     PTNODE node = (PTNODE)it;
     CopyMemory(node->data, ptr, m_dwUnitSize);
@@ -212,7 +223,7 @@ LIterator LPtrTree::New(__in LPCVOID ptr)
 
 BOOL LPtrTree::Remove(__in LIterator it)
 {
-    if (NULL == it)
+    if (NULL == it || TREE_ITERATING & m_dwStatus)
         return FALSE;
 
     LAutoLock lock(m_lock);
@@ -277,7 +288,7 @@ BOOL LPtrTree::Remove(__in LIterator it)
 
 void LPtrTree::SetAt(__in LIterator it, __in LPCVOID ptr)
 {
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
 
     PTNODE node = (PTNODE)it;
     if (NULL != m_pfnDestroy)

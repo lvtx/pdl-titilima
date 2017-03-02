@@ -118,10 +118,6 @@ public:
      * @param [in] hWnd 一个窗口句柄。
      */
     LWnd(__in HWND hWnd = NULL);
-    operator HWND(void) const
-    {
-        return m_hWnd;
-    }
 public:
     BOOL AnimateWindow(__in DWORD dwTime, __in DWORD dwFlags);
 
@@ -224,8 +220,6 @@ public:
         __in int nHeight, __in HWND hWndParent, __in HMENU hMenu,
         __in PVOID lpParam);
 
-    BOOL CreateCaret(__in HBITMAP hBitmap, __in int nWidth, __in int nHeight);
-
     /**
      * 创建一个窗口。
      * @param [in] dwExStyle 窗口的附加样式。
@@ -299,11 +293,6 @@ public:
         __in HWND hWndParent, __in HMENU hMenu, __in PVOID lpParam);
 
     void Cut(void);
-    HDWP DeferWindowPos(__in HDWP hWinPosInfo, __in_opt HWND hWndInsertAfter,
-        __in int x, __in int y, __in int cx, __in int cy,
-        __in UINT uFlags);
-    HDWP DeferWindowPos(__in HDWP hWinPosInfo, __in_opt HWND hWndInsertAfter,
-        __in LPCRECT rc, __in UINT uFlags);
     BOOL DestroyWindow(void);
 
     /**
@@ -374,7 +363,6 @@ public:
      */
     DWORD GetExStyle(void);
 
-    HFONT GetFont(void);
     HMENU GetMenu(void);
     HWND GetParent(void);
 
@@ -394,12 +382,18 @@ public:
     BOOL GetScrollInfo(__in int nBar, __inout LPSCROLLINFO lpsi);
 
     /**
+     * 获取窗口的尺寸，包括非客户区的面积。
+     * @param [out] size 用于接收窗口的尺寸信息。
+     * @return 如果成功则返回 TRUE，否则返回 FALSE。
+     */
+    BOOL GetSize(__out LPSIZE size);
+
+    /**
      * 获取窗口的样式。
      * @return 窗口的样式。
      */
     DWORD GetStyle(void);
 
-    HMENU GetSystemMenu(__in BOOL bRevert);
     HWND GetWindow(__in UINT uCmd);
     LONG GetWindowLong(__in int nIndex);
 #ifdef UNICODE
@@ -433,8 +427,8 @@ public:
 #else
     int GetWindowTextLengthW(void);
 #endif // UNICODE
+    BOOL KillTimer(__in UINT_PTR uIDEvent);
 
-    BOOL HideCaret(void);
     /**
      * 刷新窗口。
      * @param [in] bErase 是否擦除背景。
@@ -449,7 +443,6 @@ public:
     BOOL IsWindowUnicode(void);
     BOOL IsWindowVisible(void);
     BOOL IsZoomed(void);
-    BOOL KillTimer(__in UINT_PTR uIDEvent);
     int MessageBox(__in PCTSTR lpszText, __in PCTSTR lpszCaption = NULL,
         __in UINT nType = MB_OK);
 #ifdef UNICODE
@@ -513,10 +506,8 @@ public:
      */
     HICON SetIcon(__in HICON hIcon, __in BOOL bBigIcon);
 
-    HWND SetParent(__in_opt HWND hWndNewParent);
     int SetScrollInfo(__in int nBar, __in LPCSCROLLINFO lpsi,
         __in BOOL redraw);
-    DWORD SetStyle(__in DWORD dwStyle, __in DWORD dwMask);
     UINT_PTR SetTimer(__in UINT_PTR nIDEvent, __in UINT uElapse,
         __in TIMERPROC lpTimerFunc = NULL);
     LONG SetWindowLongA(__in int nIndex, __in LONG dwNewLong);
@@ -536,20 +527,11 @@ public:
     /**
      * 按照窗口的文本内容改变窗口的大小。
      * @param [in] bRedraw 是否重绘窗口。
-     * @param [in] bForce 是否强制改变大小(在原有大小可以容纳文本的情况下)。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL SizeToContent(__in BOOL bRedraw = TRUE, __in BOOL bForce = FALSE);
+    BOOL SizeToContent(__in BOOL bRedraw = TRUE);
 
-    BOOL ShowCaret(void);
-    BOOL ShowDlgItem(__in int nIDDlgItem, __in int nCmdShow);
     BOOL ShowWindow(__in int nCmdShow);
-    int TranslateAccelerator(__in HACCEL hAccTable, __in LPMSG lpMsg);
-#ifdef UNICODE
-    int TranslateAcceleratorA(__in HACCEL hAccTable, __in LPMSG lpMsg);
-#else
-    int TranslateAcceleratorW(__in HACCEL hAccTable, __in LPMSG lpMsg);
-#endif // UNICODE
     BOOL TrackMouseEvent(__in DWORD dwFlags);
     BOOL UpdateWindow(void);
 protected:
@@ -637,7 +619,7 @@ protected:
      * @param [in] lParam 消息的附加参数。
      * @param [in] lRet 消息处理的返回值。
      */
-    virtual void OnMsgProceeded(UINT uMsg, WPARAM wParam, LPARAM lParam,
+    virtual void OnMsgProcceded(UINT uMsg, WPARAM wParam, LPARAM lParam,
         LRESULT lRet);
 protected:
     /**
@@ -921,7 +903,7 @@ public:
      * @param [in] uIDDialog 对话框的资源 ID。
      * @param [in] lang ini 格式的语言文件。
      */
-    LDialog(__in UINT uIDDialog = 0, __in LIniParser* lang = NULL);
+    LDialog(__in UINT uIDDialog, __in LIniParser* lang = NULL);
 
 public:
     /**
@@ -959,20 +941,6 @@ public:
     void SetFont(__in HFONT hFont, __in BOOL bAllCtrls = TRUE,
         __in BOOL bRedraw = TRUE);
 
-    /**
-     * 设置对话框的图标。
-     * @param [in] hInstance 图标资源所在的模块句柄。
-     * @param [in] lpIcon 图标的名称。
-     */
-    void SetIcon(__in HINSTANCE hInstance, __in PCSTR lpIcon);
-
-    /**
-     * 设置对话框的图标。
-     * @param [in] hInstance 图标资源所在的模块句柄。
-     * @param [in] lpIcon 图标的名称。
-     */
-    void SetIcon(__in HINSTANCE hInstance, __in PCWSTR lpIcon);
-
 protected:
     LRESULT DoDefault(UINT uMsg, WPARAM wParam, LPARAM lParam);
     /**
@@ -990,7 +958,7 @@ protected:
      * 加载语言文件。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
-    BOOL LoadLanguageRes(LIniParser* lang, PCSTR lpSection);
+    BOOL LoadLanguageRes(void);
 protected:
     /**
      * 对话框的资源 ID
@@ -1013,10 +981,10 @@ class LDrawItem
 {
     friend class LMsgWnd;
 protected:
-    virtual int OnCompareItem(PCOMPAREITEMSTRUCT cis) { return 0; }
-    virtual BOOL OnDeleteItem(PDELETEITEMSTRUCT dis) { return FALSE; }
-    virtual BOOL OnDrawItem(PDRAWITEMSTRUCT dis) { return FALSE; }
-    virtual BOOL OnMeasureItem(PMEASUREITEMSTRUCT mis) { return FALSE; }
+    virtual int OnCompareItem(PCOMPAREITEMSTRUCT cis);
+    virtual BOOL OnDeleteItem(PDELETEITEMSTRUCT dis);
+    virtual BOOL OnDrawItem(PDRAWITEMSTRUCT dis);
+    virtual BOOL OnMeasureItem(PMEASUREITEMSTRUCT mis);
 };
 
 
@@ -1031,26 +999,17 @@ class LCustomDraw
 {
     friend class LMsgWnd;
 protected:
-    virtual DWORD OnPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
-    virtual DWORD OnPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
-    virtual DWORD OnPreErase(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
-    virtual DWORD OnPostErase(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
+    virtual DWORD OnPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnPostPaint(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnPreErase(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnPostErase(int idCtl, LPNMCUSTOMDRAW cd);
 
-    virtual DWORD OnItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
-    virtual DWORD OnItemPostPaint(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
-    virtual DWORD OnItemPreErase(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
-    virtual DWORD OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
+    virtual DWORD OnItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnItemPostPaint(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnItemPreErase(int idCtl, LPNMCUSTOMDRAW cd);
+    virtual DWORD OnItemPostErase(int idCtl, LPNMCUSTOMDRAW cd);
 
-    virtual DWORD OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd)
-    { return CDRF_DODEFAULT; }
+    virtual DWORD OnSubItemPrePaint(int idCtl, LPNMCUSTOMDRAW cd);
 };
 
 /**
@@ -1064,18 +1023,6 @@ class LNotify
 {
     friend class LMsgWnd;
 protected:
-    virtual void OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled)
-    {
-        bHandled = FALSE;
-    }
-    virtual LRESULT OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled)
-    {
-        bHandled = FALSE;
-        return 0;
-    }
-    virtual HBRUSH OnCtlColorNotify(UINT uMsg, HDC hdc, BOOL& bHandled)
-    {
-        bHandled = FALSE;
-        return NULL;
-    }
+    virtual void OnCmdNotify(WORD id, WORD wCode, HWND hCtrl, BOOL& bHandled);
+    virtual LRESULT OnMsgNotify(int id, LPNMHDR nmh, BOOL& bHandled);
 };

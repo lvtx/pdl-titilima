@@ -9,12 +9,13 @@
 
 #include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
-#include "..\..\include\pdl_util.h"
 
 #define VECTOR_DEFMAXCNT    32
+#define VECTOR_ITERATING    0x00000001
 
 LPtrVector::LPtrVector(void)
 {
+    m_dwStatus = 0;
     m_data = NULL;
     m_dwUnitSize = 0;
     m_dwUnitCnt = 0;
@@ -32,7 +33,7 @@ LPtrVector::~LPtrVector(void)
 
 BOOL LPtrVector::Clear(void)
 {
-    if (NULL == m_data || 0 == m_dwUnitCnt)
+    if (NULL == m_data || (VECTOR_ITERATING & m_dwStatus))
         return FALSE;
 
     LAutoLock lock(m_lock);
@@ -96,7 +97,7 @@ PDLINLINE PVOID LPtrVector::DataFromPos(__in int idx)
 
 void LPtrVector::Destroy(void)
 {
-    if (NULL == m_data)
+    if (NULL == m_data || (VECTOR_ITERATING & m_dwStatus))
         return;
 
     LAutoLock lock(m_lock);
@@ -150,14 +151,9 @@ DWORD LPtrVector::GetCount(void)
     return m_dwUnitCnt;
 }
 
-PVOID LPtrVector::GetRawData(__in int idx)
+PDLINLINE ILock* LPtrVector::GetSafeLock(void) const
 {
-    if (NULL == m_data || (int)m_dwUnitCnt <= idx || 0 == m_dwUnitCnt)
-        return NULL;
-
-    if (idx < 0)
-        idx = m_dwUnitCnt - 1;
-    return DataFromPos(idx);
+    return (VECTOR_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
 }
 
 void LPtrVector::Grow(void)
@@ -177,6 +173,9 @@ void LPtrVector::Grow(void)
 
 int LPtrVector::InsertAfter(__in int idx, __in LPCVOID pvData)
 {
+    if (VECTOR_ITERATING & m_dwStatus)
+        return -1;
+
     if (NULL == m_data || idx >= (int)m_dwUnitCnt)
         return -1;
 
@@ -199,6 +198,9 @@ int LPtrVector::InsertAfter(__in int idx, __in LPCVOID pvData)
 
 int LPtrVector::InsertBefore(__in int idx, __in LPCVOID pvData)
 {
+    if (VECTOR_ITERATING & m_dwStatus)
+        return -1;
+
     if (NULL == m_data || idx < 0 || idx >= (int)m_dwUnitCnt)
         return -1;
 
@@ -223,7 +225,7 @@ BOOL LPtrVector::Modify(__in int idx, __in LPCVOID pvData)
     if (idx < 0 || idx >= (int)m_dwUnitCnt)
         return FALSE;
 
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
 
     PVOID p = DataFromPos(idx);
     CopyMemory(p, pvData, m_dwUnitSize);
@@ -232,6 +234,8 @@ BOOL LPtrVector::Modify(__in int idx, __in LPCVOID pvData)
 
 BOOL LPtrVector::Remove(__in int idx)
 {
+    if (VECTOR_ITERATING & m_dwStatus)
+        return FALSE;
     if (NULL == m_data || idx >= (int)m_dwUnitCnt)
         return FALSE;
 
@@ -261,7 +265,7 @@ BOOL LPtrVector::SetAt(__in int idx, __in LPCVOID pvData)
         return FALSE;
 
     BOOL bAdd = FALSE;
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
     if (idx < 0)
     {
         bAdd = TRUE;
@@ -289,6 +293,7 @@ BOOL LPtrVector::Sort(__in ComparePtr pfnCompare)
         return FALSE;
 
     LAutoLock lock(m_lock);
+    m_dwStatus = VECTOR_ITERATING;
     PBYTE tmp = new BYTE[m_dwUnitSize];
 
     for (int i = 0; i < (int)m_dwUnitCnt - 1; ++i)
@@ -307,5 +312,6 @@ BOOL LPtrVector::Sort(__in ComparePtr pfnCompare)
     }
 
     delete [] tmp;
+    m_dwStatus &= ~VECTOR_ITERATING;
     return TRUE;
 }

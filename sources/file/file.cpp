@@ -98,14 +98,18 @@ BOOL PDLAPI LFile::Exists(
 {
     PDLASSERT(NULL != lpszFileName);
 #ifndef _WIN32_WCE
-    DWORD dwAttr = GetFileAttributesA(lpszFileName);
-    if (INVALID_FILE_ATTRIBUTES == dwAttr)
-        return FALSE;
-
-    if (bIncludeDir)
-        return TRUE;
-    else
-        return 0 == (FILE_ATTRIBUTE_DIRECTORY & dwAttr);
+    BOOL bRet;
+    WIN32_FIND_DATAA wfd;
+    HANDLE hFind;
+    hFind = FindFirstFileA(lpszFileName, &wfd);
+    bRet = INVALID_HANDLE_VALUE != hFind;
+    FindClose(hFind);
+    if (bRet && !bIncludeDir)
+    {
+        if (FILE_ATTRIBUTE_DIRECTORY & wfd.dwFileAttributes)
+            bRet = FALSE;
+    }
+    return bRet;
 #else
     LStringW str = lpszFileName;
     return Exists(str);
@@ -118,14 +122,18 @@ BOOL PDLAPI LFile::Exists(
 {
     PDLASSERT(NULL != lpszFileName);
 
-    DWORD dwAttr = GetFileAttributesW(lpszFileName);
-    if (INVALID_FILE_ATTRIBUTES == dwAttr)
-        return FALSE;
-
-    if (bIncludeDir)
-        return TRUE;
-    else
-        return 0 == (FILE_ATTRIBUTE_DIRECTORY & dwAttr);
+    BOOL bRet;
+    WIN32_FIND_DATAW wfd;
+    HANDLE hFind;
+    hFind = FindFirstFileW(lpszFileName, &wfd);
+    bRet = INVALID_HANDLE_VALUE != hFind;
+    FindClose(hFind);
+    if (bRet && !bIncludeDir)
+    {
+        if (FILE_ATTRIBUTE_DIRECTORY & wfd.dwFileAttributes)
+            bRet = FALSE;
+    }
+    return bRet;
 }
 
 BOOL LFile::Flush(void)

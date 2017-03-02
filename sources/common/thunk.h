@@ -18,9 +18,8 @@ class LThunk
 #endif // _WIN32_WCE
     };
 #pragma pack(pop)
-
 public:
-    void Init(PVOID proc, PVOID pThis)
+    void Init(PVOID proc, void* pThis)
     {
 #ifdef _WIN32_WCE
         m_thunk.m_mov_r0 = 0xe59f0000;
@@ -33,12 +32,10 @@ public:
         m_thunk.m_this = reinterpret_cast<DWORD_PTR>(pThis);
         // jmp proc
         m_thunk.m_jmp = 0xe9;
-        m_thunk.m_relproc = (INT_PTR)proc - ((INT_PTR)this
-            + sizeof(WndThunk));
+        m_thunk.m_relproc = (INT_PTR)proc - ((INT_PTR)this + sizeof(WndThunk));
 #endif // _WIN32_WCE
 
-        FlushInstructionCache(GetCurrentProcess(), &m_thunk,
-            sizeof(WndThunk));
+        ::FlushInstructionCache(GetCurrentProcess(), &m_thunk, sizeof(m_thunk));
     }
     WndThunk& GetThunk(void)
     {

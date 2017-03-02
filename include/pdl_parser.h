@@ -4,7 +4,6 @@
  * \details 这个文件中包括了 PDL 中常用的格式解析工具类及函数：
  *   \li \c LParseColorString 颜色字符串解析函数
  *   \li \c LIniParser ini 文件解析类
- *   \li \c LIniSection ini 格式 Section 类
  *   \li \c LXmlParser xml 格式解析类
  */
 
@@ -46,8 +45,7 @@ COLORREF PDLAPI LParseColorString(
  */
 
 class LTxtFile;
-class LIniSection;
-class LIniParser
+class LIniParser : protected LStrList
 {
 public:
 
@@ -73,16 +71,6 @@ public:
      * @return 如果成功则返回 ini 中保存的数值，否则返回由 nDefault 指定的数值。
      */
     int GetInt(__in PCSTR lpszSection, __in PCSTR lpszKey, __in int nDefault);
-
-    /**
-     * 从指定的 Section 名称获得一个 Section 对象。
-     * @param [in] lpszSection 要获取的 Section 名称。
-     * @param [out] 用于接收返回的 Section 对象。
-     * @param [in] 如果 Section 不存在是否创建。
-     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL GetSection(__in PCSTR lpszSection, __out LIniSection* sec,
-        __in BOOL bCreate);
 
     /**
      * 从指定的 Section 和 Key 处获取一个字符串。
@@ -138,38 +126,23 @@ public:
 
     /**
      * 打开一个 ini 文件。
-     * @param [in] lpszFileName ini 文件的文件名。
+     * @param lpszFileName: ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in PCSTR lpszFileName);
 
     /**
      * 打开一个 ini 文件。
-     * @param [in] lpszFileName ini 文件的文件名。
+     * @param lpszFileName: ini 文件的文件名。
      * @return 如果成功则返回 TRUE，否则返回 FALSE。
      */
     BOOL Open(__in PCWSTR lpszFileName);
 
     /**
-     * 借助一个 LTxtFile 对象来打开 ini 文件。
-     * @param [in] pFile 一个有效的 LTxtFile 对象指针。
-     */
-    void Open(__in LTxtFile* pFile);
-
-    /**
-     * 移除一个 Key。
-     * @param [in] lpszSection 要移除的 Key 所在的 Section 名称。
-     * @param [in] lpszKey 要移除的 Key 名称。
-     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL RemoveKey(__in PCSTR lpszSection, __in PCSTR lpszKey);
-
-    /**
      * 移除一个 Section。
-     * @param [in] lpszSection 要移除的 Section 名称。
-     * @return 如果移除成功则返回 TRUE，否则返回 FALSE。
+     * @param [in] 要移除的 Section 名称。
      */
-    BOOL RemoveSection(__in PCSTR lpszSection);
+    void RemoveSection(__in PCSTR lpszSection);
 
     /**
      * 将数据保存为一个 ini 文件。
@@ -231,252 +204,23 @@ private:
      */
     PSTR GetStringA(__in PCSTR lpszSection, __in PCSTR lpszKey);
     /**
+     * 借助一个 LTxtFile 对象来打开 ini 文件。
+     */
+    void Open(__in LTxtFile* pFile);
+    /**
      * 向指定的 Section 与 指定的 Key 处写入字符串。
      */
     BOOL WriteStringA(__in PCSTR lpszSection, __in PCSTR lpszKey,
         __in PCSTR lpszValue);
 private:
     /**
-     * 数据
-     */
-    LStrList m_data;
-    /**
      * Section 表
      */
     LPtrList m_secList;
     /**
-     * 状态标志
+     * Dirty 标志
      */
-    DWORD m_dwState;
-};
-
-/**
- * \class LIniSection
- * \brief ini 格式 Section 类
- */
-
-class LIniSection
-{
-    friend class LIniParser;
-public:
-    LIniSection(void);
-public:
-
-    /**
-     * 向头部添加一行数据。
-     * @param [in] lpKeyName 要设置的键名称。
-     * @param [in] lpValue 要设置的值。
-     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator AddHead(__in PCSTR lpKeyName, __in PCSTR lpValue);
-
-    /**
-     * 向头部添加一行数据。
-     * @param [in] lpKeyName 要设置的键名称。
-     * @param [in] lpValue 要设置的值。
-     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator AddHead(__in PCSTR lpKeyName, __in PCWSTR lpValue);
-
-    /**
-     * 向头部添加一行数据。
-     * @param [in] lpKeyName 要设置的键名称。
-     * @param [in] lpValue 要设置的值。
-     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator AddHead(__in PCSTR lpKeyName, __in int nValue);
-
-    /**
-     * 向尾部添加一行数据。
-     * @param [in] lpKeyName 要设置的键名称。
-     * @param [in] lpValue 要设置的值。
-     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator AddTail(__in PCSTR lpKeyName, __in PCSTR lpValue);
-
-    /**
-     * 向尾部添加一行数据。
-     * @param [in] lpKeyName 要设置的键名称。
-     * @param [in] lpValue 要设置的值。
-     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator AddTail(__in PCSTR lpKeyName, __in PCWSTR lpValue);
-
-    /**
-     * 向尾部添加一行数据。
-     * @param [in] lpKeyName 要设置的键名称。
-     * @param [in] lpValue 要设置的值。
-     * @return 如果添加成功则返回添加后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator AddTail(__in PCSTR lpKeyName, __in int nValue);
-
-    /**
-     * 清空 Section 数据。
-     */
-    void Clear(void);
-
-    /**
-     * 获得第一行数据的迭代器。
-     * @return 该 Section 的第一行数据。
-     */
-    LIterator GetHead(void);
-
-    /**
-     * 获得指定行的 Key 名称。
-     * @param [in] it 一行数据的迭代器。
-     * @param [out] str 用于接收 Key 名称的 LStringA 对象指针。
-     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL GetKeyName(__in LIterator it, __out LStringA* str);
-
-    /**
-     * 获得指定行的 Key 名称。
-     * @param [in] it 一行数据的迭代器。
-     * @param [out] str 用于接收 Key 名称的 LStringW 对象指针。
-     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL GetKeyName(__in LIterator it, __out LStringW* str);
-
-    /**
-     * 获得指定行下一行数据的迭代器。
-     * @return 如果成功则返回指定行的下一行数据，否则返回 NULL。
-     */
-    LIterator GetNext(__in LIterator it);
-
-    /**
-     * 获得指定行的值字串。
-     * @param [in] it 一行数据的迭代器。
-     * @param [out] str 用于接收数据的 LStringA 对象指针。
-     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL GetValue(__in LIterator it, __out LStringA* str);
-
-    /**
-     * 获得指定行的值字串。
-     * @param [in] it 一行数据的迭代器。
-     * @param [out] str 用于接收数据的 LStringW 对象指针。
-     * @return 如果获取成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL GetValue(__in LIterator it, __out LStringW* str);
-
-    /**
-     * 在指定的位置之前插入一个字符串值。
-     * @param [in] it 要插入的位置。
-     * @param [in] lpKeyName 要插入的键名称。
-     * @param [in] lpValue 要插入的值。
-     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator InsertBefore(__in LIterator it, __in PCSTR lpKeyName,
-        __in PCSTR lpValue);
-
-    /**
-     * 在指定的位置之前插入一个字符串值。
-     * @param [in] it 要插入的位置。
-     * @param [in] lpKeyName 要插入的键名称。
-     * @param [in] lpValue 要插入的值。
-     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator InsertBefore(__in LIterator it, __in PCSTR lpKeyName,
-        __in PCWSTR lpValue);
-
-    /**
-     * 在指定的位置之前插入一个整数值。
-     * @param [in] it 要插入的位置。
-     * @param [in] lpKeyName 要插入的键名称。
-     * @param [in] nValue 要插入的整数值。
-     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator InsertBefore(__in LIterator it, __in PCSTR lpKeyName,
-        __in int nValue);
-
-    /**
-     * 在指定的位置之后插入一个字符串值。
-     * @param [in] it 要插入的位置。
-     * @param [in] lpKeyName 要插入的键名称。
-     * @param [in] lpValue 要插入的值。
-     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator InsertAfter(__in LIterator it, __in PCSTR lpKeyName,
-        __in PCSTR lpValue);
-
-    /**
-     * 在指定的位置之后插入一个字符串值。
-     * @param [in] it 要插入的位置。
-     * @param [in] lpKeyName 要插入的键名称。
-     * @param [in] lpValue 要插入的值。
-     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator InsertAfter(__in LIterator it, __in PCSTR lpKeyName,
-        __in PCWSTR lpValue);
-
-    /**
-     * 在指定的位置之后插入一个整数值。
-     * @param [in] it 要插入的位置。
-     * @param [in] lpKeyName 要插入的键名称。
-     * @param [in] nValue 要插入的整数值。
-     * @return 如果插入成功则返回插入后行的迭代器，否则返回 NULL。
-     * \note 此函数并不检查数据是否重复。
-     */
-    LIterator InsertAfter(__in LIterator it, __in PCSTR lpKeyName,
-        __in int nValue);
-
-    /**
-     * 获得 Section 是否为空。
-     * @return 如果该 Section 为空则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL IsEmpty(void);
-
-    /**
-     * 设置指定行的整数数据。
-     * @param [in] it 一行数据的迭代器。
-     * @param [in] nValue 要设置的整数数据。
-     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL SetInt(__in LIterator it, __in int nValue);
-
-    /**
-     * 设置指定行的字符串数据。
-     * @param [in] it 一行数据的迭代器。
-     * @param [in] lpValue 要设置的字符串数据。
-     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL SetValue(__in LIterator it, __in PCSTR lpValue);
-
-    /**
-     * 设置指定行的字符串数据。
-     * @param [in] it 一行数据的迭代器。
-     * @param [in] lpValue 要设置的字符串数据。
-     * @return 如果设置成功则返回 TRUE，否则返回 FALSE。
-     */
-    BOOL SetValue(__in LIterator it, __in PCWSTR lpValue);
-private:
-    /**
-     * ini 状态
-     */
-    PDWORD m_pState;
-    /**
-     * ini 数据
-     */
-    LStrList* m_ini;
-    /**
-     * 第一行数据
-     */
-    LIterator m_head;
-    /**
-     * 下一个 Section
-     */
-    LIterator m_tail;
+    BOOL m_bDirty;
 };
 
 /**

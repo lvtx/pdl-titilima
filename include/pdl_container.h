@@ -12,12 +12,11 @@
 #pragma once
 
 #include "pdl_base.h"
-#include "pdl_file.h"
 
 /**
  * PDL 容器迭代器
  */
-typedef struct _tagLIterator { int unk; } *LIterator;
+typedef struct { int unk; } *LIterator;
 
 /**
  * 容器对象拷贝函数
@@ -152,13 +151,6 @@ public:
     LIterator GetPrevIterator(__in LIterator it);
 
     /**
-     * 获取指定迭代器指向的原始数据。
-     * @param [in] it 一个有效的迭代器。
-     * @return 该迭代器对应的原始数据。
-     */
-    PVOID GetRawData(__in LIterator it);
-
-    /**
      * 获取链表尾部的迭代器。
      * @return 链表尾部的迭代器。
      */
@@ -179,15 +171,6 @@ public:
      * @return 如果插入成功则返回插入后的位置，否则返回 NULL。
      */
     LIterator InsertBefore(__in LIterator it, __in LPCVOID ptr);
-
-    /**
-     * 判断容器是否为空。
-     * @return 如果容器为空则返回 TRUE，否则返回 FALSE。
-     */
-    PDLINLINE BOOL IsEmpty(void)
-    {
-        return NULL == m_itHead;
-    }
 
     /**
      * 修改指定位置的数据。
@@ -221,10 +204,18 @@ public:
 
 protected:
     /**
+     * 获得可用的操作锁。
+     */
+    PDLINLINE ILock* GetSafeLock(void) const;
+    /**
      * 为新元素申请空间。
      */
     LIterator New(__in LPCVOID ptr);
 protected:
+    /**
+     * 链表状态
+     */
+    DWORD m_dwStatus;
     /**
      * 链表头结点
      */
@@ -251,14 +242,14 @@ protected:
     ILock* m_lock;
 };
 
+#define LT_FIRST    1
+#define LT_LAST     2
+#define LT_ROOT     ((LIterator)NULL)
+
 /**
  * \class LPtrTree
  * \brief PDL 树类
  */
-
-#define LT_FIRST    1
-#define LT_LAST     2
-#define LT_ROOT     ((LIterator)NULL)
 
 class LPtrTree
 {
@@ -382,10 +373,18 @@ public:
 
 protected:
     /**
+     * 获得可用的操作锁。
+     */
+    PDLINLINE ILock* GetSafeLock(void) const;
+    /**
      * 为新元素申请空间。
      */
     LIterator New(__in LPCVOID ptr);
 protected:
+    /**
+     * 状态
+     */
+    DWORD m_dwStatus;
     /**
      * 第一个根结点
      */
@@ -486,12 +485,6 @@ public:
     DWORD GetCount(void);
 
     /**
-     * 获取指定位置的原始数据。
-     * @param [in] idx 要获取数据的索引位置。
-     * @return 如果成功则获取原始数据的指针，否则返回 NULL。
-     */
-    PVOID GetRawData(__in int idx);
-    /**
      * 向指定位置的后面插入一个元素。
      * @param [in] idx 要插入数据的索引。
      * @param [in] ptr 要插入的数据。
@@ -541,6 +534,10 @@ protected:
      */
     PDLINLINE PVOID DataFromPos(__in int idx);
     /**
+     * 获得可用的操作锁。
+     */
+    PDLINLINE ILock* GetSafeLock(void) const;
+    /**
      * 增长向量的大小。
      */
     void Grow(void);
@@ -550,6 +547,10 @@ protected:
      */
     LIterator New(__in LPCVOID ptr);
 protected:
+    /**
+     * 向量状态
+     */
+    DWORD m_dwStatus;
     /**
      * 向量数据
      */
@@ -646,15 +647,6 @@ public:
         }
         return v.Remove(-1);
     }
-
-    /**
-     * 获得栈顶数据。
-     * @return 栈顶数据的指针。
-     */
-    T* Top(void)
-    {
-        return (T*)v.GetRawData(-1);
-    }
 private:
     LPtrVector v;
 };
@@ -675,7 +667,7 @@ private:
 
 class LStringA;
 class LStringW;
-class LStrList : public LPtrList
+class LStrList : protected LPtrList
 {
 public:
 
@@ -683,7 +675,7 @@ public:
      * 构造函数。
      * @param [in] lock 操作锁。
      */
-    LStrList(__in ILock* lock = NULL, __in BOOL bUnicode = g_bUnicode);
+    LStrList(__in ILock* lock = NULL);
 
 public:
     LIterator AddHead(__in PCSTR lpString);
@@ -692,12 +684,14 @@ public:
     LIterator AddTail(__in PCWSTR lpString);
     BOOL GetAt(__in LIterator it, __out LStringA* str);
     BOOL GetAt(__in LIterator it, __out LStringW* str);
+    LIterator GetHeadIterator(void);
+    LIterator GetNextIterator(__in LIterator it);
+    LIterator GetPrevIterator(__in LIterator it);
+    LIterator GetTailIterator(void);
     LIterator InsertAfter(__in LIterator it, __in PCSTR lpString);
     LIterator InsertAfter(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCWSTR lpString);
     LIterator InsertBefore(__in LIterator it, __in PCSTR lpString);
-    BOOL IsEmptyLine(__in LIterator it);
-    PDLINLINE BOOL IsUnicode(void);
 
     /**
      * 从一个指定的文本文件中加载一个字符串链表。
@@ -746,9 +740,5 @@ public:
     void SetAt(__in LIterator it, __in PCSTR lpString);
     void SetAt(__in LIterator it, __in PCWSTR lpString);
 protected:
-    PVOID GetRawString(__in LIterator it);
-    DWORD LoadFromFile(LTxtFile* tf, BOOL bIncludeNull);
-    DWORD SaveToFile(LTxtFile* tf, BOOL bIncludeNull);
-protected:
-    DWORD m_dwFlags;
+    PCSTR GetAt(__in LIterator it);
 };

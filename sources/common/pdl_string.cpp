@@ -1,5 +1,5 @@
 #include "..\..\include\pdl_string.h"
-#include "string.hpp"
+#include "stringt.h"
 #ifdef _WIN32_WCE
 #include "..\adaptor\wince_adaptor.h"
 #endif // #ifdef _WIN32_WCE
@@ -18,7 +18,14 @@ LStringA::LStringA(void)
 LStringA::LStringA(__in PCSTR lpszString)
 {
     m_dwMaxLen = 0;
-    if (NULL == lpszString || '\0' == *lpszString)
+    m_lpszData = NULL;
+    Copy(lpszString);
+}
+
+LStringA::LStringA(__in PCWSTR lpszString)
+{
+    m_dwMaxLen = 0;
+    if (NULL == lpszString)
     {
         m_lpszData = AllocString(nullstrA);
     }
@@ -26,20 +33,6 @@ LStringA::LStringA(__in PCSTR lpszString)
     {
         m_lpszData = NULL;
         Copy(lpszString);
-    }
-}
-
-LStringA::LStringA(__in PCWSTR lpszString, __in UINT CodePage /* = CP_ACP */)
-{
-    m_dwMaxLen = 0;
-    if (NULL == lpszString || L'\0' == *lpszString)
-    {
-        m_lpszData = AllocString(nullstrA);
-    }
-    else
-    {
-        m_lpszData = NULL;
-        Copy(lpszString, CodePage);
     }
 }
 
@@ -103,7 +96,8 @@ const LStringA& LStringA::operator+=(__in char ch)
 
 char LStringA::operator[](__in int idx)
 {
-    return GetAt(idx);
+    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
+    return m_lpszData[idx];
 }
 
 PSTR LStringA::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
@@ -149,9 +143,9 @@ void LStringA::Copy(__in PCSTR lpszString)
     str.Copy(lpszString);
 }
 
-void LStringA::Copy(__in PCWSTR lpszString, __in UINT CodePage /* = CP_ACP */)
+void LStringA::Copy(__in PCWSTR lpszString)
 {
-    int len = WideCharToMultiByte(CodePage, 0, lpszString, -1, NULL, 0,
+    int len = WideCharToMultiByte(CP_ACP, 0, lpszString, -1, NULL, 0,
         NULL, NULL);
     if (len > (int)m_dwMaxLen)
     {
@@ -159,7 +153,7 @@ void LStringA::Copy(__in PCWSTR lpszString, __in UINT CodePage /* = CP_ACP */)
         FreeString(m_lpszData);
         m_lpszData = CharTraitsA::Alloc(len);
     }
-    WideCharToMultiByte(CodePage, 0, lpszString, -1, m_lpszData, len, NULL,
+    WideCharToMultiByte(CP_ACP, 0, lpszString, -1, m_lpszData, len, NULL,
         NULL);
     m_lpszData[len] = '\0';
 }
@@ -174,12 +168,6 @@ void LStringA::Empty(void)
 {
     LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
     str.Empty();
-}
-
-BOOL LStringA::ExpandEnvironment(void)
-{
-    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
-    return str.ExpandEnvironment();
 }
 
 int LStringA::Find(__in char ch, __in int iStart /* = 0 */)
@@ -210,12 +198,6 @@ int LStringA::Format(__in PCSTR lpszFormat, ...)
 void LStringA::FreeString(__in PSTR lpString)
 {
     CharTraitsA::Free(lpString);
-}
-
-char LStringA::GetAt(__in int idx)
-{
-    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
-    return m_lpszData[idx];
 }
 
 int LStringA::GetLength(void) const
@@ -250,12 +232,6 @@ int LStringA::Replace(__in PCSTR pszOld, __in PCSTR pszNew)
 {
     LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
     return str.Replace(pszOld, pszNew);
-}
-
-void LStringA::ReplaceBackslashChars(void)
-{
-    LStringT<char, CharTraitsA> str(m_lpszData, m_dwMaxLen);
-    str.ReplaceBackslashChars();
 }
 
 int LStringA::ReverseFind(__in char ch)
@@ -305,24 +281,17 @@ LStringW::LStringW(void)
     m_lpszData = AllocString(nullstrW);
 }
 
-LStringW::LStringW(__in PCSTR lpszString, __in UINT CodePage /* = CP_ACP */)
+LStringW::LStringW(__in PCSTR lpszString)
 {
     m_dwMaxLen = 0;
-    if (NULL == lpszString || '\0' == *lpszString)
-    {
-        m_lpszData = AllocString(nullstrW);
-    }
-    else
-    {
-        m_lpszData = NULL;
-        Copy(lpszString, CodePage);
-    }
+    m_lpszData = NULL;
+    Copy(lpszString);
 }
 
 LStringW::LStringW(__in PCWSTR lpszString /* = NULL */)
 {
     m_dwMaxLen = 0;
-    if (NULL == lpszString || L'\0' == *lpszString)
+    if (NULL == lpszString)
     {
         m_lpszData = AllocString(nullstrW);
     }
@@ -392,7 +361,8 @@ const LStringW& LStringW::operator+=(__in WCHAR ch)
 
 WCHAR LStringW::operator[](__in int idx)
 {
-    return GetAt(idx);
+    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
+    return m_lpszData[idx];
 }
 
 PWSTR LStringW::AllocBuffer(__in DWORD nChars, __in BOOL bSaveData /* = TRUE */)
@@ -433,16 +403,16 @@ BSTR LStringW::ConvertToBSTR(void)
     return ::SysAllocString(m_lpszData);
 }
 
-void LStringW::Copy(__in PCSTR lpszString, __in UINT CodePage /* = CP_ACP */)
+void LStringW::Copy(__in PCSTR lpszString)
 {
-    int len = MultiByteToWideChar(CodePage, 0, lpszString, -1, NULL, 0);
+    int len = MultiByteToWideChar(CP_ACP, 0, lpszString, -1, NULL, 0);
     if (len > (int)m_dwMaxLen)
     {
         m_dwMaxLen = len;
         FreeString(m_lpszData);
         m_lpszData = CharTraitsW::Alloc(len);
     }
-    MultiByteToWideChar(CodePage, 0, lpszString, -1, m_lpszData, len);
+    MultiByteToWideChar(CP_ACP, 0, lpszString, -1, m_lpszData, len);
     m_lpszData[len] = L'\0';
 }
 
@@ -462,12 +432,6 @@ void LStringW::Empty(void)
 {
     LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
     str.Empty();
-}
-
-BOOL LStringW::ExpandEnvironment(void)
-{
-    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
-    return str.ExpandEnvironment();
 }
 
 int LStringW::Find(__in WCHAR ch, int iStart /* = 0 */)
@@ -498,12 +462,6 @@ BOOL LStringW::Format(__in PCWSTR lpszFormat, ...)
 void LStringW::FreeString(__in PWSTR lpString)
 {
     CharTraitsW::Free(lpString);
-}
-
-WCHAR LStringW::GetAt(__in int idx)
-{
-    PDLASSERT(idx < (int)(m_dwMaxLen + 1));
-    return m_lpszData[idx];
 }
 
 int LStringW::GetLength(void) const
@@ -538,12 +496,6 @@ int LStringW::Replace(__in PCWSTR pszOld, __in PCWSTR pszNew)
 {
     LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
     return str.Replace(pszOld, pszNew);
-}
-
-void LStringW::ReplaceBackslashChars(void)
-{
-    LStringT<WCHAR, CharTraitsW> str(m_lpszData, m_dwMaxLen);
-    str.ReplaceBackslashChars();
 }
 
 int LStringW::ReverseFind(__in WCHAR ch)

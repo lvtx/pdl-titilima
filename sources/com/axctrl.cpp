@@ -55,11 +55,12 @@ BOOL LAxCtrl::CreateAxCtrl(__in REFCLSID clsid)
         return FALSE;
 
     m_pObject->SetHostNames(L"LAxHost", NULL);
-    if (FAILED(OleSetContainedObject(m_pObject, TRUE)))
-        return FALSE;
 
     RECT rcClient;
     GetClientRect(&rcClient);
+    if (FAILED(OleSetContainedObject(m_pObject, TRUE)))
+        return FALSE;
+
     hr = m_pObject->DoVerb(OLEIVERB_SHOW, NULL, this, -1, m_hWnd, &rcClient);
     return SUCCEEDED(hr);
 }
@@ -504,12 +505,6 @@ PDL_END_MSGMAP(LWindow)
 
 void LAxCtrl::OnSize(UINT nType, int cx, int cy, BOOL& bHandled)
 {
-    if (NULL == m_pObject)
-    {
-        bHandled = FALSE;
-        return;
-    }
-
     RECT rc = { 0, 0, cx, cy };
     LComQIPtr<IOleInPlaceObject> pObjInPlace = m_pObject;
     if (pObjInPlace)

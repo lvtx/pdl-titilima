@@ -8,11 +8,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 // LTxtFile
 
-LTxtFile::LTxtFile(__in BOOL bUnicode) : LFile()
+LTxtFile::LTxtFile(void) : LFile()
 {
     m_dwFlags = OPFLAG_WRITE;
-    SetUnicodeMode(bUnicode);
-
+    m_cbChar = sizeof(char);
     m_buf = new BYTE[TXTBUF_SIZE];
     m_ptr = 0;
     m_rwptr = 0;
@@ -86,11 +85,16 @@ int LTxtFile::GetChar(void)
         ReadBlock();
 
     int ch;
-    if (IsUnicode())
+    if (FILEFLAG_UNICODE & m_dwFlags)
+    {
         ch = *(PCWSTR)(m_buf + m_ptr);
+        m_ptr += sizeof(WCHAR);
+    }
     else
+    {
         ch = *(PCSTR)(m_buf + m_ptr);
-    m_ptr += m_cbChar;
+        m_ptr += sizeof(char);
+    }
 
     if (m_rwptr < TXTBUF_SIZE && m_ptr >= m_rwptr)
         m_dwFlags |= OPFLAG_EOF;
@@ -99,9 +103,9 @@ int LTxtFile::GetChar(void)
     return ch;
 }
 
-PDLINLINE BOOL LTxtFile::IsUnicode(void)
+BOOL LTxtFile::IsUnicode(void)
 {
-    return 0 != (FILEFLAG_UNICODE & m_dwFlags);
+    return (FILEFLAG_UNICODE & m_dwFlags) ? TRUE : FALSE;
 }
 
 BOOL LTxtFile::Open(__in PCSTR lpFileName, __in MODE mode)
@@ -133,9 +137,10 @@ BOOL LTxtFile::Open(__in PCSTR lpFileName, __in MODE mode)
         WORD hdr = 0;
         DWORD dwRead = file.Read(&hdr, sizeof(WORD));
         if (sizeof(WORD) == dwRead && UNICODE_HEADER == hdr)
-            SetUnicodeMode(TRUE);
-        else
-            SetUnicodeMode(FALSE);
+        {
+            m_cbChar = sizeof(WCHAR);
+            m_dwFlags |= FILEFLAG_UNICODE;
+        }
         file.Close();
     }
 
@@ -152,7 +157,7 @@ BOOL LTxtFile::Open(__in PCSTR lpFileName, __in MODE mode)
         break;
     case LTxtFile::modeReset:
         {
-            if (IsUnicode())
+            if (FILEFLAG_UNICODE & m_dwFlags)
             {
                 WORD hdr = UNICODE_HEADER;
                 LFile::Write(&hdr, sizeof(WORD));
@@ -162,7 +167,7 @@ BOOL LTxtFile::Open(__in PCSTR lpFileName, __in MODE mode)
         break;
     case LTxtFile::modeReadWrite:
         {
-            if (IsUnicode())
+            if (FILEFLAG_UNICODE & m_dwFlags)
                 LFile::SetPointer(sizeof(WORD), FILE_BEGIN);
             m_dwFlags |= OPFLAG_WRITE;
             if (LFile::GetSize() == LFile::GetPointer())
@@ -205,9 +210,10 @@ BOOL LTxtFile::Open(__in PCWSTR lpFileName, __in MODE mode)
         WORD hdr = 0;
         DWORD dwRead = file.Read(&hdr, sizeof(WORD));
         if (sizeof(WORD) == dwRead && UNICODE_HEADER == hdr)
-            SetUnicodeMode(TRUE);
-        else
-            SetUnicodeMode(FALSE);
+        {
+            m_cbChar = sizeof(WCHAR);
+            m_dwFlags |= FILEFLAG_UNICODE;
+        }
         file.Close();
     }
 
@@ -224,7 +230,7 @@ BOOL LTxtFile::Open(__in PCWSTR lpFileName, __in MODE mode)
         break;
     case LTxtFile::modeReset:
         {
-            if (IsUnicode())
+            if (FILEFLAG_UNICODE & m_dwFlags)
             {
                 WORD hdr = UNICODE_HEADER;
                 LFile::Write(&hdr, sizeof(WORD));
@@ -234,7 +240,7 @@ BOOL LTxtFile::Open(__in PCWSTR lpFileName, __in MODE mode)
         break;
     case LTxtFile::modeReadWrite:
         {
-            if (IsUnicode())
+            if (FILEFLAG_UNICODE & m_dwFlags)
                 LFile::SetPointer(sizeof(WORD), FILE_BEGIN);
             m_dwFlags |= OPFLAG_WRITE;
             if (LFile::GetSize() == LFile::GetPointer())
@@ -274,7 +280,7 @@ int LTxtFile::PrintF(__in PCWSTR format, ...)
 
 void LTxtFile::PutChar(int ch)
 {
-    if (IsUnicode())
+    if (FILEFLAG_UNICODE & m_dwFlags)
     {
         WCHAR w[2] = { (WCHAR)ch, L'\0' };
         Write(w);
@@ -288,7 +294,7 @@ void LTxtFile::PutChar(int ch)
 
 DWORD LTxtFile::Read(__out LStringA* str, __in DWORD dwSize)
 {
-    if (IsUnicode())
+    if (FILEFLAG_UNICODE & m_dwFlags)
     {
         LStringW strW;
         if (0 == Read(&strW, dwSize))
@@ -318,7 +324,7 @@ DWORD LTxtFile::Read(__out LStringA* str, __in DWORD dwSize)
 
 DWORD LTxtFile::Read(__out LStringW* str, __in DWORD dwSize)
 {
-    if (!IsUnicode())
+    if (!(FILEFLAG_UNICODE & m_dwFlags))
     {
         LStringA strA;
         if (0 == Read(&strA, dwSize))
@@ -362,7 +368,7 @@ DWORD LTxtFile::ReadBlock(void)
 
 BOOL LTxtFile::ReadLn(__out LStringA* str)
 {
-    if (IsUnicode())
+    if (FILEFLAG_UNICODE & m_dwFlags)
     {
         LStringW strW;
         if (!ReadLn(&strW))
@@ -424,7 +430,7 @@ BOOL LTxtFile::ReadLn(__out LStringA* str)
 
 BOOL LTxtFile::ReadLn(__out LStringW* str)
 {
-    if (!IsUnicode())
+    if (!(FILEFLAG_UNICODE & m_dwFlags))
     {
         LStringA strA;
         if (!ReadLn(&strA))
@@ -484,20 +490,6 @@ BOOL LTxtFile::ReadLn(__out LStringW* str)
     return TRUE;
 }
 
-PDLINLINE void LTxtFile::SetUnicodeMode(BOOL bUnicode)
-{
-    if (bUnicode)
-    {
-        m_dwFlags |= FILEFLAG_UNICODE;
-        m_cbChar = sizeof(WCHAR);
-    }
-    else
-    {
-        m_dwFlags &= ~FILEFLAG_UNICODE;
-        m_cbChar = sizeof(char);
-    }
-}
-
 void LTxtFile::StartRead(void)
 {
     if (OPFLAG_WRITE & m_dwFlags)
@@ -526,7 +518,7 @@ BOOL LTxtFile::Write(__in PCSTR str)
     if (NULL == str)
         return FALSE;
 
-    if (IsUnicode())
+    if (FILEFLAG_UNICODE & m_dwFlags)
     {
         LStringW strW = str;
         return Write(strW);
@@ -553,7 +545,7 @@ BOOL LTxtFile::Write(__in PCWSTR str)
     if (NULL == str)
         return FALSE;
 
-    if (!IsUnicode())
+    if (!(FILEFLAG_UNICODE & m_dwFlags))
     {
         LStringA strA = str;
         return Write(strA);

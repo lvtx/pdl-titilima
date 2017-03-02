@@ -9,7 +9,8 @@
 
 #include "..\..\include\pdl_container.h"
 #include "..\common\lock.h"
-#include "..\..\include\pdl_util.h"
+
+#define LIST_ITERATING  0x00000001
 
 typedef struct _tagNode NODE, *PNODE;
 struct _tagNode {
@@ -20,6 +21,7 @@ struct _tagNode {
 
 LPtrList::LPtrList(void)
 {
+    m_dwStatus = 0;
     m_itHead = NULL;
     m_itTail = NULL;
     m_dwUnitSize = 0;
@@ -35,6 +37,9 @@ LPtrList::~LPtrList(void)
 
 LIterator LPtrList::AddHead(__in LPCVOID ptr)
 {
+    if (LIST_ITERATING & m_dwStatus)
+        return NULL;
+
     PNODE node = (PNODE)New(ptr);
     if (NULL == node)
         return NULL;
@@ -57,6 +62,9 @@ LIterator LPtrList::AddHead(__in LPCVOID ptr)
 
 LIterator LPtrList::AddTail(__in LPCVOID ptr)
 {
+    if (LIST_ITERATING & m_dwStatus)
+        return NULL;
+
     PNODE node = (PNODE)New(ptr);
     if (NULL == node)
         return NULL;
@@ -79,6 +87,9 @@ LIterator LPtrList::AddTail(__in LPCVOID ptr)
 
 BOOL LPtrList::Clear(void)
 {
+    if (LIST_ITERATING & m_dwStatus)
+        return FALSE;
+
     LAutoLock lock(m_lock);
     PNODE node = (PNODE)m_itHead;
     while (NULL != node)
@@ -127,9 +138,7 @@ void LPtrList::Create(
 
 void LPtrList::Destroy(void)
 {
-    if (0 == m_dwUnitSize)
-        return;
-
+    m_dwStatus &= ~LIST_ITERATING;
     Clear();
 
     m_dwUnitSize = 0;
@@ -144,6 +153,7 @@ LIterator LPtrList::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
         return NULL;
 
     LAutoLock lock(m_lock);
+    m_dwStatus = LIST_ITERATING;
     PNODE node = (PNODE)m_itHead;
     while (NULL != node)
     {
@@ -153,6 +163,7 @@ LIterator LPtrList::ForEach(__in IteratePtr pfnCallBack, __in PVOID param)
         node = node->next;
     }
 
+    m_dwStatus &= ~LIST_ITERATING;
     return (LIterator)node;
 }
 
@@ -172,7 +183,7 @@ DWORD LPtrList::GetCount(void)
         return 0;
 
     DWORD ret = 0;
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
     PNODE node = (PNODE)m_itHead;
     while (NULL != node)
     {
@@ -201,11 +212,9 @@ LIterator LPtrList::GetPrevIterator(__in LIterator it)
     return (LIterator)(((PNODE)it)->prev);
 }
 
-PVOID LPtrList::GetRawData(__in LIterator it)
+PDLINLINE ILock* LPtrList::GetSafeLock(void) const
 {
-    if (NULL == it)
-        return NULL;
-    return ((PNODE)it)->data;
+    return (LIST_ITERATING & m_dwStatus) ? LDummyLock::Get() : m_lock;
 }
 
 LIterator LPtrList::GetTailIterator(void)
@@ -215,6 +224,9 @@ LIterator LPtrList::GetTailIterator(void)
 
 LIterator LPtrList::InsertAfter(__in LIterator it, __in LPCVOID ptr)
 {
+    if (LIST_ITERATING & m_dwStatus)
+        return NULL;
+
     if (m_itTail == it)
         return AddTail(ptr);
 
@@ -234,6 +246,9 @@ LIterator LPtrList::InsertAfter(__in LIterator it, __in LPCVOID ptr)
 
 LIterator LPtrList::InsertBefore(__in LIterator it, __in LPCVOID ptr)
 {
+    if (LIST_ITERATING & m_dwStatus)
+        return NULL;
+
     if (m_itHead == it)
         return AddHead(ptr);
 
@@ -253,7 +268,7 @@ LIterator LPtrList::InsertBefore(__in LIterator it, __in LPCVOID ptr)
 
 void LPtrList::Modify(__in LIterator it, __in LPCVOID ptr)
 {
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
 
     PNODE node = (PNODE)it;
     CopyMemory(node->data, ptr, m_dwUnitSize);
@@ -272,7 +287,7 @@ LIterator LPtrList::New(__in LPCVOID ptr)
 
 BOOL LPtrList::Remove(__in LIterator it)
 {
-    if (NULL == it)
+    if (NULL == it || LIST_ITERATING & m_dwStatus)
         return FALSE;
 
     LAutoLock lock(m_lock);
@@ -308,7 +323,7 @@ BOOL LPtrList::Remove(__in LIterator it)
 
 void LPtrList::SetAt(__in LIterator it, __in LPCVOID ptr)
 {
-    LAutoLock lock(m_lock);
+    LAutoLock lock(GetSafeLock());
 
     PNODE node = (PNODE)it;
     if (NULL != m_pfnDestroy)
@@ -324,6 +339,7 @@ BOOL LPtrList::Sort(__in ComparePtr pfnCompare)
         return FALSE;
 
     LAutoLock lock(m_lock);
+    m_dwStatus = LIST_ITERATING;
     PBYTE tmp = new BYTE[m_dwUnitSize];
 
     PNODE p1 = (PNODE)m_itHead;
@@ -346,5 +362,6 @@ BOOL LPtrList::Sort(__in ComparePtr pfnCompare)
     }
 
     delete [] tmp;
+    m_dwStatus &= ~LIST_ITERATING;
     return TRUE;
 }

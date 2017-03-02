@@ -15,6 +15,11 @@ LGdiObj::~LGdiObj(void)
         ::DeleteObject(m_hGdiObj);
 }
 
+LGdiObj::operator HGDIOBJ(void)
+{
+    return m_hGdiObj;
+}
+
 LGdiObj& LGdiObj::operator=(__in HGDIOBJ hGdiObj)
 {
     DeleteObject();
@@ -47,6 +52,11 @@ HGDIOBJ LGdiObj::Detach(void)
 LBitmap::LBitmap(__in HBITMAP hBitmap /* = NULL */)
 {
     m_hGdiObj = hBitmap;
+}
+
+LBitmap::operator HBITMAP(void)
+{
+    return (HBITMAP)m_hGdiObj;
 }
 
 LBitmap& LBitmap::operator=(__in HBITMAP hBitmap)
@@ -145,6 +155,11 @@ LBrush::LBrush(__in HBRUSH hBrush /* = NULL */) : LGdiObj(hBrush)
 {
 }
 
+LBrush::operator HBRUSH(void)
+{
+    return (HBRUSH)m_hGdiObj;
+}
+
 LBrush& LBrush::operator=(__in HBRUSH hBrush)
 {
     DeleteObject();
@@ -176,33 +191,16 @@ LFont::LFont(__in HFONT hFont /* = NULL */)
     m_hGdiObj = hFont;
 }
 
+LFont::operator HFONT(void)
+{
+    return (HFONT)m_hGdiObj;
+}
+
 LFont& LFont::operator=(__in HFONT hFont)
 {
     DeleteObject();
     m_hGdiObj = hFont;
     return *this;
-}
-
-BOOL LFont::CreateIndirect(__in LPLOGFONTA lf)
-{
-    HFONT hFont = CreateFontIndirectA(lf);
-    if (NULL == hFont)
-        return FALSE;
-
-    DeleteObject();
-    m_hGdiObj = hFont;
-    return TRUE;
-}
-
-BOOL LFont::CreateIndirect(__in LPLOGFONTW lf)
-{
-    HFONT hFont = CreateFontIndirectW(lf);
-    if (NULL == hFont)
-        return FALSE;
-
-    DeleteObject();
-    m_hGdiObj = hFont;
-    return TRUE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,6 +209,11 @@ BOOL LFont::CreateIndirect(__in LPLOGFONTW lf)
 LPen::LPen(__in HPEN hPen /* = NULL */)
 {
     m_hGdiObj = hPen;
+}
+
+LPen::operator HPEN(void)
+{
+    return (HPEN)m_hGdiObj;
 }
 
 LPen& LPen::operator=(__in HPEN hPen)
@@ -226,6 +229,11 @@ LPen& LPen::operator=(__in HPEN hPen)
 LRgn::LRgn(__in HRGN hRgn /* = NULL */)
 {
     m_hGdiObj = hRgn;
+}
+
+LRgn::operator HRGN(void)
+{
+    return (HRGN)m_hGdiObj;
 }
 
 LRgn& LRgn::operator=(__in HRGN hRgn)
@@ -245,6 +253,11 @@ LDC::LDC(__in HDC hDC /* = NULL */)
 
 LDC::~LDC(void)
 {
+}
+
+LDC::operator HDC(void) const
+{
+    return m_hDC;
 }
 
 void LDC::Attach(__in HDC hDC)
@@ -312,11 +325,6 @@ BOOL LDC::DrawFocusRect(__in LPCRECT lprc)
     return ::DrawFocusRect(m_hDC, lprc);
 }
 
-BOOL LDC::DrawIcon(__in int X, __in int Y, __in HICON hIcon)
-{
-    return ::DrawIcon(m_hDC, X, Y, hIcon);
-}
-
 int LDC::DrawTextA(
     __in PCSTR lpString,
     __in int nCount,
@@ -338,6 +346,50 @@ int LDC::DrawTextW(
     __in UINT uFormat)
 {
     return ::DrawTextW(m_hDC, lpString, nCount, lpRect, uFormat);
+}
+
+int LDC::DrawTextClipped(
+    __in PCSTR lpString,
+    __in int nCount,
+    __inout LPRECT lpRect,
+    __in UINT uFormat)
+{
+    LStringW str = lpString;
+    return DrawTextClipped(str, nCount, lpRect, uFormat);
+}
+
+int LDC::DrawTextClipped(
+    __in PCWSTR lpString,
+    __in int nCount,
+    __inout LPRECT lpRect,
+    __in UINT uFormat)
+{
+    int cx   = lpRect->right - lpRect->left;
+    int nLen = lstrlenW(lpString);
+
+    PWSTR p = new WCHAR[nLen + 4]; // 4 for "...\0"
+    lstrcpyW(p, lpString);
+
+    RECT rc = { 0 };
+    do
+    {
+        rc.right = 0;
+        DrawTextW(p, -1, &rc, DT_CALCRECT | uFormat);
+        if (cx < rc.right)
+        {
+            p[nLen]     = L'.';
+            p[nLen - 1] = L'.';
+            p[nLen + 1] = L'.';
+            p[nLen + 2] = L'\0';
+        }
+        --nLen;
+    } while (cx < rc.right && nLen > 0);
+
+    if (0 < nLen)
+        DrawTextW(p, -1, lpRect, uFormat);
+
+    delete [] p;
+    return nLen;
 }
 
 BOOL LDC::ExtTextOutA(
@@ -481,6 +533,11 @@ LPaintDC::~LPaintDC(void)
     ::EndPaint(m_hWnd, &ps);
 }
 
+LPaintDC::operator HDC(void) const
+{
+    return m_hDC;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // LClientDC
 
@@ -492,6 +549,11 @@ LClientDC::LClientDC(HWND hWnd) : m_hWnd(hWnd)
 LClientDC::~LClientDC(void)
 {
     ::ReleaseDC(m_hWnd, m_hDC);
+}
+
+LClientDC::operator HDC(void) const
+{
+    return m_hDC;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -507,12 +569,22 @@ LWindowDC::~LWindowDC(void)
     ::ReleaseDC(m_hWnd, m_hDC);
 }
 
+LWindowDC::operator HDC(void) const
+{
+    return m_hDC;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // LBufferDC
 
 LBufferDC::~LBufferDC(void)
 {
     ::DeleteDC(m_hDC);
+}
+
+LBufferDC::operator HDC(void) const
+{
+    return m_hDC;
 }
 
 void LBufferDC::CommitDraw(void)
@@ -534,5 +606,5 @@ void LBufferDC::PrepareDraw(__in LDC *pDC, __in int cx, __in int cy)
 
 void LBufferDC::PrepareDraw(__in LDC* dc, __in const RECT& rc)
 {
-    PrepareDraw(dc, rc.right - rc.left, rc.bottom - rc.top);
+    PrepareDraw(dc, rc.right + 1, rc.bottom + 1);
 }
